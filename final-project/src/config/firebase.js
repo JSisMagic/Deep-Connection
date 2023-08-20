@@ -1,22 +1,24 @@
-// firebase.js
-
-import firebase from 'firebase/app';
-import 'firebase/auth';
-import 'firebase/firestore';
+import { initializeApp } from "firebase/app"
+import { getAnalytics } from "firebase/analytics"
+import { getDatabase } from "firebase/database"
+import { getAuth } from "@firebase/auth"
+import { getStorage } from "firebase/storage"
 
 const firebaseConfig = {
-    apiKey: 'AIzaSyCfvYBN7RjpI7LJoLX6r7BB_SsPc0TQ3jk', // Firebase Web API Key
-    authDomain: 'final-react-project-f8e7f.firebaseapp.com', // Firebase authDomain
-    projectId: 'final-react-project-f8e7f', // Firebase project ID
-    storageBucket: 'final-react-project-f8e7f.appspot.com', // Your Firebase storageBucket
-    messagingSenderId: '1023608608794', // Firebase messagingSenderId
-    appId: 'YOUR_APP_ID', // irebase appId
-};
+  apiKey: "AIzaSyCfvYBN7RjpI7LJoLX6r7BB_SsPc0TQ3jk",
+  authDomain: "final-react-project-f8e7f.firebaseapp.com",
+  databaseURL: "https://final-react-project-f8e7f-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "final-react-project-f8e7f",
+  storageBucket: "final-react-project-f8e7f.appspot.com",
+  messagingSenderId: "1023608608794",
+  appId: "1:1023608608794:web:18dbc102b75d5ceccc19a3",
+  measurementId: "G-E896CMK7ME",
+}
 
-// Initialize Firebase
-const app = firebase.initializeApp(firebaseConfig);
-const auth = app.auth();
-const db = app.firestore();
+const app = initializeApp(firebaseConfig)
+const analytics = getAnalytics(app)
+const auth = getAuth(app)
+export const storage = getStorage(app)
+export const db = getDatabase(app)
 
-export { auth, db, firebase }; // Export the 'firebase' module
-
+export { app, analytics, auth }
