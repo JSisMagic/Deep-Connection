@@ -14,6 +14,8 @@ import { LIGHT_PURPLE } from "../../common/colors"
 import { useForm } from "react-hook-form"
 import { registerUser } from "../../services/auth.services"
 import { createUser, getUser } from "../../services/users.services"
+import { useContext } from "react"
+import { AuthContext } from "../../context/AuthContext"
 
 const RegisterPage = () => {
   const {
@@ -23,11 +25,12 @@ const RegisterPage = () => {
     setError,
     formState: { errors },
   } = useForm()
+  const { setAuthState } = useContext(AuthContext)
 
   const onSubmit = async values => {
     const { email, username, firstName, lastName, password } = values
 
-    const user = await getUser(username);
+    const user = await getUser(username)
     if (user !== null) {
       return setError("alreadyRegistered", { message: "User already exists" })
     }
@@ -35,7 +38,7 @@ const RegisterPage = () => {
     try {
       const credentials = await registerUser(email, password)
 
-      await createUser({
+      const userData = await createUser({
         uid: credentials.user.uid,
         email,
         username,
@@ -43,6 +46,8 @@ const RegisterPage = () => {
         lastName,
         password,
       })
+
+      setAuthState(prev => ({ ...prev, userData: userData }))
     } catch (e) {
       console.error(e)
     }
