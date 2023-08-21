@@ -9,11 +9,12 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
+import { useContext } from "react"
+import { useForm } from "react-hook-form"
 import { Link } from "react-router-dom"
 import { LIGHT_PURPLE } from "../../common/colors"
-import { useForm } from "react-hook-form"
+import { AuthContext } from "../../context/AuthContext"
 import { loginUser } from "../../services/auth.services"
-import { getUserByUid } from "../../services/users.services"
 
 const LoginPage = () => {
   const {
@@ -23,12 +24,12 @@ const LoginPage = () => {
     setError,
     formState: { errors },
   } = useForm()
+  const { userData, setAuthState, user } = useContext(AuthContext)
 
   const onSubmit = async values => {
     const { email, password } = values
 
-    const credentials = await loginUser(email, password)
-    const userData = await getUserByUid(credentials.user.uid)
+    await loginUser(email, password)
   }
 
   return (
