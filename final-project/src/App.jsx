@@ -1,12 +1,15 @@
+import { ChakraProvider } from "@chakra-ui/react"
 import { RouterProvider } from "react-router-dom"
-import { router } from "./router"
-import { ChakraProvider, ColorModeScript } from "@chakra-ui/react"
 import theme from "./config/theme"
+import { AuthContextProvider } from "./context/AuthContext"
+import { router } from "./router"
 
 function App() {
   return (
     <ChakraProvider theme={theme}>
-      <RouterProvider router={router} />
+      <AuthContextProvider>
+        <RouterProvider router={router} />
+      </AuthContextProvider>
     </ChakraProvider>
   )
 }
