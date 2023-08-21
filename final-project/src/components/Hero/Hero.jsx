@@ -6,6 +6,7 @@ const Hero = () => {
     <Box position="relative" direction="column">
       <Stack
         zIndex={10}
+        color="white"
         left={0}
         right={0}
         textAlign="center"
