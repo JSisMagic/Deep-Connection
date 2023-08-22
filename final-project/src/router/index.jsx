@@ -3,6 +3,7 @@ import LoginPage from "../pages/Login/LoginPage"
 import RegisterPage from "../pages/Register/RegisterPage"
 import LandingLayout from "../layout/LandingLayout"
 import Calendar from "../components/Calendar/Calendar"
+import CreateEvent from "../components/Events/CreateEvents"
 
 export const router = createBrowserRouter([
   {
@@ -20,5 +21,9 @@ export const router = createBrowserRouter([
   {
     path: "/calendar",
     element: <Calendar />,
+  },
+  {
+    path: "/create-event",
+    element: <CreateEvent />,
   },
 ])
