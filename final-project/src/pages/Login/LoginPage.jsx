@@ -15,6 +15,7 @@ import { Link } from "react-router-dom"
 import { LIGHT_PURPLE } from "../../common/colors"
 import { AuthContext } from "../../context/AuthContext"
 import { loginUser } from "../../services/auth.services"
+import bgImage from "../../assets/images/hero.png"
 
 const LoginPage = () => {
   const {
@@ -24,7 +25,6 @@ const LoginPage = () => {
     setError,
     formState: { errors },
   } = useForm()
-  const { userData, setAuthState, user } = useContext(AuthContext)
 
   const onSubmit = async values => {
     const { email, password } = values
@@ -39,9 +39,17 @@ const LoginPage = () => {
       width="100%"
       justify="center"
       align="center"
-      borderRadius="md"
+      bgImage={bgImage}
     >
-      <Box width="30%" bgColor="rgba(255,255,255, .05)" padding="2rem">
+      <Box
+        width="30%"
+        bgColor="rgba(255,255,255, .1)"
+        backdropFilter="blur(16px)"
+        color="white"
+        padding="2rem"
+        borderRadius="lg"
+        boxShadow="2xl"
+      >
         <Heading textAlign="center">Log in</Heading>
         <Stack mt={10}>
           <FormControl>
