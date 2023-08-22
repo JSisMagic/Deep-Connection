@@ -1,7 +1,10 @@
 import { Box, Button, Heading, Stack } from "@chakra-ui/react"
 import HeroImg from "../../assets/images/hero.png"
+import { useNavigate } from "react-router-dom"
 
 const Hero = () => {
+  const navigate = useNavigate()
+
   return (
     <Box position="relative" direction="column">
       <Stack
@@ -22,7 +25,13 @@ const Hero = () => {
             Unite, Innovate, and Empower
           </Heading>
         </Stack>
-        <Button marginTop={10} size="lg" width="200px" marginInline="auto">
+        <Button
+          marginTop={10}
+          size="lg"
+          width="200px"
+          marginInline="auto"
+          onClick={() => navigate("/register")}
+        >
           Get started
         </Button>
       </Stack>
