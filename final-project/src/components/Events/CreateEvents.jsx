@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Button, Input, Textarea, FormControl, FormLabel, VStack } from "@chakra-ui/react";
+import { Button, FormControl, FormLabel, Input, Textarea, VStack } from "@chakra-ui/react";
 import { createEvent } from '../../services/event.services';
+import bgImage from "../../assets/images/hero.png"; // Import the background image hereq
 
 const CreateEvent = () => {
   const [eventTitle, setEventTitle] = useState('');
@@ -33,54 +34,48 @@ const CreateEvent = () => {
   };
 
   return (
-    <VStack spacing={4} padding={5}>
-      <FormControl>
+    <div style={{ backgroundImage: `url(${bgImage})`, height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <VStack spacing={4} padding={5} width="30%" bgColor="rgba(255,255,255)" borderRadius="lg" boxShadow="2xl">
         <FormLabel>Title</FormLabel>
-        <Input 
-          value={eventTitle} 
-          onChange={(e) => setEventTitle(e.target.value)} 
+        <Input
+          value={eventTitle}
+          onChange={(e) => setEventTitle(e.target.value)}
           placeholder="Title"
         />
-      </FormControl>
-      
-      <FormControl>
+
         <FormLabel>Location</FormLabel>
-        <Input 
-          value={eventLocation} 
-          onChange={(e) => setEventLocation(e.target.value)} 
+        <Input
+          value={eventLocation}
+          onChange={(e) => setEventLocation(e.target.value)}
           placeholder="Location"
         />
-      </FormControl>
 
-      <FormControl>
         <FormLabel>Description</FormLabel>
-        <Textarea 
-          value={eventDescription} 
-          onChange={(e) => setEventDescription(e.target.value)} 
+        <Textarea
+          value={eventDescription}
+          onChange={(e) => setEventDescription(e.target.value)}
           placeholder="Description"
         />
-      </FormControl>
 
-      <FormControl>
         <FormLabel>Start Date and Time</FormLabel>
-        <Input 
+        <Input
           type="datetime-local"
           value={eventStartDate}
           onChange={e => setEventStartDate(e.target.value)}
         />
-      </FormControl>
 
-      <FormControl>
         <FormLabel>End Date and Time</FormLabel>
-        <Input 
+        <Input
           type="datetime-local"
           value={eventEndDate}
           onChange={e => setEventEndDate(e.target.value)}
         />
-      </FormControl>
-      
-      <Button colorScheme="blue" onClick={handleCreateEvent}>Create Event</Button>
-    </VStack>
+
+        <Button colorScheme="blue" onClick={handleCreateEvent}>
+          Create Event
+        </Button>
+      </VStack>
+    </div>
   );
 };
 
