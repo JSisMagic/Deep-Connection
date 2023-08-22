@@ -16,6 +16,7 @@ import { registerUser } from "../../services/auth.services"
 import { createUser, getUser } from "../../services/users.services"
 import { useContext } from "react"
 import { AuthContext } from "../../context/AuthContext"
+import bgImage from "../../assets/images/hero.png"
 
 const RegisterPage = () => {
   const {
@@ -62,9 +63,9 @@ const RegisterPage = () => {
       width="100%"
       justify="center"
       align="center"
-      borderRadius="md"
+      bgImage={bgImage}
     >
-      <Box width="30%" bgColor="rgba(255,255,255, .05)" padding="2rem">
+      <Box width="30%" bgColor="rgba(255,255,255)" padding="2rem" borderRadius="lg" boxShadow="2xl">
         <Heading textAlign="center">Register</Heading>
         <Stack mt={10}>
           <FormControl>
@@ -82,6 +83,10 @@ const RegisterPage = () => {
           <FormControl>
             <FormLabel>Last name</FormLabel>
             <Input type="text" {...register("lastName")} />
+          </FormControl>
+          <FormControl>
+            <FormLabel>Phone number</FormLabel>
+            <Input type="text" {...register("phone")} />
           </FormControl>
           <FormControl>
             <FormLabel>Password</FormLabel>
