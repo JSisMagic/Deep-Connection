@@ -8,7 +8,7 @@ import WorkWeekView from './WorkWeekView';
 
 const Calendar = () => {
     const [currentDate, setCurrentDate] = useState(new Date());
-    const [currentView, setCurrentView] = useState('month'); // default view
+    const [currentView, setCurrentView] = useState('month'); 
 
     const renderView = () => {
         switch (currentView) {
