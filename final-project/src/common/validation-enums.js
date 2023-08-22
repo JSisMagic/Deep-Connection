@@ -15,6 +15,12 @@ export const validation = {
     MAX_TITLE_LENGTH: 30,
     MAX_ADDITIONAL_INFO_LENGTH: 500,
 
+    WEEK_DAYS_COUNT: 7,
+    WORK_WEEK_DAYS_COUNT: 5,
+    NUM_WEEKS_IN_ONE_YEAR: 52,
+    NUM_MONTHS_IN_ONE_YEAR: 12,
+    NUM_YEARS_TO_REPEAT_EVENT: 2,
+
 };
 
 export const WEATHER_API_KEY = "9c8806d8db30401c82d205958232008"; // Gergana https://www.weatherapi.com
