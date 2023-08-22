@@ -1,16 +1,32 @@
-import { ChakraProvider } from "@chakra-ui/react"
-import { RouterProvider } from "react-router-dom"
-import theme from "./config/theme"
-import { AuthContextProvider } from "./context/AuthContext"
-import { router } from "./router"
+import { useAuthState } from "react-firebase-hooks/auth"
+import { Route, Routes } from "react-router-dom"
+import { auth } from "./config/firebase"
+import LandingLayout from "./layout/LandingLayout"
+import LandingPage from "./pages/Landing/LandingPage"
+import LoginPage from "./pages/Login/LoginPage"
+import RegisterPage from "./pages/Register/RegisterPage"
+import Calendar from "./components/Calendar/calendar"
+import CreateEvent from "./components/Events/CreateEvents"
 
 function App() {
+  const [user, loading] = useAuthState(auth)
+
   return (
-    <ChakraProvider theme={theme}>
-      <AuthContextProvider>
-        <RouterProvider router={router} />
-      </AuthContextProvider>
-    </ChakraProvider>
+    <>
+      {user ? (
+        <></>
+      ) : (
+        <LandingLayout>
+          <Routes>
+            <Route index element={<LandingPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/calendar" element={<Calendar />} />
+            <Route path="/create-event" element={<CreateEvent />} />
+          </Routes>
+        </LandingLayout>
+      )}
+    </>
   )
 }
 
