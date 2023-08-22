@@ -7,6 +7,7 @@ import LoginPage from "./pages/Login/LoginPage"
 import RegisterPage from "./pages/Register/RegisterPage"
 import Calendar from "./components/Calendar/calendar"
 import CreateEvent from "./components/Events/CreateEvents"
+import ApplicationLayout from "./layout/ApplicationLayout"
 
 function App() {
   const [user, loading] = useAuthState(auth)
@@ -14,7 +15,11 @@ function App() {
   return (
     <>
       {user ? (
-        <></>
+        <ApplicationLayout>
+          <Routes>
+            <Route index element={<Calendar />} />
+          </Routes>
+        </ApplicationLayout>
       ) : (
         <LandingLayout>
           <Routes>

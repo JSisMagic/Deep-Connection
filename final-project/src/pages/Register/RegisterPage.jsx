@@ -3,13 +3,14 @@ import {
   Button,
   Flex,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Heading,
   Input,
   Stack,
   Text,
 } from "@chakra-ui/react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { LIGHT_PURPLE } from "../../common/colors"
 import { useForm } from "react-hook-form"
 import { registerUser } from "../../services/auth.services"
@@ -17,6 +18,7 @@ import { createUser, getUser } from "../../services/users.services"
 import { useContext } from "react"
 import { AuthContext } from "../../context/AuthContext"
 import bgImage from "../../assets/images/hero.png"
+import { errorMessages } from "../../common/error-messages"
 
 const RegisterPage = () => {
   const {
@@ -27,13 +29,14 @@ const RegisterPage = () => {
     formState: { errors },
   } = useForm()
   const { setAuthState } = useContext(AuthContext)
+  const navigate = useNavigate()
 
   const onSubmit = async values => {
-    const { email, username, firstName, lastName, password } = values
+    const { email, username, firstName, lastName, phone, password } = values
 
     const user = await getUser(username)
     if (user !== null) {
-      return setError("alreadyRegistered", { message: "User already exists" })
+      return setError("username", { message: errorMessages.USER_EXISTS })
     }
 
     try {
@@ -44,16 +47,17 @@ const RegisterPage = () => {
         email,
         username,
         firstName,
+        phone,
         lastName,
         password,
       })
 
       setAuthState(prev => ({ ...prev, userData: userData }))
+      console.log("successful registration")
+      navigate("/")
     } catch (e) {
-      console.error(e)
+      setError("email", { message: errorMessages.EMAIL_EXISTS })
     }
-
-    //TODO redirect to private part
   }
 
   return (
@@ -68,13 +72,15 @@ const RegisterPage = () => {
       <Box width="30%" bgColor="rgba(255,255,255)" padding="2rem" borderRadius="lg" boxShadow="2xl">
         <Heading textAlign="center">Register</Heading>
         <Stack mt={10}>
-          <FormControl>
+          <FormControl isInvalid={errors.email}>
             <FormLabel>Email</FormLabel>
             <Input type="email" {...register("email")} />
+            <FormErrorMessage>{errors?.email?.message}</FormErrorMessage>
           </FormControl>
-          <FormControl>
+          <FormControl isInvalid={errors.username}>
             <FormLabel>Username</FormLabel>
             <Input type="text" {...register("username")} />
+            <FormErrorMessage>{errors?.username?.message}</FormErrorMessage>
           </FormControl>
           <FormControl>
             <FormLabel>First name</FormLabel>

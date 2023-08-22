@@ -9,13 +9,11 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
-import { useContext } from "react"
 import { useForm } from "react-hook-form"
-import { Link } from "react-router-dom"
-import { LIGHT_PURPLE } from "../../common/colors"
-import { AuthContext } from "../../context/AuthContext"
-import { loginUser } from "../../services/auth.services"
+import { Link, useNavigate } from "react-router-dom"
 import bgImage from "../../assets/images/hero.png"
+import { LIGHT_PURPLE } from "../../common/colors"
+import { loginUser } from "../../services/auth.services"
 
 const LoginPage = () => {
   const {
@@ -25,11 +23,13 @@ const LoginPage = () => {
     setError,
     formState: { errors },
   } = useForm()
-
+  const navigate = useNavigate();
+  
   const onSubmit = async values => {
     const { email, password } = values
 
     await loginUser(email, password)
+    navigate("/")
   }
 
   return (
