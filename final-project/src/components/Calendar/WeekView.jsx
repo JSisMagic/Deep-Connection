@@ -34,7 +34,7 @@ const WeekView = ({ date }) => {
     <Grid templateColumns="repeat(7, 1fr)">
       {days.map(day => (
         <Box key={day} border="1px" borderColor="gray.200" p={3}>
-          {format(day, "iiii")}
+          {format(day, "EEEE, MMMM d")} 
           <DayView date={day} events={events.filter(event => {
             const eventDate = new Date(event.startDate).toDateString();
             return day.toDateString() === eventDate;
