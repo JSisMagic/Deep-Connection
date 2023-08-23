@@ -39,7 +39,6 @@ const ProfilePage = () => {
       width="100%"
       justify="center"
       align="center"
-      bgImage={bgImage} // Apply bg image just in case
     >
       <Box width="30%" bgColor="rgba(255,255,255)" padding="2rem" borderRadius="lg" boxShadow="2xl">
         <CardWithAvatar
