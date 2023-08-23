@@ -6,11 +6,6 @@ import { Link } from "react-router-dom";
 const LandingHeader = () => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logoutUser();
-    navigate("/");
-  };
-
   return (
     <Box
       padding="1rem 2rem"
@@ -36,14 +31,12 @@ const LandingHeader = () => {
         </Flex>
       </Flex>
       <Flex gap={2}>
-        <Button variant="outline" color="white" _hover={{ bg: "rgba(255,255,255, .2)" }} onClick={handleLogout}>
-          Logout
+        <Button variant="outline" color="white" _hover={{ bg: "rgba(255,255,255, .2)" }} onClick={() => navigate("/login")}>
+          Log in
         </Button>
-        <Link to="/profile">
-        <Button variant="outline" color="white" _hover={{ bg: "rgba(255,255,255, .2)" }}>
-          Profile
+        <Button variant="outline" color="white" _hover={{ bg: "rgba(255,255,255, .2)" }} onClick={() => navigate("/register")}>
+          Sign up
         </Button>
-      </Link>
     </Flex>
 
     </Box>
