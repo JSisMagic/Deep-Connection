@@ -1,4 +1,4 @@
-import { equalTo, get, orderByChild, query, ref, update } from "firebase/database"; 
+import { equalTo, set, get, orderByChild, query, ref, update } from "firebase/database"
 import { db } from "../config/firebase"
 
 export const getUser = async username => {
@@ -18,7 +18,6 @@ export const createUser = async (data = {}) => {
   }
 
   await set(ref(db, `users/${data.username}`), data)
-
   return { ...data }
 }
 
@@ -30,13 +29,13 @@ export const getUserByUid = async uid => {
 
 export const updateUser = async (uid, data) => {
   if (!uid) {
-    throw new Error("UID must be provided!");
+    throw new Error("UID must be provided!")
   }
 
-  const usersRef = ref(db, `users`);
-  const userSnapshot = await get(query(usersRef, orderByChild("uid"), equalTo(uid)));
-  const username = Object.keys(userSnapshot.val())[0]; 
+  const usersRef = ref(db, `users`)
+  const userSnapshot = await get(query(usersRef, orderByChild("uid"), equalTo(uid)))
+  const username = Object.keys(userSnapshot.val())[0]
 
-  await update(ref(db, `users/${username}`), data); 
-  return { ...data };
-};
+  await update(ref(db, `users/${username}`), data)
+  return { ...data }
+}
