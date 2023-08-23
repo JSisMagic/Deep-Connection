@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { Button, FormControl, FormLabel, Input, Textarea, VStack } from "@chakra-ui/react";
-import { createEvent } from '../../services/event.services';
-import bgImage from "../../assets/images/hero.png"; // Import the background image hereq
+import React, { useState } from "react"
+import { Button, FormControl, FormLabel, Input, Textarea, VStack } from "@chakra-ui/react"
+import { createEvent } from "../../services/event.services"
+import bgImage from "../../assets/images/hero.png" // Import the background image hereq
 
 const CreateEvent = () => {
-  const [eventTitle, setEventTitle] = useState('');
-  const [eventLocation, setEventLocation] = useState('');
-  const [eventDescription, setEventDescription] = useState('');
-  const [eventStartDate, setEventStartDate] = useState('');
-  const [eventEndDate, setEventEndDate] = useState('');
+  const [eventTitle, setEventTitle] = useState("")
+  const [eventLocation, setEventLocation] = useState("")
+  const [eventDescription, setEventDescription] = useState("")
+  const [eventStartDate, setEventStartDate] = useState("")
+  const [eventEndDate, setEventEndDate] = useState("")
 
   const handleCreateEvent = async () => {
     const newEvent = {
@@ -16,44 +16,59 @@ const CreateEvent = () => {
       location: eventLocation,
       description: eventDescription,
       startDate: eventStartDate,
-      endDate: eventEndDate
-    };
-
-    try {
-      const id = await createEvent(newEvent);
-      console.log("New event created with ID:", id);
-    } catch (error) {
-      console.error("Error creating event:", error);
+      endDate: eventEndDate,
     }
 
-    setEventTitle('');
-    setEventLocation('');
-    setEventDescription('');
-    setEventStartDate('');
-    setEventEndDate('');
-  };
+    try {
+      const id = await createEvent(newEvent)
+      console.log("New event created with ID:", id)
+    } catch (error) {
+      console.error("Error creating event:", error)
+    }
+
+    setEventTitle("")
+    setEventLocation("")
+    setEventDescription("")
+    setEventStartDate("")
+    setEventEndDate("")
+  }
 
   return (
-    <div style={{ backgroundImage: `url(${bgImage})`, height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      <VStack spacing={4} padding={5} width="30%" bgColor="rgba(255,255,255)" borderRadius="lg" boxShadow="2xl">
+    <div
+      style={{
+        // backgroundImage: `url(${bgImage})`,
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <VStack
+        spacing={4}
+        padding={5}
+        width="30%"
+        bgColor="rgba(255,255,255)"
+        borderRadius="lg"
+        boxShadow="2xl"
+      >
         <FormLabel>Title</FormLabel>
         <Input
           value={eventTitle}
-          onChange={(e) => setEventTitle(e.target.value)}
+          onChange={e => setEventTitle(e.target.value)}
           placeholder="Title"
         />
 
         <FormLabel>Location</FormLabel>
         <Input
           value={eventLocation}
-          onChange={(e) => setEventLocation(e.target.value)}
+          onChange={e => setEventLocation(e.target.value)}
           placeholder="Location"
         />
 
         <FormLabel>Description</FormLabel>
         <Textarea
           value={eventDescription}
-          onChange={(e) => setEventDescription(e.target.value)}
+          onChange={e => setEventDescription(e.target.value)}
           placeholder="Description"
         />
 
@@ -76,7 +91,7 @@ const CreateEvent = () => {
         </Button>
       </VStack>
     </div>
-  );
-};
+  )
+}
 
-export default CreateEvent;
+export default CreateEvent
