@@ -1,27 +1,20 @@
-import { Box, Button } from "@chakra-ui/react"
-import { logoutUser } from "../services/auth.services"
-import { Link } from "react-router-dom"
-import LandingHeader from "../components/LandingHeader/LandingHeader";
-
+import { Box, Flex } from "@chakra-ui/react"
+import PrivateHeader from "../components/PrivateHeader/PrivateHeader"
+import Sidebar from "../components/Sidebar/Sidebar"
+import { HEADER_HEIGHT } from "../common/constrants"
 
 const ApplicationLayout = ({ children }) => {
-  const handleLogout = () => {
-    logoutUser();
-  }
-
-  //TODO structure to be changed later
   return (
-    <Box height="100vh" position="relative">
-      <LandingHeader />
-      <Button onClick={handleLogout} position="absolute" top="1rem" right="1rem">
-        Logout
-      </Button>
-      <Link to="/profile">
-        <Button position="absolute" top="1rem" right="6rem">Profile</Button>
-      </Link>
-      <Box mt="100px">{children}</Box>
-    </Box>
-  );
-};
+    <Flex height="100vh">
+      <Sidebar />
+      <Box position="relative" flexGrow={1} height="100vh">
+        <PrivateHeader />
+        <Box overflowY="hidden" height={`calc(100vh - ${HEADER_HEIGHT})`} position="relative">
+          {children}
+        </Box>
+      </Box>
+    </Flex>
+  )
+}
 
-export default ApplicationLayout;
+export default ApplicationLayout
