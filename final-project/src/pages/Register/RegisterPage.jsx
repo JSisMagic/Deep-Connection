@@ -51,7 +51,7 @@ const RegisterPage = () => {
         lastName,
         password,
       })
-
+      
       setAuthState(prev => ({ ...prev, userData: userData }))
       console.log("successful registration")
       navigate("/")
