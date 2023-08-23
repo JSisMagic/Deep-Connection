@@ -1,11 +1,15 @@
-import { Box, Button, ButtonGroup, Divider, Flex, Heading, Link } from "@chakra-ui/react"
-import { useNavigate } from "react-router-dom"
+import { Box, Button, Flex, Heading, Link as ChakraLink } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
+import { logoutUser } from "../../services/auth.services";
+import { Link } from "react-router-dom";
 
 const LandingHeader = () => {
-  const navigate = useNavigate()
-  const handleRedirect = path => {
-    return () => navigate(path)
-  }
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logoutUser();
+    navigate("/");
+  };
 
   return (
     <Box
@@ -18,41 +22,32 @@ const LandingHeader = () => {
       display="flex"
       align="center"
       justifyContent="space-between"
-      // bg="rgba(255,255,255, .1)"
-      // boxShadow="0px 4px 12px rgba(0,0,0,.05)"
     >
       <Flex gap={8} align="center" color="white">
         <Heading>Logo</Heading>
         <Flex gap={3} align="center">
-          <Link fontSize={20} fontWeight={600}>
+          <ChakraLink fontSize={20} fontWeight={600}>
             Events
-          </Link>
+          </ChakraLink>
 
-          <Link fontSize={20} fontWeight={600}>
+          <ChakraLink fontSize={20} fontWeight={600}>
             About us
-          </Link>
+          </ChakraLink>
         </Flex>
       </Flex>
       <Flex gap={2}>
-        <Button
-          variant="outline"
-          color="white"
-          _hover={{ bg: "rgba(255,255,255, .2)" }}
-          onClick={handleRedirect("/login")}
-        >
-          Log in
+        <Button variant="outline" color="white" _hover={{ bg: "rgba(255,255,255, .2)" }} onClick={handleLogout}>
+          Logout
         </Button>
-        <Button
-          variant="outline"
-          color="white"
-          _hover={{ bg: "rgba(255,255,255, .2)" }}
-          onClick={handleRedirect("/register")}
-        >
-          Sign up
+        <Link to="/profile">
+        <Button variant="outline" color="white" _hover={{ bg: "rgba(255,255,255, .2)" }}>
+          Profile
         </Button>
-      </Flex>
-    </Box>
-  )
-}
+      </Link>
+    </Flex>
 
-export default LandingHeader
+    </Box>
+  );
+};
+
+export default LandingHeader;

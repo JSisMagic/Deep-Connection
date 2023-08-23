@@ -8,6 +8,7 @@ import RegisterPage from "./pages/Register/RegisterPage"
 import Calendar from "./components/Calendar/calendar"
 import CreateEvent from "./components/Events/CreateEvents"
 import ApplicationLayout from "./layout/ApplicationLayout"
+import ProfilePage from "./components/Profile/ProfilePage"
 
 function App() {
   const [user, loading] = useAuthState(auth)
@@ -18,6 +19,7 @@ function App() {
         <ApplicationLayout>
           <Routes>
             <Route index element={<Calendar />} />
+            <Route path="/profile" element={<ProfilePage />} />
           </Routes>
         </ApplicationLayout>
       ) : (
@@ -28,11 +30,13 @@ function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/create-event" element={<CreateEvent />} />
+            <Route path="/profile" element={<ProfilePage />} />
           </Routes>
         </LandingLayout>
       )}
     </>
-  )
+  );
 }
+
 
 export default App

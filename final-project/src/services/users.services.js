@@ -1,4 +1,4 @@
-import { equalTo, get, orderByChild, query, ref, set } from "firebase/database"
+import { equalTo, get, orderByChild, query, ref, update } from "firebase/database"; 
 import { db } from "../config/firebase"
 
 export const getUser = async username => {
@@ -27,3 +27,16 @@ export const getUserByUid = async uid => {
   const value = snapshot.val()
   return value ? Object.values(value)[0] : null
 }
+
+export const updateUser = async (uid, data) => {
+  if (!uid) {
+    throw new Error("UID must be provided!");
+  }
+
+  const usersRef = ref(db, `users`);
+  const userSnapshot = await get(query(usersRef, orderByChild("uid"), equalTo(uid)));
+  const username = Object.keys(userSnapshot.val())[0]; 
+
+  await update(ref(db, `users/${username}`), data); 
+  return { ...data };
+};
