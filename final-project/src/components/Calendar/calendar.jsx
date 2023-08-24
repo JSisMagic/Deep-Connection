@@ -43,6 +43,7 @@ const Calendar = () => {
   return (
     <Box className="calendar-container" paddingInline={5} height="100%" overflowY="scroll">
       <Grid
+      zIndex={10}
         templateColumns="repeat(3, 1fr)"
         position="sticky"
         top={0}
@@ -63,17 +64,13 @@ const Calendar = () => {
             <Button background={COOL_GREEN} color="white" onClick={handleChangeView("week")}>
               Week
             </Button>
-            <Button background={COOL_BLUE} color="white" onClick={handleChangeView("month")}>
+            <Button background={COOL_BLUE} color="white" onClick={handleChangeView("workWeek")}>
+              Work Week
+            </Button>
+            <Button background={COOL_BLUE_GREEN} color="white" onClick={handleChangeView("month")}>
               Month
             </Button>
             {/* <Button  onClick={handleChangeView("year")}>Year</Button> */}
-            <Button
-              background={COOL_BLUE_GREEN}
-              color="white"
-              onClick={handleChangeView("workWeek")}
-            >
-              Work Week
-            </Button>
           </ButtonGroup>
         </GridItem>
       </Grid>
