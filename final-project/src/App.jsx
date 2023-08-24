@@ -9,9 +9,17 @@ import Calendar from "./components/Calendar/calendar"
 import ApplicationLayout from "./layout/ApplicationLayout"
 import ProfilePage from "./components/Profile/ProfilePage"
 import CreateEvent from "./components/Events/CreateEvents"
+import { useLoadScript } from "@react-google-maps/api";
+
+const GOOGLE_MAPS_API_KEY = "AIzaSyCs89FEdCghqxYJoWMICN59cqhVOYyRLgs";
 
 function App() {
   const [user, loading] = useAuthState(auth)
+
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
+    libraries: ["places"],
+  });
 
   return (
     <>

@@ -4,6 +4,7 @@ import { createEvent } from "../../services/event.services"
 import { auth } from "../../config/firebase"
 import bgImage from "../../assets/images/hero.png" // Import the background image hereq
 import PlacesWrapper from "../Location/PlacesWrapper"
+import PlacesAutocomplete from "../Location/PlacesAutocomplete"
 
 const CreateEvent = () => {
   const [eventTitle, setEventTitle] = useState("")
@@ -75,7 +76,7 @@ const CreateEvent = () => {
       />
 
       <FormLabel>Location</FormLabel>
-      <PlacesWrapper setSelected={setEventLocation} />
+      <PlacesAutocomplete selected={eventLocation} setSelected={setEventLocation} />
 
       <FormLabel>Description</FormLabel>
       <Textarea

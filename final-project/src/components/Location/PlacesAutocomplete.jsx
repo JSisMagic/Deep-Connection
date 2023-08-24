@@ -1,22 +1,29 @@
-import { Input, List, ListItem, Popover, PopoverTrigger, PopoverContent } from "@chakra-ui/react";
-import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete";
+import { Input, List, ListItem, Popover, PopoverTrigger, PopoverContent, PopoverBody } from "@chakra-ui/react";
+import { useEffect } from "react";
+import usePlacesAutocomplete from "use-places-autocomplete";
 
-const PlacesAutocomplete = ({ setSelected }) => {
+const PlacesAutocomplete = ({ selected, setSelected }) => {
   const {
     ready,
     value,
     setValue,
     suggestions: { status, data },
-    clearSuggestions,
-  } = usePlacesAutocomplete();
+    clearSuggestions
+  } = usePlacesAutocomplete({
+    debounce: 500
+  });
 
   const handleSelect = async (address) => {
     setValue(address, false);
     clearSuggestions();
-    const results = await getGeocode({ address });
-    const { lat, lng } = await getLatLng(results[0]);
-    setSelected({ lat, lng });
+    setSelected(address);
   };
+
+  useEffect(() => {
+    if (selected === '') {
+      setValue('', false);
+    }
+  }, [setValue, selected])
 
   return (
     <Popover isOpen={status === "OK"}>
@@ -26,17 +33,24 @@ const PlacesAutocomplete = ({ setSelected }) => {
           onChange={(e) => setValue(e.target.value)}
           disabled={!ready}
           placeholder="Search an address"
+          autoComplete="off"
         />
       </PopoverTrigger>
-      <PopoverContent width="auto">
+      <PopoverContent width="422px">
+      <PopoverBody>
         <List>
           {status === "OK" &&
             data.map(({ place_id, description }) => (
-              <ListItem key={place_id} onClick={() => handleSelect(description)}>
+              <ListItem key={place_id} onClick={() => handleSelect(description)} _hover={{
+                background: "white",
+                color: "teal.500",
+                cursor: "pointer"
+              }}>
                 {description}
               </ListItem>
             ))}
         </List>
+        </PopoverBody>
       </PopoverContent>
     </Popover>
   );
