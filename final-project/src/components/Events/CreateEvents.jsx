@@ -3,7 +3,6 @@ import { Button, FormControl, FormLabel, Input, Textarea, VStack } from "@chakra
 import { createEvent } from "../../services/event.services"
 import { auth } from "../../config/firebase"
 import bgImage from "../../assets/images/hero.png" // Import the background image hereq
-import PlacesWrapper from "../Location/PlacesWrapper"
 import PlacesAutocomplete from "../Location/PlacesAutocomplete"
 
 const CreateEvent = () => {
