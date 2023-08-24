@@ -3,6 +3,7 @@ import { Button, FormControl, FormLabel, Input, Textarea, VStack } from "@chakra
 import { createEvent } from "../../services/event.services"
 import { auth } from "../../config/firebase"
 import bgImage from "../../assets/images/hero.png" // Import the background image hereq
+import PlacesWrapper from "../Location/PlacesWrapper"
 
 const CreateEvent = () => {
   const [eventTitle, setEventTitle] = useState("")
@@ -74,11 +75,7 @@ const CreateEvent = () => {
       />
 
       <FormLabel>Location</FormLabel>
-      <Input
-        value={eventLocation}
-        onChange={e => setEventLocation(e.target.value)}
-        placeholder="Location"
-      />
+      <PlacesWrapper setSelected={setEventLocation} />
 
       <FormLabel>Description</FormLabel>
       <Textarea
