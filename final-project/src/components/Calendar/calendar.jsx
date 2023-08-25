@@ -26,22 +26,22 @@ const Calendar = () => {
   const renderView = () => {
     switch (currentView) {
       case "day":
-        return <DayView date={currentDate} />
+        return <DayView date={currentDate.setHours(0, 0, 0, 0)} />
       case "week":
-        return <WeekView date={currentDate} />
+        return <WeekView date={currentDate} setDate={setCurrentDate} />
       case "month":
-        return <MonthView date={currentDate} />
+        return <MonthView date={currentDate} setDate={setCurrentDate} />
       case "year":
         return <YearView date={currentDate} />
       case "workWeek":
-        return <WorkWeekView date={currentDate} />
+        return <WeekView date={currentDate} isWorkWeek={true} />
       default:
         return <MonthView date={currentDate} />
     }
   }
 
   return (
-    <Box className="calendar-container" paddingInline={5} height="100%" overflowY="scroll">
+    <Box className="calendar-container" paddingInline={5} height="100%" overflowY="auto">
       <Grid
       zIndex={10}
         templateColumns="repeat(3, 1fr)"
@@ -70,7 +70,6 @@ const Calendar = () => {
             <Button background={COOL_BLUE_GREEN} color="white" onClick={handleChangeView("month")}>
               Month
             </Button>
-            {/* <Button  onClick={handleChangeView("year")}>Year</Button> */}
           </ButtonGroup>
         </GridItem>
       </Grid>
