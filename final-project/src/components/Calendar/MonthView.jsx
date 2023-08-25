@@ -1,16 +1,25 @@
-import { Grid, Box, Stack } from "@chakra-ui/react"
+import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons"
 import {
-  getStartOfMonth,
-  getEndOfMonth,
-  geteachDayOfInterval,
-} from "../../services/calendar.services"
+  Box,
+  Button,
+  Flex,
+  Grid,
+  Heading,
+  IconButton
+} from "@chakra-ui/react"
+import { addMonths, subMonths } from "date-fns"
+import endOfWeek from "date-fns/endOfWeek"
 import format from "date-fns/format"
-import { COOL_PURPLE } from "../../common/colors"
 import isToday from "date-fns/isToday"
 import startOfWeek from "date-fns/startOfWeek"
-import endOfWeek from "date-fns/endOfWeek"
+import { COOL_PURPLE } from "../../common/colors"
+import {
+  getEndOfMonth,
+  getStartOfMonth,
+  geteachDayOfInterval,
+} from "../../services/calendar.services"
 
-const MonthView = ({ date }) => {
+const MonthView = ({ date, setDate }) => {
   const startOfMonth = getStartOfMonth(date)
   const endOfMonth = getEndOfMonth(date)
 
@@ -21,9 +30,37 @@ const MonthView = ({ date }) => {
 
   const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
+  const handleNavigate = action => {
+    return () => {
+      switch (action) {
+        case "today":
+          setDate(new Date())
+          break
+        case "prev":
+          setDate(prev => subMonths(prev, 1))
+          break
+        case "next":
+          setDate(prev => addMonths(prev, 1))
+      }
+    }
+  }
+
   return (
-    <Box height="100%" >
-      <Grid templateColumns="repeat(7, 1fr)" position="sticky" top={16} >
+    <Box height="100%">
+      <Grid templateColumns="repeat(3, 1fr)" py={2}>
+        <Button onClick={handleNavigate("today")} width="max-content">
+          Today
+        </Button>
+
+        <Flex justify="center" align="center" gap={3}>
+          <IconButton size="sm" icon={<ArrowBackIcon />} onClick={handleNavigate("prev")} />
+          <Heading w="200px" size="md" textAlign="center">
+            {format(date, "MMMM, y")}
+          </Heading>
+          <IconButton size="sm" icon={<ArrowForwardIcon />} onClick={handleNavigate("next")} />
+        </Flex>
+      </Grid>
+      <Grid templateColumns="repeat(7, 1fr)" position="sticky" top={16}>
         {weekdays.map(weekday => (
           <Box
             key={weekday}
