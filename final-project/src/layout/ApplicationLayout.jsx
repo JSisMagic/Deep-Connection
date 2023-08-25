@@ -5,7 +5,7 @@ import { HEADER_HEIGHT } from "../common/constrants"
 
 const ApplicationLayout = ({ children }) => {
   return (
-    <Flex height="100vh">
+    <Flex height="100vh" w={{ base: "fit-content", sm: "full" }}>
       <Sidebar />
       <Box position="relative" flexGrow={1} height="100vh">
         <PrivateHeader />
