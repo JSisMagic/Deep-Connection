@@ -1,3 +1,5 @@
+//final-react-project/final-project/src/common/validation-enums.js
+
 export const validation = {
 
     MIN_FIRSTNAME_LENGTH: 1,
@@ -11,6 +13,9 @@ export const validation = {
     MIN_PHONE_NUM_LENGTH: 10,
     MIN_PASSWORD_LENGTH: 8,
     MAX_PASSWORD_LENGTH: 30,
+    PASSWORD_COMPLEXITY: /(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+/,
+    PHONE_FORMAT: /^\d+$/,
+    NAME_FORMAT: /^[a-zA-Z]+$/,
     MIN_TITLE_LENGTH: 3,
     MAX_TITLE_LENGTH: 30,
     MAX_ADDITIONAL_INFO_LENGTH: 500,
@@ -23,4 +28,4 @@ export const validation = {
 
 };
 
-export const WEATHER_API_KEY = "9c8806d8db30401c82d205958232008"; // Gergana https://www.weatherapi.com
+export default validation;
