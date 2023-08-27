@@ -1,18 +1,18 @@
-import { Box } from "@chakra-ui/react"
+import { Box } from "@chakra-ui/react";
 
 const EventBox = ({ title, isUsedInWeek }) => {
   return (
     <Box
-      border="1px solid black"
-      bg="green.100"
+      border="1px grey"
+      bg="blue.100"
       // marginInline="auto"
-      w={isUsedInWeek ? "98%" : "full"}
+      w={isUsedInWeek ? "100%" : "full"}
       height="full"
-      opacity="60%"
+      opacity="55%"
     >
       {title}
     </Box>
-  )
-}
+  );
+};
 
-export default EventBox
+export default EventBox;
