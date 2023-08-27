@@ -18,6 +18,7 @@ import bgImage from "../../assets/images/hero.png";
 import { loginUser } from "../../services/auth.services";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons"; // Add this import
 
 const LoginPage = () => {
   const {
@@ -85,7 +86,7 @@ const LoginPage = () => {
                     variant="ghost"
                     aria-label="Toggle password visibility"
                   >
-                    {showPassword ? "Hide" : "Show"}
+                    {showPassword ? <ViewIcon /> : <ViewOffIcon />}
                   </Button>
                 </InputRightElement>
               </InputGroup>
