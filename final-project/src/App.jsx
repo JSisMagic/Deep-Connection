@@ -11,6 +11,7 @@ import ProfilePage from "./components/Profile/ProfilePage"
 import CreateEvent from "./components/Events/CreateEvents"
 import { useLoadScript } from "@react-google-maps/api";
 import ContactList from "./components/ContactList/ContactList"
+import MembersPage from "./pages/Members/Members"
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyCs89FEdCghqxYJoWMICN59cqhVOYyRLgs";
 
@@ -31,7 +32,7 @@ function App() {
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/create-event" element={<CreateEvent />} />
             {/* <Route path="/events" element={<EventsPage />} /> */}
-            {/* <Route path="/members" element={<MembersPage />} /> */}
+            <Route path="/members" element={<MembersPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/contacts" element={<ContactList />} />
           </Routes>
