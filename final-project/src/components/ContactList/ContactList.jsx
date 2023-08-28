@@ -1,21 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { auth } from '../../config/firebase';  
 import {
-  Box,
-  Heading,
-  List,
-  ListItem,
-  Input,
-  Button,
-  Stack,
-  VStack,
-  Spinner,
-  Select
+  Box, Heading, List, ListItem,
+  Input, Button, Stack, VStack,
+  Spinner, Select
 } from '@chakra-ui/react';
-import { getUserByEmail, getUserContactLists, createContactListForUser, updateUser } from '../../services/users.services';
+import { getUserByEmail, getUserContactLists, createContactListForUser, updateContactListForUser } from '../../services/users.services';
 
 const ContactList = () => {
-  const [contactLists, setContactLists] = useState([]);
+  const [contactLists, setContactLists] = useState({});
   const [listName, setListName] = useState('');
   const [emailToAdd, setEmailToAdd] = useState('');
   const [selectedList, setSelectedList] = useState(null);
@@ -37,8 +30,9 @@ const ContactList = () => {
     if (userUid) {
       const fetchContactLists = async () => {
         const lists = await getUserContactLists(userUid);
-        setContactLists(Object.values(lists));
+        setContactLists(lists);
       };
+
       fetchContactLists();
     }
   }, [userUid]);
@@ -47,29 +41,40 @@ const ContactList = () => {
     if (listName && userUid) {
       const newList = await createContactListForUser(userUid, {
         name: listName,
-        contacts: []
+        contacts: {}
       });
-      setContactLists(prevLists => [...prevLists, newList]);
+
+      setContactLists(prevLists => { 
+        return {...prevLists, [newList.id]: newList}
+      });
+
       setListName('');
     }
   };
 
   const handleAddUserToList = async () => {
-    const user = await getUserByEmail(emailToAdd);
-    if(user) {
-      const selectedContactList = contactLists.find(list => list.id === selectedList);
-      if(!selectedContactList.contacts.some(contact => contact.id === user.uid)) {
-        selectedContactList.contacts.push({
-          id: user.uid,
-          name: `${user.firstName} ${user.lastName}`
-        });
-        await updateUser(userUid, { contactLists: { ...contactLists, [selectedList]: selectedContactList } });
-        setEmailToAdd('');
+    try {
+      const user = await getUserByEmail(emailToAdd);
+      if(user) {
+        const list = { ...contactLists[selectedList] };
+
+        if (list.contacts[user.uid] === undefined) {
+          list.contacts[user.uid] = {
+            id: user.uid,
+            name: `${user.firstName} ${user.lastName}`
+          }
+
+          await updateContactListForUser(userUid, selectedList, list);
+          setContactLists({ ...contactLists, [selectedList]: list });
+          setEmailToAdd('');
+        } else {
+          alert("User already in the list.");
+        }
       } else {
-        alert("User already in the list.");
+        alert("No user found with that email.");
       }
-    } else {
-      alert("No user found with that email.");
+    } catch (error) {
+      console.log('Error:', error.message);
     }
   };
 
@@ -84,11 +89,11 @@ const ContactList = () => {
   return (
     <VStack spacing={5} width="100%">
       <Heading>Contact Lists</Heading>
-      {contactLists.map(list => (
+      {Object.values(contactLists).map(list => (
         <Box key={list.id} p={4} borderWidth="1px" borderRadius="lg" width="100%">
           <Heading size="md">{list.name}</Heading>
           <List spacing={2}>
-            {(list.contacts || []).map(contact => (
+            {Object.values((list.contacts || {})).map(contact => (
               <ListItem key={contact.id}>{contact.name}</ListItem>
             ))}
           </List>
@@ -109,7 +114,7 @@ const ContactList = () => {
           placeholder="Enter user email to add"
         />
         <Select placeholder="Select a contact list" onChange={e => setSelectedList(e.target.value)}>
-          {contactLists.map(list => (
+          {Object.values(contactLists).map(list => (
             <option key={list.id} value={list.id}>{list.name}</option>
           ))}
         </Select>
