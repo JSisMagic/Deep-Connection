@@ -5,7 +5,8 @@ import {
   Input, Button, Stack, VStack,
   Spinner, Select
 } from '@chakra-ui/react';
-import { getUserByEmail, getUserContactLists, createContactListForUser, updateContactListForUser } from '../../services/users.services';
+import { FaTrash } from 'react-icons/fa';
+import { getUserByEmail, getUserContactLists, createContactListForUser, updateContactListForUser, deleteContactListForUser } from '../../services/users.services';
 
 const ContactList = () => {
   const [contactLists, setContactLists] = useState({});
@@ -78,6 +79,20 @@ const ContactList = () => {
     }
   };
 
+  const handleDeleteList = async (listId) => {
+    try {
+      await deleteContactListForUser(userUid, listId);
+
+      setContactLists(prevLists => {
+        const updatedLists = { ...prevLists };
+        delete updatedLists[listId];
+        return updatedLists;
+      });
+    } catch (error) {
+      console.log('Error deleting list:', error.message);
+    }
+  };
+
   if (isLoading) {
     return <Spinner />;
   }
@@ -91,7 +106,10 @@ const ContactList = () => {
       <Heading>Contact Lists</Heading>
       {Object.values(contactLists).map(list => (
         <Box key={list.id} p={4} borderWidth="1px" borderRadius="lg" width="100%">
-          <Heading size="md">{list.name}</Heading>
+          <Heading size="md">
+            {list.name}
+            <Button size="sm" leftIcon={<FaTrash />} onClick={() => handleDeleteList(list.id)} colorScheme="blue" ml={4}></Button>
+          </Heading>
           <List spacing={2}>
             {Object.values((list.contacts || {})).map(contact => (
               <ListItem key={contact.id}>{contact.name}</ListItem>
