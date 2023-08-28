@@ -88,9 +88,10 @@ const WeekView = ({ date, setDate, isWorkWeek = false }) => {
       </Grid>
       <Grid
         templateRows="40px 1fr"
-        templateColumns="50px repeat(7, 1fr)"
+        templateColumns={`50px repeat(${daysCount}, 1fr)`}
         borderLeft="1px solid"
         borderRight="1px solid"
+        borderTop="1px solid"
         borderColor="gray.300"
       >
         <GridItem rowStart={2} colEnd={2}>
@@ -104,7 +105,7 @@ const WeekView = ({ date, setDate, isWorkWeek = false }) => {
               borderColor="gray.300"
             >
               <GridItem rowEnd={2} bgColor="gray.50">
-                <Center>{format(day, "EEEE, MMMM d")}</Center>
+                <Center>{format(day, "E, do")}</Center>
               </GridItem>
               <GridItem rowStart={2}>
                 <EventsColumn date={day} events={events} isUsedInWeek={true} />

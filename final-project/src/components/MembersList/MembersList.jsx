@@ -1,34 +1,45 @@
-import { Avatar, Box, Button, ButtonGroup, Flex, Heading, Stack, Text } from "@chakra-ui/react"
-import { useState } from "react"
-import { useEffect } from "react"
-import { getAllUsers } from "../../services/users.services"
+import {
+  Avatar,
+  Box,
+  Button,
+  ButtonGroup,
+  Flex,
+  Heading,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
+import { useState } from "react";
+import { useEffect } from "react";
+import { getAllUsers } from "../../services/users.services";
 
 const MembersList = ({ searchTerm }) => {
-  const [allMembers, setAllMembers] = useState([])
-  const [filteredMembers, setFilteredMembers] = useState([])
+  const [allMembers, setAllMembers] = useState([]);
+  const [filteredMembers, setFilteredMembers] = useState([]);
 
   useEffect(() => {
-    getAllUsers().then(setAllMembers).catch(console.error)
-  }, [])
+    getAllUsers().then(setAllMembers).catch(console.error);
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       const filtered = allMembers.filter(
-        user => user.username.toLowerCase().includes(searchTerm) || user.phone.includes(searchTerm)
-      )
+        (user) =>
+          user?.username?.toLowerCase().includes(searchTerm) ||
+          user?.phone?.includes(searchTerm)
+      );
 
-      setFilteredMembers(filtered)
-    }, 300)
+      setFilteredMembers(filtered);
+    }, 300);
 
     return () => {
-      clearTimeout(timer)
-    }
-  }, [searchTerm, allMembers])
+      clearTimeout(timer);
+    };
+  }, [searchTerm, allMembers]);
 
   return (
     <Stack marginTop={5}>
       {filteredMembers.length ? (
-        filteredMembers.map(user => (
+        filteredMembers.map((user) => (
           <Flex
             key={user.uid}
             background="gray.100"
@@ -58,7 +69,7 @@ const MembersList = ({ searchTerm }) => {
         </Heading>
       )}
     </Stack>
-  )
-}
+  );
+};
 
-export default MembersList
+export default MembersList;
