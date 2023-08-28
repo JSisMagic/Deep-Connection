@@ -1,4 +1,4 @@
-import { equalTo, set, get, orderByChild, query, ref, update, remove } from "firebase/database"
+import { equalTo, set, get, orderByChild, query, ref, update } from "firebase/database"
 import { db } from "../config/firebase"
 
 export const getUser = async username => {
@@ -31,48 +31,44 @@ export const getUserByUid = async uid => {
   return value ? Object.values(value)[0] : null
 }
 
+export const getAllUsers = async () => {
+  const snapshot = await get(ref(db, "users"));
+  const value = snapshot.val();
+
+  return Object.values(value);
+}
+
 export const updateUser = async (uid, data) => {
   if (!uid) {
     throw new Error("UID must be provided!")
   }
 
-  const userSnapshot = await getUserByUid(uid)
+  const usersRef = ref(db, `users`)
+  const userSnapshot = await get(query(usersRef, orderByChild("uid"), equalTo(uid)))
+  const username = Object.keys(userSnapshot.val())[0]
 
-  await update(ref(db, `users/${uid}`), {...userSnapshot, ...data})
+  await update(ref(db, `users/${username}`), data)
   return { ...data }
 }
 
 export const getUserContactLists = async (uid) => {
   const contactListsRef = ref(db, `users/${uid}/contactLists`);
   const snapshot = await get(contactListsRef);
-  const result = {};
-
-  Object.values(snapshot.val() || {}).map(value => {
-    result[value.id] = {
-      ...value,
-      contacts: value.contacts !== undefined ? value.contacts : {}
-    }
-  })
-
-  // debugger;
-  return result;
+  return snapshot.val() || {};
 }
 
 export const createContactListForUser = async (uid, contactList) => {
   const id = new Date().getTime().toString();
-  const list = { id, ...contactList};
 
-  await set(ref(db, `users/${uid}/contactLists/${id}`), list);
-  return { ...list };
+  const listWithContacts = { ...contactList, contacts: contactList.contacts || [] };
+
+  await set(ref(db, `users/${uid}/contactLists/${id}`), listWithContacts);
+  return { id, ...listWithContacts };
 }
 
-export const updateContactListForUser = async (uid, listId, list) => {
-  await update(ref(db, `users/${uid}/contactLists/${listId}`), list)
-  return { ...list }
-}
-
-export const deleteContactListForUser = async (uid, listId) => {
-  await remove(ref(db, `users/${uid}/contactLists/${listId}`));
+export const updateContactListForUser = async (username, listId, updatedContactList) => {
+  await update(ref(db, `users/${username}/contactLists/${listId}`), updatedContactList)
+  return { ...updatedContactList }
 }
 
 export const getUserByEmail = async email => {
