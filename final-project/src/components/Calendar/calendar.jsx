@@ -1,49 +1,60 @@
-import React, { useState } from "react"
-import { Box, Button, ButtonGroup, Grid, GridItem } from "@chakra-ui/react"
-import DayView from "./DayView"
-import WeekView from "./WeekView"
-import MonthView from "./MonthView"
-import YearView from "./YearView"
-import WorkWeekView from "./WorkWeekView"
+import React, { useState } from "react";
+import { Box, Button, ButtonGroup, Grid, GridItem } from "@chakra-ui/react";
+import DayView from "./DayView";
+import WeekView from "./WeekView";
+import MonthView from "./MonthView";
+import YearView from "./YearView";
+import WorkWeekView from "./WorkWeekView";
 import {
   COOL_BLACK,
   COOL_BLUE,
   COOL_BLUE_GREEN,
   COOL_GREEN,
   COOL_PURPLE,
-} from "../../common/colors"
-import { useNavigate } from "react-router-dom"
+} from "../../common/colors";
+import { useNavigate } from "react-router-dom";
 
 const Calendar = () => {
-  const [currentDate, setCurrentDate] = useState(new Date())
-  const [currentView, setCurrentView] = useState("month")
-  const navigate = useNavigate()
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentView, setCurrentView] = useState("month");
+  const navigate = useNavigate();
 
-  const handleChangeView = view => {
-    return () => setCurrentView(view)
-  }
+  const handleChangeView = (view) => {
+    return () => setCurrentView(view);
+  };
 
   const renderView = () => {
     switch (currentView) {
       case "day":
-        return <DayView date={currentDate} />
+        return <DayView date={currentDate.setHours(0, 0, 0, 0)} />;
       case "week":
-        return <WeekView date={currentDate} />
+        return <WeekView date={currentDate} setDate={setCurrentDate} />;
       case "month":
-        return <MonthView date={currentDate} />
+        return <MonthView date={currentDate} setDate={setCurrentDate} />;
       case "year":
-        return <YearView date={currentDate} />
+        return <YearView date={currentDate} />;
       case "workWeek":
-        return <WorkWeekView date={currentDate} />
+        return (
+          <WeekView
+            date={currentDate}
+            setDate={setCurrentDate}
+            isWorkWeek={true}
+          />
+        );
       default:
-        return <MonthView date={currentDate} />
+        return <MonthView date={currentDate} />;
     }
-  }
+  };
 
   return (
-    <Box className="calendar-container" paddingInline={5} height="100%" overflowY="scroll">
+    <Box
+      className="calendar-container"
+      paddingInline={5}
+      height="100%"
+      overflowY="auto"
+    >
       <Grid
-      zIndex={10}
+        zIndex={10}
         templateColumns="repeat(3, 1fr)"
         position="sticky"
         top={0}
@@ -57,27 +68,47 @@ const Calendar = () => {
           </Button>
         </GridItem>
         <GridItem>
-          <ButtonGroup variant="outline" width="100%" justifyContent="center" paddingBottom={6}>
-            <Button background={COOL_PURPLE} color="white" onClick={handleChangeView("day")}>
+          <ButtonGroup
+            variant="outline"
+            width="100%"
+            justifyContent="center"
+            paddingBottom={6}
+          >
+            <Button
+              background={COOL_PURPLE}
+              color="white"
+              onClick={handleChangeView("day")}
+            >
               Day
             </Button>
-            <Button background={COOL_GREEN} color="white" onClick={handleChangeView("week")}>
+            <Button
+              background={COOL_GREEN}
+              color="white"
+              onClick={handleChangeView("week")}
+            >
               Week
             </Button>
-            <Button background={COOL_BLUE} color="white" onClick={handleChangeView("workWeek")}>
+            <Button
+              background={COOL_BLUE}
+              color="white"
+              onClick={handleChangeView("workWeek")}
+            >
               Work Week
             </Button>
-            <Button background={COOL_BLUE_GREEN} color="white" onClick={handleChangeView("month")}>
+            <Button
+              background={COOL_BLUE_GREEN}
+              color="white"
+              onClick={handleChangeView("month")}
+            >
               Month
             </Button>
-            {/* <Button  onClick={handleChangeView("year")}>Year</Button> */}
           </ButtonGroup>
         </GridItem>
       </Grid>
 
       {renderView()}
     </Box>
-  )
-}
+  );
+};
 
-export default Calendar
+export default Calendar;

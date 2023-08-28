@@ -3,34 +3,49 @@ import {
   Button,
   Flex,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Heading,
   Input,
   Stack,
   Text,
-} from "@chakra-ui/react"
-import { useForm } from "react-hook-form"
-import { Link, useNavigate } from "react-router-dom"
-import bgImage from "../../assets/images/hero.png"
-import { LIGHT_PURPLE } from "../../common/colors"
-import { loginUser } from "../../services/auth.services"
+  InputGroup,
+  InputRightElement,
+} from "@chakra-ui/react";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import bgImage from "../../assets/images/hero.png";
+import { loginUser } from "../../services/auth.services";
+import { useContext, useState } from "react";
+import { AuthContext } from "../../context/AuthContext";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons"; // Add this import
 
 const LoginPage = () => {
   const {
     register,
     handleSubmit,
-    watch,
     setError,
     formState: { errors },
-  } = useForm()
+  } = useForm();
   const navigate = useNavigate();
-  
-  const onSubmit = async values => {
-    const { email, password } = values
+  const { setAuthState } = useContext(AuthContext);
 
-    await loginUser(email, password)
-    navigate("/")
-  }
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleTogglePassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const onSubmit = async (values) => {
+    const { email, password } = values;
+
+    try {
+      await loginUser(email, password);
+      navigate("/");
+    } catch (e) {
+      setError("email", { message: "Invalid email or password" });
+    }
+  };
 
   return (
     <Flex
@@ -51,30 +66,51 @@ const LoginPage = () => {
         boxShadow="2xl"
       >
         <Heading textAlign="center">Log in</Heading>
-        <Stack mt={10}>
-          <FormControl>
-            <FormLabel>Email</FormLabel>
-            <Input type="email" {...register("email")} />
-          </FormControl>
-          <FormControl>
-            <FormLabel>Password</FormLabel>
-            <Input type="password" {...register("password")} />
-          </FormControl>
-          <Button type="submit" onClick={handleSubmit(onSubmit)}>
-            Log in
-          </Button>
-          <Flex>
-            <Text>
-              Don't have an account? Create one{" "}
-              <Link style={{ color: LIGHT_PURPLE }} to="/register">
-                here
-              </Link>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Stack mt={10}>
+            <FormControl isInvalid={errors.email}>
+              <FormLabel>Email</FormLabel>
+              <Input type="email" {...register("email")} />
+              <FormErrorMessage>{errors?.email?.message}</FormErrorMessage>
+            </FormControl>
+            <FormControl isInvalid={errors.password}>
+              <FormLabel>Password</FormLabel>
+              <InputGroup>
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  {...register("password")}
+                />
+                <InputRightElement>
+                  <Button
+                    onClick={handleTogglePassword}
+                    variant="ghost"
+                    aria-label="Toggle password visibility"
+                  >
+                    {showPassword ? <ViewIcon /> : <ViewOffIcon />}
+                  </Button>
+                </InputRightElement>
+              </InputGroup>
+              <FormErrorMessage>{errors?.password?.message}</FormErrorMessage>
+            </FormControl>
+            <Button type="submit">Log in</Button>
+          </Stack>
+        </form>
+        <Stack pt={6}>
+          {errors.email && (
+            <Text color="red.500" align="center">
+              Invalid email or password
             </Text>
-          </Flex>
+          )}
+          <Text align="center">
+            Don't have an account? Create one{" "}
+            <Link to="/register" style={{ color: "purple" }}>
+              here
+            </Link>
+          </Text>
         </Stack>
       </Box>
     </Flex>
-  )
-}
+  );
+};
 
-export default LoginPage
+export default LoginPage;

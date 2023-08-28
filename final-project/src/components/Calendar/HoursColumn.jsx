@@ -8,7 +8,7 @@ const HoursColumn = () => {
   )
 
   return (
-    <Grid borderRight="1px solid" borderColor="#CBD5E0" templateRows="repeat(48, 30px)">
+    <Grid templateRows="repeat(48, 30px)">
       {hoursWithMinutes.map((hour, i) => (
         <GridItem
           key={hour}
@@ -16,13 +16,9 @@ const HoursColumn = () => {
           borderTop={i % 2 === 0 && "1px solid"}
           borderColor="#CBD5E0"
         >
-          <Grid gap={2}>
-            <GridItem>
-              <Text fontSize={i % 2 === 0 ? "sm" : "xs"} px={2} pt={1} textAlign="right">
-                {hour}
-              </Text>
-            </GridItem>
-          </Grid>
+          <Text fontSize={i % 2 === 0 ? "sm" : "xs"} px={2} pt={1} textAlign="right">
+            {hour}
+          </Text>
         </GridItem>
       ))}
     </Grid>
