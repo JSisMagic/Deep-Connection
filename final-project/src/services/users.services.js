@@ -11,13 +11,17 @@ export const createUser = async (data = {}) => {
     throw new Error("Data should be a valid object!")
   }
 
-  const userExists = await getUser(data.username)
+  const userExists = await getUser(data.uid)  
 
   if (userExists !== null) {
-    throw new Error(`User with username ${data.username} already exists!`)
+    throw new Error(`User with UID ${data.uid} already exists!`)
   }
 
-  await set(ref(db, `users/${data.username}`), data)
+  await set(ref(db, `users/${data.uid}`), {
+    ...data,
+    contactLists: {}
+  });
+
   return { ...data }
 }
 
@@ -38,4 +42,30 @@ export const updateUser = async (uid, data) => {
 
   await update(ref(db, `users/${username}`), data)
   return { ...data }
+}
+
+export const getUserContactLists = async (uid) => {
+  const contactListsRef = ref(db, `users/${uid}/contactLists`);
+  const snapshot = await get(contactListsRef);
+  return snapshot.val() || {};
+}
+
+export const createContactListForUser = async (uid, contactList) => {
+  const id = new Date().getTime().toString();
+
+  const listWithContacts = { ...contactList, contacts: contactList.contacts || [] };
+
+  await set(ref(db, `users/${uid}/contactLists/${id}`), listWithContacts);
+  return { id, ...listWithContacts };
+}
+
+export const updateContactListForUser = async (username, listId, updatedContactList) => {
+  await update(ref(db, `users/${username}/contactLists/${listId}`), updatedContactList)
+  return { ...updatedContactList }
+}
+
+export const getUserByEmail = async email => {
+  const snapshot = await get(query(ref(db, "users"), orderByChild("email"), equalTo(email)));
+  const value = snapshot.val();
+  return value ? Object.values(value)[0] : null;
 }
