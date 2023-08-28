@@ -127,15 +127,16 @@ const ContactList = () => {
       bgColor="rgba(255,255,255)"
       borderRadius="lg"
       boxShadow="2xl">
-      <Heading>Contact Lists</Heading>
+      <Heading fontWeight={600}>Contact Lists</Heading>
 
       {Object.values(contactLists).map(list => (
-        <Box key={list.id} p={4} borderWidth="1px" borderRadius="lg" width="100%">
-          <Heading size="md" display="flex" alignItems="center" justifyContent="space-between">
+        <Box key={list.id} p={4} borderWidth="1px" borderRadius="lg" width="100%" >
+          <Heading size="md" display="flex" alignItems="center" justifyContent="space-between" fontWeight={600}>
             {list.name}
             <Box>
               <Button 
                 size="sm" 
+                fontWeight={600}
                 onClick={() => setExpandedList(prev => prev === list.id ? null : list.id)} 
                 mr={2}>
                   {expandedList === list.id ? <FaChevronUp /> : <FaChevronDown />}
@@ -149,7 +150,7 @@ const ContactList = () => {
             </Box>
           </Heading>
           <Collapse in={expandedList === list.id}>
-            <List spacing={2}>
+            <List spacing={2} fontWeight={600}>
               {Object.values((list.contacts || {})).map(contact => (
                 <ListItem key={contact.id} display="flex" justifyContent="space-between" alignItems="center">
                   {contact.name}
@@ -157,6 +158,7 @@ const ContactList = () => {
                     size="sm" 
                     leftIcon={<FaTimes />} 
                     onClick={() => handleRemoveUserFromList(list.id, contact.id)} 
+                    // bgColor="#E9D8FD" 
                     variant="outline">
                      
                   </Button>
@@ -170,7 +172,7 @@ const ContactList = () => {
       <Divider my={4} />
 
       <Box p={6} width="100%" borderWidth="1px" borderRadius="lg" boxShadow="sm">
-        <Heading size="sm" mb={4}>Manage Contact Lists</Heading>
+        <Heading size="sm" mb={4} fontWeight={600}>Manage Contact Lists</Heading>
         <Stack direction="row" spacing={4} width="100%" mb={4}>
           <Input
             value={listName}
