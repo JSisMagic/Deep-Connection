@@ -31,10 +31,9 @@ function App() {
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/create-event" element={<CreateEvent />} />
             {/* <Route path="/events" element={<EventsPage />} /> */}
-            {/* <Route path="/contacts" element={<ContactsPage />} /> */}
             {/* <Route path="/members" element={<MembersPage />} /> */}
             <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/contact-list" element={<ContactList />} />
+            <Route path="/contacts" element={<ContactList />} />
           </Routes>
         </ApplicationLayout>
       ) : (
