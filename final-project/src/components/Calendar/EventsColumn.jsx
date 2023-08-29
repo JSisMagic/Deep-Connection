@@ -36,7 +36,12 @@ const EventsColumn = ({ events = [], date, isUsedInWeek, borderLeft = false }) =
             isSameDay(event.endDate, date) ? event.endHour * 2 + (event.endAtHalf ? 2 : 1) : 49
           }
         >
-          <EventBox isUsedInWeek={isUsedInWeek} title={event.title} />
+          <EventBox
+            isUsedInWeek={isUsedInWeek}
+            title={event.title}
+            color={event.color}
+            startDate={event.startDate}
+          />
         </GridItem>
       ))}
     </Grid>
