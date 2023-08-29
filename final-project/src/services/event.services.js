@@ -7,13 +7,16 @@ export const createEvent = async event => {
 }
 
 export const fetchEventsForInterval = (startDate, endDate) => {
+  const adjustedStartDate = new Date(startDate.getTime() - startDate.getTimezoneOffset() * 60000);
+  const adjustedEndDate = new Date(endDate.getTime() - startDate.getTimezoneOffset() * 60000);
+  
   return new Promise((resolve, reject) => {
     const eventsRef = ref(db, "events")
     const eventsQuery = query(
       eventsRef,
       orderByChild("startDate"),
-      startAt(startDate.toISOString().slice(0, -8)),
-      endAt(endDate.toISOString().slice(0, -8))
+      startAt(adjustedStartDate.toISOString().slice(0, -8)),
+      endAt(adjustedEndDate.toISOString().slice(0, -8))
     )
 
     onValue(
