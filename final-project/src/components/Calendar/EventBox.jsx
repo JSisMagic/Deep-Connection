@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Box, Heading, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton } from "@chakra-ui/react"
+import { Box, Heading, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, Text } from "@chakra-ui/react"
 import { categoryColors } from "../../common/colors"
 import { format } from "date-fns"
 
@@ -41,10 +41,30 @@ const EventBox = ({ title, color = "blue", startDate, endDate, description, loca
         <ModalHeader>{title}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <p>Start Date: {format(startDate, "EEEE, d MMMM yyyy, H:mm")}</p>
-          <p>End Date: {format(endDate, "EEEE, d MMMM yyyy, H:mm")}</p>
-          <p>Location: {location}</p>
-          <p>Description: {description}</p>
+          <Box>
+              <Text fontWeight="bold">Start Date:</Text>
+              <Heading fontSize={13} fontWeight={700} maxW="150px" mb={1}>
+                  {format(startDate, "EEEE, d MMMM yyyy, h:mm a")}
+              </Heading>
+          </Box>
+          <Box>
+              <Text fontWeight="bold">End Date:</Text>
+              <Heading fontSize={13} fontWeight={700} maxW="150px" mb={1}>
+                  {format(endDate, "EEEE, d MMMM yyyy, h:mm a")}
+              </Heading>
+          </Box>
+          <Box>
+              <Text fontWeight="bold">Location:</Text>
+              <Heading fontSize={13} fontWeight={600} maxW="150px" mb={1}>
+                  {location}
+              </Heading>
+          </Box>
+          <Box>
+              <Text fontWeight="bold">Description:</Text>
+              <Heading fontSize={13} fontWeight={600} maxW="150px" mb={1}>
+                  {description}
+              </Heading>
+          </Box>
 
         </ModalBody>
       </ModalContent>
