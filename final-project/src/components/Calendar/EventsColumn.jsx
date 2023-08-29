@@ -41,6 +41,9 @@ const EventsColumn = ({ events = [], date, isUsedInWeek, borderLeft = false }) =
             title={event.title}
             color={event.color}
             startDate={event.startDate}
+            endDate={event.endDate}
+            location = {event.location}
+            description = {event.description}
           />
         </GridItem>
       ))}
