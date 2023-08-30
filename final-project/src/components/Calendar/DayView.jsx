@@ -1,17 +1,19 @@
 import { Flex } from "@chakra-ui/react"
-import { auth } from "../../config/firebase"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
+import { AuthContext } from "../../context/AuthContext"
+import { getEventsForUser } from "../../services/event.services"
 import EventsColumn from "./EventsColumn"
 import HoursColumn from "./HoursColumn"
-import { fetchEventsForInterval } from "../../services/event.services"
-import { addDays } from "date-fns"
 
 const DayView = ({ date }) => {
+  const { user } = useContext(AuthContext)
   const [events, setEvents] = useState([])
 
   useEffect(() => {
-    fetchEventsForInterval(new Date(date), addDays(date, 1), auth.currentUser.uid).then(setEvents)
-  }, [date])
+    if (user.uid) {
+      getEventsForUser(user.uid).then(setEvents).catch(console.error)
+    }
+  }, [date, user.uid])
 
   return (
     <Flex>

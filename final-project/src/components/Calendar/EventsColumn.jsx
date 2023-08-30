@@ -7,7 +7,6 @@ import EventBox from "./EventBox"
 
 const EventsColumn = ({ events = [], date, isUsedInWeek, borderLeft = false }) => {
   const [eventsForDate, setEventsForDate] = useState([])
-  console.log("events", eventsForDate)
 
   useEffect(() => {
     setEventsForDate(getEventsForDate(date, events))

@@ -1,18 +1,33 @@
-import { endAt, onValue, orderByChild, push, query, ref, set, startAt } from "firebase/database"
+import {
+  endAt,
+  get,
+  onValue,
+  orderByChild,
+  push,
+  query,
+  ref,
+  set,
+  startAt,
+  update,
+} from "firebase/database"
 import { db } from "../config/firebase"
 
 export const createEvent = async event => {
-  const newEventRef = push(ref(db, "events"));
-  await set(newEventRef, event);
-  return newEventRef.key;
+  const { key } = await push(ref(db, "events"), event)
+
+  update(ref(db), {
+    [`users/${event.creatorId}/events/${key}`]: true,
+  })
+
+  return key
 }
 
 export const fetchEventsForInterval = (startDate, endDate, userUid) => {
-  const adjustedStartDate = new Date(startDate.getTime() - startDate.getTimezoneOffset() * 60000);
-  const adjustedEndDate = new Date(endDate.getTime() - startDate.getTimezoneOffset() * 60000);
-  
+  const adjustedStartDate = new Date(startDate.getTime() - startDate.getTimezoneOffset() * 60000)
+  const adjustedEndDate = new Date(endDate.getTime() - startDate.getTimezoneOffset() * 60000)
+
   return new Promise((resolve, reject) => {
-    const eventsRef = ref(db, `events`);
+    const eventsRef = ref(db, `events`)
     const eventsQuery = query(
       eventsRef,
       orderByChild("startDate"),
@@ -24,7 +39,7 @@ export const fetchEventsForInterval = (startDate, endDate, userUid) => {
       eventsQuery,
       snapshot => {
         const data = snapshot.val()
-        console.log("Fetched Data:", data);
+        console.log("Fetched Data:", data)
         if (data) {
           const eventsArray = Object.keys(data).map(key => ({
             ...data[key],
@@ -32,7 +47,11 @@ export const fetchEventsForInterval = (startDate, endDate, userUid) => {
             startDate: new Date(data[key].startDate),
             endDate: new Date(data[key].endDate),
           }))
-          resolve(eventsArray.filter(element => element.createdBy === userUid && element.isPrivate === true))
+          resolve(
+            eventsArray.filter(
+              element => element.createdBy === userUid && element.isPrivate === true
+            )
+          )
         } else {
           resolve([])
         }
@@ -43,6 +62,27 @@ export const fetchEventsForInterval = (startDate, endDate, userUid) => {
       }
     )
   })
+}
+
+export const getEventData = async eventId => {
+  const snapshot = await get(ref(db, `events/${eventId}`))
+  const eventData = snapshot.val()
+  return (
+    {
+      ...eventData,
+      startDate: new Date(eventData.startDate),
+      endDate: new Date(eventData.endDate),
+    } || {}
+  )
+}
+
+export const getEventsForUser = async uid => {
+  const snapshot = await get(ref(db, `users/${uid}/events`))
+
+  const eventIds = Object.keys(snapshot.val())
+  const eventData = await Promise.all(eventIds.map(id => getEventData(id)))
+
+  return eventData
 }
 
 export const getEventsForDate = (date, events) => {
@@ -71,10 +111,3 @@ export const getEventsForDate = (date, events) => {
       return { ...event, startHour, endHour, startAtHalf, endAtHalf }
     })
 }
-
-// export const getEvents = () => {
-//   const eventsRef = ref(db, 'events');
-//   onValue(eventsRef, (snapshot) => {
-//       const data = snapshot.val();
-//   });
-// };

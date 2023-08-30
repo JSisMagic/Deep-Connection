@@ -21,24 +21,19 @@ import PlacesAutocomplete from "../Location/PlacesAutocomplete"
 import { BiTag } from "react-icons/bi"
 import { COOL_BLUE, COOL_GREEN, COOL_PURPLE, categoryColors } from "../../common/colors"
 import { useNavigate } from "react-router-dom"
+import { useContext } from "react"
+import { AuthContext } from "../../context/AuthContext"
 
 const CreateEvent = () => {
   const navigate = useNavigate()
+  const { user } = useContext(AuthContext)
   const [eventTitle, setEventTitle] = useState("")
   const [eventLocation, setEventLocation] = useState("")
   const [eventDescription, setEventDescription] = useState("")
   const [eventStartDate, setEventStartDate] = useState("")
   const [eventEndDate, setEventEndDate] = useState("")
   const [eventColor, setEventColor] = useState("blue")
-  const [user, setUser] = useState(null)
-  const [isPrivate, setIsPrivate] = useState(true);
-  
-
-  useEffect(() => {
-    if (auth.currentUser) {
-      setUser(auth.currentUser.uid)
-    }
-  }, [])
+  const [isPrivate, setIsPrivate] = useState(true)
 
   const handleCreateEvent = async () => {
     if (!user) {
@@ -52,7 +47,7 @@ const CreateEvent = () => {
       description: eventDescription,
       startDate: eventStartDate,
       endDate: eventEndDate,
-      createdBy: user,
+      creatorId: user.uid,
       color: eventColor,
       isPrivate: isPrivate,
     }

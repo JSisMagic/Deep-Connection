@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -9,20 +10,20 @@ import {
   Heading,
   IconButton,
 } from "@chakra-ui/react";
+import { addWeeks, subWeeks } from "date-fns";
 import format from "date-fns/format";
-import { useEffect, useState } from "react";
-import { auth } from "../../config/firebase";
+import { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../../context/AuthContext";
 import {
   addDaysToDate,
   getStartOfWeek,
 } from "../../services/calendar.services";
-import { fetchEventsForInterval } from "../../services/event.services";
+import { getEventsForUser } from "../../services/event.services";
 import EventsColumn from "./EventsColumn";
 import HoursColumn from "./HoursColumn";
-import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
-import { addWeeks, subWeeks } from "date-fns";
 
 const WeekView = ({ date, setDate, isWorkWeek = false }) => {
+  const { userData } = useContext(AuthContext)
   const [events, setEvents] = useState([]);
 
   const startDay = isWorkWeek ? 1 : 0; // 1 for Monday, 0 for Sunday
@@ -30,18 +31,10 @@ const WeekView = ({ date, setDate, isWorkWeek = false }) => {
   const daysCount = endDay - startDay + 1;
 
   useEffect(() => {
-    if (date) {
-      const startOfWeek = getStartOfWeek(date);
-      const endOfWeek = addDaysToDate(startOfWeek, 6);
-
-      fetchEvents(startOfWeek, endOfWeek);
+    if (date && userData?.uid) {
+      getEventsForUser(userData?.uid).then(setEvents)
     }
-  }, [date]);
-
-  const fetchEvents = async (startOfWeek, endOfWeek) => {
-    const fetchedEvents = await fetchEventsForInterval(startOfWeek, endOfWeek, auth.currentUser.uid);
-    setEvents(fetchedEvents);
-  };
+  }, [date, userData]);
 
   // TODO conditional rendering if isWorkWeek === true to render 5 days (monday - friday)
   const days = Array.from({ length: daysCount }).map((_, i) =>
@@ -62,7 +55,7 @@ const WeekView = ({ date, setDate, isWorkWeek = false }) => {
       }
     };
   };
-  console.log(days);
+
   return (
     <Box>
       <Grid templateColumns="repeat(3, 1fr)" py={2}>
