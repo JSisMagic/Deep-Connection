@@ -5,7 +5,7 @@ import { getEventsForUser } from "../../services/event.services"
 import EventsColumn from "./EventsColumn"
 import HoursColumn from "./HoursColumn"
 
-const DayView = ({ date }) => {
+const DayView = ({ date, onOpenDetailedModal }) => {
   const { user } = useContext(AuthContext)
   const [events, setEvents] = useState([])
 
@@ -18,7 +18,12 @@ const DayView = ({ date }) => {
   return (
     <Flex>
       <HoursColumn />
-      <EventsColumn date={new Date(date)} borderLeft={true} events={events} />
+      <EventsColumn
+        date={new Date(date)}
+        borderLeft={true}
+        events={events}
+        onOpenDetailedModal={onOpenDetailedModal}
+      />
     </Flex>
   )
 }
