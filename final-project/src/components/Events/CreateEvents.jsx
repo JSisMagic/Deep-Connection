@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react"
 import {
   Button,
-  FormControl,
+  Switch,
+  Text,
+  Stack,
   FormLabel,
   Input,
   Menu,
   MenuButton,
-  MenuItem,
   MenuItemOption,
   MenuList,
   MenuOptionGroup,
@@ -30,6 +31,7 @@ const CreateEvent = () => {
   const [eventEndDate, setEventEndDate] = useState("")
   const [eventColor, setEventColor] = useState("blue")
   const [user, setUser] = useState(null)
+  const [isPrivate, setIsPrivate] = useState(true);
   
 
   useEffect(() => {
@@ -52,6 +54,7 @@ const CreateEvent = () => {
       endDate: eventEndDate,
       createdBy: user,
       color: eventColor,
+      isPrivate: isPrivate,
     }
 
     try {
@@ -101,6 +104,16 @@ const CreateEvent = () => {
           onChange={e => setEventDescription(e.target.value)}
           placeholder="Description"
         />
+
+        <Stack direction="row" alignItems="center" spacing={4}>
+          <Text>Private</Text>
+          <Switch
+            isChecked={isPrivate}
+            onChange={e => setIsPrivate(e.target.checked)}
+            colorScheme="blue"
+          />
+          <Text>Public</Text>
+        </Stack>
 
         <FormLabel>Start Date and Time</FormLabel>
         <Input

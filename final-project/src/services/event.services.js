@@ -32,7 +32,7 @@ export const fetchEventsForInterval = (startDate, endDate, userUid) => {
             startDate: new Date(data[key].startDate),
             endDate: new Date(data[key].endDate),
           }))
-          resolve(eventsArray.filter(element => element.createdBy === userUid))
+          resolve(eventsArray.filter(element => element.createdBy === userUid && element.isPrivate === true))
         } else {
           resolve([])
         }
