@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import { getEventsForDate } from "../../services/event.services"
 import EventBox from "./EventBox"
 
-const EventsColumn = ({ events = [], date, isUsedInWeek, borderLeft = false }) => {
+const EventsColumn = ({ events = [], date, isUsedInWeek, borderLeft = false, onOpenDetailedModal }) => {
   const [eventsForDate, setEventsForDate] = useState([])
 
   useEffect(() => {
@@ -37,12 +37,8 @@ const EventsColumn = ({ events = [], date, isUsedInWeek, borderLeft = false }) =
         >
           <EventBox
             isUsedInWeek={isUsedInWeek}
-            title={event.title}
-            color={event.color}
-            startDate={event.startDate}
-            endDate={event.endDate}
-            location = {event.location}
-            description = {event.description}
+            eventData={event}
+            onOpenDetailedModal={onOpenDetailedModal}
           />
         </GridItem>
       ))}
