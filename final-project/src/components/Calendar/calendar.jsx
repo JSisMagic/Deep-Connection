@@ -1,58 +1,84 @@
-import React, { useState } from "react";
-import { Box, Button, ButtonGroup, Grid, GridItem } from "@chakra-ui/react";
-import DayView from "./DayView";
-import WeekView from "./WeekView";
-import MonthView from "./MonthView";
-import YearView from "./YearView";
-import WorkWeekView from "./WorkWeekView";
+import { useState } from "react"
 import {
-  COOL_BLACK,
-  COOL_BLUE,
-  COOL_BLUE_GREEN,
-  COOL_GREEN,
-  COOL_PURPLE,
-} from "../../common/colors";
-import { useNavigate } from "react-router-dom";
+  Box,
+  Button,
+  ButtonGroup,
+  Grid,
+  GridItem,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
+  Text,
+  Heading,
+  Stack
+} from "@chakra-ui/react"
+import DayView from "./DayView"
+import WeekView from "./WeekView"
+import MonthView from "./MonthView"
+import YearView from "./YearView"
+import { COOL_BLUE, COOL_BLUE_GREEN, COOL_GREEN, COOL_PURPLE } from "../../common/colors"
+import { useNavigate } from "react-router-dom"
+import { format } from "date-fns"
+import DetailedEventCard from "../DetailedEventCard/DetailedEventCard"
 
 const Calendar = () => {
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [currentView, setCurrentView] = useState("month");
-  const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false)
+  const [detailedEventData, setDetailedEventData] = useState({
+    title: "",
+    startDate: new Date(),
+    endDate: new Date(),
+    description: "",
+    location: "",
+  })
+  const [currentDate, setCurrentDate] = useState(new Date())
+  const [currentView, setCurrentView] = useState("month")
+  const navigate = useNavigate()
 
-  const handleChangeView = (view) => {
-    return () => setCurrentView(view);
-  };
+  const handleChangeView = view => {
+    return () => setCurrentView(view)
+  }
 
   const renderView = () => {
     switch (currentView) {
       case "day":
-        return <DayView date={currentDate.setHours(0, 0, 0, 0)} />;
+        return <DayView date={currentDate.setHours(0, 0, 0, 0)} onOpenDetailedModal={onOpen} />
       case "week":
-        return <WeekView date={currentDate} setDate={setCurrentDate} />;
+        return <WeekView date={currentDate} setDate={setCurrentDate} onOpenDetailedModal={onOpen} />
       case "month":
-        return <MonthView date={currentDate} setDate={setCurrentDate} />;
+        return (
+          <MonthView date={currentDate} setDate={setCurrentDate} onOpenDetailedModal={onOpen} />
+        )
       case "year":
-        return <YearView date={currentDate} />;
+        return <YearView date={currentDate} />
       case "workWeek":
         return (
           <WeekView
             date={currentDate}
             setDate={setCurrentDate}
             isWorkWeek={true}
+            onOpenDetailedModal={onOpen}
           />
-        );
+        )
       default:
-        return <MonthView date={currentDate} />;
+        return (
+          <MonthView date={currentDate} setDate={setCurrentDate} onOpenDetailedModal={onOpen} />
+        )
     }
-  };
+  }
+  const onOpen = eventData => {
+    setDetailedEventData({ ...eventData })
+    setIsOpen(true)
+  }
+
+  const onClose = () => {
+    setIsOpen(false)
+  }
 
   return (
-    <Box
-      className="calendar-container"
-      paddingInline={5}
-      height="100%"
-      overflowY="auto"
-    >
+    <Box className="calendar-container" paddingInline={5} height="100%" overflowY="auto">
       <Grid
         zIndex={10}
         templateColumns="repeat(3, 1fr)"
@@ -68,38 +94,17 @@ const Calendar = () => {
           </Button>
         </GridItem>
         <GridItem>
-          <ButtonGroup
-            variant="outline"
-            width="100%"
-            justifyContent="center"
-            paddingBottom={6}
-          >
-            <Button
-              background={COOL_PURPLE}
-              color="white"
-              onClick={handleChangeView("day")}
-            >
+          <ButtonGroup variant="outline" width="100%" justifyContent="center" paddingBottom={6}>
+            <Button background={COOL_PURPLE} color="white" onClick={handleChangeView("day")}>
               Day
             </Button>
-            <Button
-              background={COOL_GREEN}
-              color="white"
-              onClick={handleChangeView("week")}
-            >
+            <Button background={COOL_GREEN} color="white" onClick={handleChangeView("week")}>
               Week
             </Button>
-            <Button
-              background={COOL_BLUE}
-              color="white"
-              onClick={handleChangeView("workWeek")}
-            >
+            <Button background={COOL_BLUE} color="white" onClick={handleChangeView("workWeek")}>
               Work Week
             </Button>
-            <Button
-              background={COOL_BLUE_GREEN}
-              color="white"
-              onClick={handleChangeView("month")}
-            >
+            <Button background={COOL_BLUE_GREEN} color="white" onClick={handleChangeView("month")}>
               Month
             </Button>
           </ButtonGroup>
@@ -107,8 +112,19 @@ const Calendar = () => {
       </Grid>
 
       {renderView()}
-    </Box>
-  );
-};
 
-export default Calendar;
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader></ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <DetailedEventCard detailedEventData={detailedEventData} />
+          </ModalBody> 
+        </ModalContent>
+      </Modal>
+    </Box>
+  )
+}
+
+export default Calendar
