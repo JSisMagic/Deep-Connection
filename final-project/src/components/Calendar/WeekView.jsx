@@ -22,8 +22,13 @@ import { getEventsForUser } from "../../services/event.services";
 import EventsColumn from "./EventsColumn";
 import HoursColumn from "./HoursColumn";
 
-const WeekView = ({ date, setDate, isWorkWeek = false }) => {
-  const { userData } = useContext(AuthContext)
+const WeekView = ({
+  date,
+  setDate,
+  isWorkWeek = false,
+  onOpenDetailedModal,
+}) => {
+  const { userData } = useContext(AuthContext);
   const [events, setEvents] = useState([]);
 
   const startDay = isWorkWeek ? 1 : 0; // 1 for Monday, 0 for Sunday
@@ -32,7 +37,7 @@ const WeekView = ({ date, setDate, isWorkWeek = false }) => {
 
   useEffect(() => {
     if (date && userData?.uid) {
-      getEventsForUser(userData?.uid).then(setEvents)
+      getEventsForUser(userData?.uid).then(setEvents);
     }
   }, [date, userData]);
 
@@ -102,7 +107,12 @@ const WeekView = ({ date, setDate, isWorkWeek = false }) => {
                 <Center>{format(day, "E, do")}</Center>
               </GridItem>
               <GridItem rowStart={2}>
-                <EventsColumn date={day} events={events} isUsedInWeek={true} />
+                <EventsColumn
+                  date={day}
+                  events={events}
+                  isUsedInWeek={true}
+                  onOpenDetailedModal={onOpenDetailedModal}
+                />
               </GridItem>
             </Grid>
           </GridItem>
