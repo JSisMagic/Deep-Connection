@@ -1,4 +1,5 @@
 import { Flex } from "@chakra-ui/react"
+import { auth } from "../../config/firebase"
 import { useEffect, useState } from "react"
 import EventsColumn from "./EventsColumn"
 import HoursColumn from "./HoursColumn"
@@ -9,7 +10,7 @@ const DayView = ({ date }) => {
   const [events, setEvents] = useState([])
 
   useEffect(() => {
-    fetchEventsForInterval(new Date(date), addDays(date, 1)).then(setEvents)
+    fetchEventsForInterval(new Date(date), addDays(date, 1), auth.currentUser.uid).then(setEvents)
   }, [date])
 
   return (

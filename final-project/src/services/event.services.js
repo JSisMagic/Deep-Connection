@@ -2,16 +2,17 @@ import { endAt, onValue, orderByChild, push, query, ref, set, startAt } from "fi
 import { db } from "../config/firebase"
 
 export const createEvent = async event => {
-  const newEventRef = push(ref(db, "events"))
-  await set(newEventRef, event)
+  const newEventRef = push(ref(db, "events"));
+  await set(newEventRef, event);
+  return newEventRef.key;
 }
 
-export const fetchEventsForInterval = (startDate, endDate) => {
+export const fetchEventsForInterval = (startDate, endDate, userUid) => {
   const adjustedStartDate = new Date(startDate.getTime() - startDate.getTimezoneOffset() * 60000);
   const adjustedEndDate = new Date(endDate.getTime() - startDate.getTimezoneOffset() * 60000);
   
   return new Promise((resolve, reject) => {
-    const eventsRef = ref(db, "events")
+    const eventsRef = ref(db, `events`);
     const eventsQuery = query(
       eventsRef,
       orderByChild("startDate"),
@@ -23,6 +24,7 @@ export const fetchEventsForInterval = (startDate, endDate) => {
       eventsQuery,
       snapshot => {
         const data = snapshot.val()
+        console.log("Fetched Data:", data);
         if (data) {
           const eventsArray = Object.keys(data).map(key => ({
             ...data[key],
@@ -30,7 +32,7 @@ export const fetchEventsForInterval = (startDate, endDate) => {
             startDate: new Date(data[key].startDate),
             endDate: new Date(data[key].endDate),
           }))
-          resolve(eventsArray)
+          resolve(eventsArray.filter(element => element.createdBy === userUid))
         } else {
           resolve([])
         }

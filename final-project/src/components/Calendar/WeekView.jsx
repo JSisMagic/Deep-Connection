@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import format from "date-fns/format";
 import { useEffect, useState } from "react";
+import { auth } from "../../config/firebase";
 import {
   addDaysToDate,
   getStartOfWeek,
@@ -38,7 +39,7 @@ const WeekView = ({ date, setDate, isWorkWeek = false }) => {
   }, [date]);
 
   const fetchEvents = async (startOfWeek, endOfWeek) => {
-    const fetchedEvents = await fetchEventsForInterval(startOfWeek, endOfWeek);
+    const fetchedEvents = await fetchEventsForInterval(startOfWeek, endOfWeek, auth.currentUser.uid);
     setEvents(fetchedEvents);
   };
 

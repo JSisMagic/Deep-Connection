@@ -30,6 +30,7 @@ const CreateEvent = () => {
   const [eventEndDate, setEventEndDate] = useState("")
   const [eventColor, setEventColor] = useState("blue")
   const [user, setUser] = useState(null)
+  
 
   useEffect(() => {
     if (auth.currentUser) {
