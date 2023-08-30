@@ -46,7 +46,6 @@ const RegisterPage = () => {
         firstName,
         phone,
         lastName,
-        password,
       });
 
       setAuthState((prev) => ({ ...prev, userData: userData }));
