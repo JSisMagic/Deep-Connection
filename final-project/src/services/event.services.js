@@ -79,7 +79,7 @@ export const getEventData = async eventId => {
 export const getEventsForUser = async uid => {
   const snapshot = await get(ref(db, `users/${uid}/events`))
 
-  const eventIds = Object.keys(snapshot.val())
+  const eventIds = Object.keys(snapshot.val() || {})
   const eventData = await Promise.all(eventIds.map(id => getEventData(id)))
 
   return eventData
