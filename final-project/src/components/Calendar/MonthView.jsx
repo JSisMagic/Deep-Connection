@@ -1,12 +1,5 @@
 import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons"
-import {
-  Box,
-  Button,
-  Flex,
-  Grid,
-  Heading,
-  IconButton
-} from "@chakra-ui/react"
+import { Box, Button, Flex, Grid, Heading, IconButton, GridItem } from "@chakra-ui/react"
 import { addMonths, subMonths } from "date-fns"
 import endOfWeek from "date-fns/endOfWeek"
 import format from "date-fns/format"
@@ -18,8 +11,15 @@ import {
   getStartOfMonth,
   geteachDayOfInterval,
 } from "../../services/calendar.services"
+import { useState, useEffect, useContext } from "react"
+import MonthDayBox from "./MonthDayBox"
+import { getEventsForUser } from "../../services/event.services"
+import { AuthContext } from "../../context/AuthContext"
 
-const MonthView = ({ date, setDate }) => {
+const MonthView = ({ date, setDate, onOpenDetailedModal }) => {
+  const [events, setEvents] = useState()
+  const { user } = useContext(AuthContext)
+
   const startOfMonth = getStartOfMonth(date)
   const endOfMonth = getEndOfMonth(date)
 
@@ -29,6 +29,12 @@ const MonthView = ({ date, setDate }) => {
   const days = geteachDayOfInterval({ start: startOfCalendarView, end: endOfCalendarView })
 
   const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+
+  useEffect(() => {
+    if (user?.uid) {
+      getEventsForUser(user.uid).then(setEvents)
+    }
+  }, [user?.uid])
 
   const handleNavigate = action => {
     return () => {
@@ -46,7 +52,7 @@ const MonthView = ({ date, setDate }) => {
   }
 
   return (
-    <Box height="100%">
+    <Box>
       <Grid templateColumns="repeat(3, 1fr)" py={2}>
         <Button onClick={handleNavigate("today")} width="max-content">
           Today
@@ -60,7 +66,7 @@ const MonthView = ({ date, setDate }) => {
           <IconButton size="sm" icon={<ArrowForwardIcon />} onClick={handleNavigate("next")} />
         </Flex>
       </Grid>
-      <Grid templateColumns="repeat(7, 1fr)" position="sticky" top={16}>
+      <Grid templateColumns="repeat(7, 1fr)">
         {weekdays.map(weekday => (
           <Box
             key={weekday}
@@ -77,30 +83,24 @@ const MonthView = ({ date, setDate }) => {
         ))}
       </Grid>
       <Grid
+        height="700px"
+        overflowY="auto"
         templateColumns="repeat(7, 1fr)"
-        templateRows="50px, auto"
-        height="100%"
+        templateRows="auto"
         borderTop="1px solid"
         borderLeft="1px solid"
         borderColor="gray.200"
       >
         {days.map(day => {
-          const isCurrentDay = isToday(day)
-          const isOutsideCurrentMonth = day.getMonth() !== date.getMonth()
-
           return (
-            <Box
-              key={day}
-              p={3}
-              borderBottom="1px solid"
-              borderRight="1px solid"
-              borderColor="gray.200"
-              bgColor={isCurrentDay ? COOL_PURPLE : isOutsideCurrentMonth ? "gray.50" : "white"}
-              color={isOutsideCurrentMonth ? "gray.400" : "black"}
-              fontWeight={isCurrentDay ? "bold" : "normal"}
-            >
-              {format(day, "d")}
-            </Box>
+            <GridItem key={day}>
+              <MonthDayBox
+                day={day}
+                date={date}
+                events={events}
+                onOpenDetailedModal={onOpenDetailedModal}
+              />
+            </GridItem>
           )
         })}
       </Grid>
