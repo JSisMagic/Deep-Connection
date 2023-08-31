@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Switch,
@@ -13,32 +13,59 @@ import {
   MenuOptionGroup,
   Textarea,
   VStack,
-} from "@chakra-ui/react"
-import { createEvent } from "../../services/event.services"
-import { auth } from "../../config/firebase"
-import bgImage from "../../assets/images/hero.png" // Import the background image hereq
-import PlacesAutocomplete from "../Location/PlacesAutocomplete"
-import { BiTag } from "react-icons/bi"
-import { COOL_BLUE, COOL_GREEN, COOL_PURPLE, categoryColors } from "../../common/colors"
-import { useNavigate } from "react-router-dom"
-import { useContext } from "react"
-import { AuthContext } from "../../context/AuthContext"
+} from "@chakra-ui/react";
+import { createEvent } from "../../services/event.services";
+import { auth, storage } from "../../config/firebase";
+import bgImage from "../../assets/images/hero.png"; // Import the background image hereq
+import PlacesAutocomplete from "../Location/PlacesAutocomplete";
+import { BiTag } from "react-icons/bi";
+import {
+  COOL_BLUE,
+  COOL_GREEN,
+  COOL_PURPLE,
+  categoryColors,
+} from "../../common/colors";
+import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import { SUPPORTED_FORMATS } from "../../common/constrants";
+import { v4 } from "uuid";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const CreateEvent = () => {
-  const navigate = useNavigate()
-  const { user } = useContext(AuthContext)
-  const [eventTitle, setEventTitle] = useState("")
-  const [eventLocation, setEventLocation] = useState("")
-  const [eventDescription, setEventDescription] = useState("")
-  const [eventStartDate, setEventStartDate] = useState("")
-  const [eventEndDate, setEventEndDate] = useState("")
-  const [eventColor, setEventColor] = useState("blue")
-  const [isPrivate, setIsPrivate] = useState(true)
+  const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
+  const [eventTitle, setEventTitle] = useState("");
+  const [eventLocation, setEventLocation] = useState("");
+  const [eventDescription, setEventDescription] = useState("");
+  const [eventStartDate, setEventStartDate] = useState("");
+  const [eventEndDate, setEventEndDate] = useState("");
+  const [eventColor, setEventColor] = useState("blue");
+  const [isPrivate, setIsPrivate] = useState(true);
+  const [image, setImage] = useState("");
+
+  const [desc, setDesc] = useState("");
+
+  const handleImageUpload = (e) => {
+    if (!SUPPORTED_FORMATS.includes(e.target.files[0].type)) {
+      console.log("Unsupported file format!");
+    }
+    setImage(e.target.files[0]);
+  };
 
   const handleCreateEvent = async () => {
     if (!user) {
-      console.error("No user authenticated. Event not created.")
-      return
+      console.error("No user authenticated. Event not created.");
+      return;
+    }
+
+    const imageRef = ref(storage, `images/${v4()}`);
+    let url = image;
+    if (typeof image !== "string") {
+      const result = await uploadBytes(imageRef, image);
+      url = await getDownloadURL(result.ref);
     }
 
     const newEvent = {
@@ -50,20 +77,21 @@ const CreateEvent = () => {
       creatorId: user.uid,
       color: eventColor,
       isPrivate: isPrivate,
-    }
+      image: url,
+    };
 
     try {
-      const id = await createEvent(newEvent)
-      console.log("New event created with ID:", id)
-      navigate("/calendar")
+      const id = await createEvent(newEvent);
+      console.log("New event created with ID:", id);
+      navigate("/calendar");
     } catch (error) {
-      console.error("Error creating event:", error)
+      console.error("Error creating event:", error);
     }
-  }
+  };
 
-  const handleChangeEventColor = value => {
-    setEventColor(value)
-  }
+  const handleChangeEventColor = (value) => {
+    setEventColor(value);
+  };
 
   return (
     <div
@@ -86,25 +114,36 @@ const CreateEvent = () => {
         <FormLabel>Title</FormLabel>
         <Input
           value={eventTitle}
-          onChange={e => setEventTitle(e.target.value)}
+          onChange={(e) => setEventTitle(e.target.value)}
           placeholder="Title"
         />
 
         <FormLabel>Location</FormLabel>
-        <PlacesAutocomplete selected={eventLocation} setSelected={setEventLocation} />
+        <PlacesAutocomplete
+          selected={eventLocation}
+          setSelected={setEventLocation}
+        />
 
         <FormLabel>Description</FormLabel>
-        <Textarea
-          value={eventDescription}
-          onChange={e => setEventDescription(e.target.value)}
-          placeholder="Description"
+        <ReactQuill
+          placeholder="Add event description"
+          style={{
+            minHeight: "140px",
+            maxHeight: "140px",
+            borderColor: "gray",
+            borderRadius: "10px",
+          }}
+          className="w-full mb-10 md:m"
+          theme="snow"
+          value={desc}
+          onChange={setDesc}
         />
 
         <Stack direction="row" alignItems="center" spacing={4}>
           <Text>Private</Text>
           <Switch
             isChecked={isPrivate}
-            onChange={e => setIsPrivate(e.target.checked)}
+            onChange={(e) => setIsPrivate(e.target.checked)}
             colorScheme="blue"
           />
           <Text>Public</Text>
@@ -114,15 +153,21 @@ const CreateEvent = () => {
         <Input
           type="datetime-local"
           value={eventStartDate}
-          onChange={e => setEventStartDate(e.target.value)}
+          onChange={(e) => setEventStartDate(e.target.value)}
         />
 
         <FormLabel>End Date and Time</FormLabel>
         <Input
           type="datetime-local"
           value={eventEndDate}
-          onChange={e => setEventEndDate(e.target.value)}
+          onChange={(e) => setEventEndDate(e.target.value)}
         />
+
+        <div>
+          <div className="w-8">{/* here is the icon for upload */}</div>
+          <input type="file" onChange={(e) => handleImageUpload(e)} />
+          <p>(Optional)</p>
+        </div>
 
         <Menu closeOnSelect={false}>
           <MenuButton
@@ -137,7 +182,11 @@ const CreateEvent = () => {
             Categorize
           </MenuButton>
           <MenuList>
-            <MenuOptionGroup type="radio" defaultValue="blue" onChange={handleChangeEventColor}>
+            <MenuOptionGroup
+              type="radio"
+              defaultValue="blue"
+              onChange={handleChangeEventColor}
+            >
               <MenuItemOption
                 value="pink"
                 _hover={{ bgColor: `rgba(${categoryColors.pink}, .3)` }}
@@ -195,7 +244,7 @@ const CreateEvent = () => {
         </Button>
       </VStack>
     </div>
-  )
-}
+  );
+};
 
-export default CreateEvent
+export default CreateEvent;

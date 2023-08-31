@@ -70,11 +70,11 @@ export const getEventData = async eventId => {
 
   return eventData
     ? {
-        ...eventData,
-        id: eventId,
-        startDate: new Date(eventData.startDate),
-        endDate: new Date(eventData.endDate),
-      }
+      ...eventData,
+      id: eventId,
+      startDate: new Date(eventData.startDate),
+      endDate: new Date(eventData.endDate),
+    }
     : {}
 }
 

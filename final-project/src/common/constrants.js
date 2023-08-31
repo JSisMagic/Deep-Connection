@@ -1,4 +1,9 @@
-import { BiCalendar, BiCalendarEvent, BiUserPlus, BiGroup } from "react-icons/bi"
+import {
+  BiCalendar,
+  BiCalendarEvent,
+  BiUserPlus,
+  BiGroup,
+} from "react-icons/bi";
 
 export const navLinks = [
   {
@@ -21,6 +26,8 @@ export const navLinks = [
     path: "/members",
     icon: BiGroup,
   },
-]
+];
 
-export const HEADER_HEIGHT = "64px"
+export const HEADER_HEIGHT = "64px";
+
+export const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg", "image/png"];
