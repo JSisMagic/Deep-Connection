@@ -67,13 +67,15 @@ export const fetchEventsForInterval = (startDate, endDate, userUid) => {
 export const getEventData = async eventId => {
   const snapshot = await get(ref(db, `events/${eventId}`))
   const eventData = snapshot.val()
-  return (
-    {
-      ...eventData,
-      startDate: new Date(eventData.startDate),
-      endDate: new Date(eventData.endDate),
-    } || {}
-  )
+
+  return eventData
+    ? {
+        ...eventData,
+        id: eventId,
+        startDate: new Date(eventData.startDate),
+        endDate: new Date(eventData.endDate),
+      }
+    : {}
 }
 
 export const getEventsForUser = async uid => {
