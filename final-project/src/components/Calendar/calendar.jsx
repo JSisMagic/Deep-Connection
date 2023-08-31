@@ -1,4 +1,3 @@
-import { useState } from "react"
 import {
   Box,
   Button,
@@ -6,23 +5,20 @@ import {
   Grid,
   GridItem,
   Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
   ModalBody,
   ModalCloseButton,
-  Text,
-  Heading,
-  Stack
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
 } from "@chakra-ui/react"
-import DayView from "./DayView"
-import WeekView from "./WeekView"
-import MonthView from "./MonthView"
-import YearView from "./YearView"
-import { COOL_BLUE, COOL_BLUE_GREEN, COOL_GREEN, COOL_PURPLE } from "../../common/colors"
+import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { format } from "date-fns"
+import { COOL_BLUE, COOL_BLUE_GREEN, COOL_GREEN, COOL_PURPLE } from "../../common/colors"
 import DetailedEventCard from "../DetailedEventCard/DetailedEventCard"
+import DayView from "./DayView"
+import MonthView from "./MonthView"
+import WeekView from "./WeekView"
+import YearView from "./YearView"
 
 const Calendar = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -44,7 +40,13 @@ const Calendar = () => {
   const renderView = () => {
     switch (currentView) {
       case "day":
-        return <DayView date={currentDate.setHours(0, 0, 0, 0)} onOpenDetailedModal={onOpen} />
+        return (
+          <DayView
+            date={currentDate.setHours(0, 0, 0, 0)}
+            setDate={setCurrentDate}
+            onOpenDetailedModal={onOpen}
+          />
+        )
       case "week":
         return <WeekView date={currentDate} setDate={setCurrentDate} onOpenDetailedModal={onOpen} />
       case "month":
@@ -78,7 +80,7 @@ const Calendar = () => {
   }
 
   return (
-    <Box className="calendar-container" paddingInline={5} height="100%" overflowY="auto">
+    <Box className="calendar-container" paddingInline={5} height="100%">
       <Grid
         zIndex={10}
         templateColumns="repeat(3, 1fr)"
@@ -120,7 +122,7 @@ const Calendar = () => {
           <ModalCloseButton />
           <ModalBody>
             <DetailedEventCard detailedEventData={detailedEventData} />
-          </ModalBody> 
+          </ModalBody>
         </ModalContent>
       </Modal>
     </Box>
