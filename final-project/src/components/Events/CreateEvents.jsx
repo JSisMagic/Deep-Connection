@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
+  Flex,
   Button,
   Switch,
   Text,
@@ -45,9 +46,7 @@ const CreateEvent = () => {
   const [eventColor, setEventColor] = useState("blue");
   const [isPrivate, setIsPrivate] = useState(true);
   const [image, setImage] = useState("");
-
-  const [desc, setDesc] = useState("");
-
+  
   const handleImageUpload = (e) => {
     if (!SUPPORTED_FORMATS.includes(e.target.files[0].type)) {
       console.log("Unsupported file format!");
@@ -94,14 +93,12 @@ const CreateEvent = () => {
   };
 
   return (
-    <div
-      style={{
-        // backgroundImage: `url(${bgImage})`,
-        height: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
+    <Flex
+    height="100%"
+    justify="center"
+    align="center"
+    padding={5}
+    overflowY="auto"
     >
       <VStack
         spacing={4}
@@ -135,8 +132,8 @@ const CreateEvent = () => {
           }}
           className="w-full mb-10 md:m"
           theme="snow"
-          value={desc}
-          onChange={setDesc}
+          value={eventDescription}
+          onChange={setEventDescription}
         />
 
         <Stack direction="row" alignItems="center" spacing={4}>
@@ -243,7 +240,7 @@ const CreateEvent = () => {
           Create Event
         </Button>
       </VStack>
-    </div>
+    </Flex>
   );
 };
 
