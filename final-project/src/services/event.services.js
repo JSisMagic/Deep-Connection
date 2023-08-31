@@ -1,5 +1,6 @@
 import {
   endAt,
+  equalTo,
   get,
   onValue,
   orderByChild,
@@ -70,11 +71,11 @@ export const getEventData = async eventId => {
 
   return eventData
     ? {
-      ...eventData,
-      id: eventId,
-      startDate: new Date(eventData.startDate),
-      endDate: new Date(eventData.endDate),
-    }
+        ...eventData,
+        id: eventId,
+        startDate: new Date(eventData.startDate),
+        endDate: new Date(eventData.endDate),
+      }
     : {}
 }
 
@@ -112,4 +113,18 @@ export const getEventsForDate = (date, events) => {
 
       return { ...event, startHour, endHour, startAtHalf, endAtHalf }
     })
+}
+
+export const getPublicEvents = async () => {
+  const snapshot = await get(query(ref(db, "events"), orderByChild("isPrivate"), equalTo(false)))
+  const value = snapshot.val()
+
+  return value
+    ? Object.keys(value).map(key => ({
+        ...value[key],
+        id: key,
+        startDate: new Date(value[key].startDate),
+        endDate: new Date(value[key].endDate),
+      }))
+    : []
 }
