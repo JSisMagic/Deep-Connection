@@ -115,16 +115,7 @@ const Calendar = () => {
 
       {renderView()}
 
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader></ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <DetailedEventCard detailedEventData={detailedEventData} />
-          </ModalBody>
-        </ModalContent>
-      </Modal>
+      <DetailedEventCard isOpen={isOpen} onClose={onClose} detailedEventData={detailedEventData} />
     </Box>
   )
 }
