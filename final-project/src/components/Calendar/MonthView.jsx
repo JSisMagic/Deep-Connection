@@ -66,44 +66,44 @@ const MonthView = ({ date, setDate, onOpenDetailedModal }) => {
           <IconButton size="sm" icon={<ArrowForwardIcon />} onClick={handleNavigate("next")} />
         </Flex>
       </Grid>
-      <Grid templateColumns="repeat(7, 1fr)">
-        {weekdays.map(weekday => (
-          <Box
-            key={weekday}
-            p={1}
-            borderBottom="1px solid"
-            borderRight="1px solid"
-            borderColor="gray.200"
-            fontWeight="bold"
-            bgColor="gray.100"
-            textAlign="center"
-          >
-            {weekday}
-          </Box>
-        ))}
-      </Grid>
-      <Grid
+      <Box
         height="700px"
         overflowY="auto"
-        templateColumns="repeat(7, 1fr)"
-        templateRows="auto"
         borderTop="1px solid"
         borderLeft="1px solid"
         borderColor="gray.200"
       >
-        {days.map(day => {
-          return (
-            <GridItem key={day}>
-              <MonthDayBox
-                day={day}
-                date={date}
-                events={events}
-                onOpenDetailedModal={onOpenDetailedModal}
-              />
-            </GridItem>
-          )
-        })}
-      </Grid>
+        <Grid templateColumns="repeat(7, 1fr)">
+          {weekdays.map(weekday => (
+            <Box
+              key={weekday}
+              p={1}
+              borderBottom="1px solid"
+              borderRight="1px solid"
+              borderColor="gray.200"
+              fontWeight="bold"
+              bgColor="gray.100"
+              textAlign="center"
+            >
+              {weekday}
+            </Box>
+          ))}
+        </Grid>
+        <Grid templateColumns="repeat(7, 1fr)" templateRows="auto">
+          {days.map(day => {
+            return (
+              <GridItem key={day}>
+                <MonthDayBox
+                  day={day}
+                  date={date}
+                  events={events}
+                  onOpenDetailedModal={onOpenDetailedModal}
+                />
+              </GridItem>
+            )
+          })}
+        </Grid>
+      </Box>
     </Box>
   )
 }
