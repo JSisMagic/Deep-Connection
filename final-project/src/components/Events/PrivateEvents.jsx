@@ -1,52 +1,19 @@
-import { SearchIcon } from "@chakra-ui/icons";
-import { Input, InputGroup, InputLeftElement, Stack } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import { getPrivateEvents } from "../../services/event.services"; // You might need to create this service function
-import EventCard from "../EventCard/EventCard";
+import { useContext, useEffect, useState } from "react"
+import { AuthContext } from "../../context/AuthContext"
+import { getPrivateEvents } from "../../services/event.services" // You might need to create this service function
+import EventsList from "../EventsList/EventsList"
 
 const PrivateEvents = () => {
-  const [events, setEvents] = useState([]);
-  const [filteredEvents, setFilteredEvents] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const { user } = useContext(AuthContext)
+  const [events, setEvents] = useState([])
 
   useEffect(() => {
-    getPrivateEvents().then(setEvents).catch(console.error);
-  }, []);
+    if (user?.uid) {
+      getPrivateEvents(user.uid).then(setEvents).catch(console.error)
+    }
+  }, [user?.uid])
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const filtered = events.filter(
-        (ev) =>
-          ev.title.toLowerCase().includes(searchTerm) ||
-          ev.description.toLowerCase().includes(searchTerm) ||
-          ev.location.toLowerCase().includes(searchTerm)
-      );
+  return <EventsList events={events} />
+}
 
-      setFilteredEvents(filtered);
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [searchTerm, events]);
-
-  return (
-    <Stack gap={5}>
-      <InputGroup>
-        <Input
-          placeholder="Search for private events.."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
-        />
-        <InputLeftElement>
-          <SearchIcon />
-        </InputLeftElement>
-      </InputGroup>
-      <Stack height="700px" overflowY="auto">
-        {filteredEvents.map((event) => (
-          <EventCard key={event.id} eventData={event} />
-        ))}
-      </Stack>
-    </Stack>
-  );
-};
-
-export default PrivateEvents;
+export default PrivateEvents
