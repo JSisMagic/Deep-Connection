@@ -1,16 +1,29 @@
-import { Flex, Heading, Icon, Image, Stack, Text } from "@chakra-ui/react"
+import { Flex, Heading, Icon, Image, Stack, Text, Box } from "@chakra-ui/react"
 import { format } from "date-fns"
 import { FaLocationDot } from "react-icons/fa6"
 import FallbackImg from "../../assets/images/event.jpg"
 
-const EventPageCard = ({ eventData }) => {
+const EventPageCard = ({ eventData, onOpenDetailedEvent }) => {
   return (
-    <Flex height="220px" width="100%" gap={8} bg="gray.50" borderRadius="md" cursor="pointer">
-      <Stack align="center" width="200px" py={3}>
+    <Flex
+      p={3}
+      direction={{ base: "column", lg: "row" }}
+      h={{ base: "max-content", lg: "25vh" }}
+      align="center"
+      width="100%"
+      gap={8}
+      bg="gray.50"
+      borderRadius="md"
+      cursor="pointer"
+      maxW="1500px"
+      marginInline="auto"
+      onClick={() => onOpenDetailedEvent(eventData)}
+    >
+      <Stack alignSelf={{ lg: "start" }} align="center" width="10%">
         <Text fontWeight={500}>{format(eventData.startDate, "ccc").toUpperCase()}</Text>
         <Heading size="md">{format(eventData.startDate, "d")}</Heading>
       </Stack>
-      <Stack justify="space-between" flexGrow={1} py={3}>
+      <Stack h="100%" justify="space-between" flexGrow={1} width={{ lg: "60%" }}>
         <Text fontWeight={500}>
           {format(eventData.startDate, "MMMM")} @{format(eventData.startDate, "HH:mm")} -
           {format(eventData.endDate, "HH:mm O")}
@@ -24,14 +37,15 @@ const EventPageCard = ({ eventData }) => {
         )}
         <Text dangerouslySetInnerHTML={{ __html: eventData.description }} />
       </Stack>
-      <Image
-        w="600px"
-        height="220px"
-        borderRadius="md"
-        p={3}
-        src={eventData?.image || FallbackImg}
-        objectFit="cover"
-      />
+      <Box h="100%" w={{ lg: "30%" }}>
+        <Image
+          h="100%"
+          w="100%"
+          borderRadius="md"
+          src={eventData?.image || FallbackImg}
+          objectFit="cover"
+        />
+      </Box>
     </Flex>
   )
 }
