@@ -129,18 +129,9 @@ export const getPublicEvents = async () => {
     : []
 }
 
-export const getPrivateEvents = async () => {
-  const snapshot = await get(
-    query(ref(db, "events"), orderByChild("isPrivate"), equalTo(true))
-  );
-  const value = snapshot.val();
+export const getPrivateEvents = async (creatorId) => {
+  const eventsForUser = await getEventsForUser(creatorId);
+  const privateEvents = eventsForUser.filter(ev => ev.isPrivate)
 
-  return value
-    ? Object.keys(value).map((key) => ({
-      ...value[key],
-      id: key,
-      startDate: new Date(value[key].startDate),
-      endDate: new Date(value[key].endDate),
-    }))
-    : [];
+  return privateEvents;
 };
