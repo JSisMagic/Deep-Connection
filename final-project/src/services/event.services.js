@@ -135,3 +135,33 @@ export const getPrivateEvents = async (creatorId) => {
 
   return privateEvents;
 };
+
+export const acceptInvite = async (email, eventId) => {
+  const event = await getEventData(eventId);
+  const attendees = { ...event.attendees, accepted: event.attendees.accepted || [] }
+
+  if (attendees.pending.indexOf(email) === -1) {
+    alert("Cannot accept invite, user has no invitation");
+    return;
+  }
+
+  attendees.accepted.push(email);
+  attendees.pending.splice(event.attendees.pending.indexOf(email), 1);
+
+  await update(ref(db, `events/${eventId}/attendees`), { ...attendees })
+}
+
+export const denyInvite = async (email, eventId) => {
+  const event = await getEventData(eventId);
+  const attendees = { ...event.attendees, denied: event.attendees.denied || [] }
+
+  if (attendees.pending.indexOf(email) === -1) {
+    alert("Cannot deny invite, user has no invitation");
+    return;
+  }
+
+  attendees.denied.push(email);
+  attendees.pending.splice(event.attendees.pending.indexOf(email), 1);
+
+  await update(ref(db, `events/${eventId}/attendees`), { ...attendees })
+}

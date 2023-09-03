@@ -30,6 +30,7 @@ import { storage } from "../../config/firebase";
 import { AuthContext } from "../../context/AuthContext";
 import { createEvent } from "../../services/event.services";
 import PlacesAutocomplete from "../Location/PlacesAutocomplete";
+import Attendees from "./Attendees";
 
 const CreateEvent = () => {
   const navigate = useNavigate();
@@ -40,6 +41,7 @@ const CreateEvent = () => {
   const [eventStartDate, setEventStartDate] = useState("");
   const [eventEndDate, setEventEndDate] = useState("");
   const [eventColor, setEventColor] = useState("blue");
+  const [eventAttendees, setEventAttendees] = useState([]);
   const [isPrivate, setIsPrivate] = useState(true);
   const [image, setImage] = useState("");
   const [errors, setErrors] = useState({
@@ -96,6 +98,7 @@ const CreateEvent = () => {
       title: eventTitle,
       location: eventLocation,
       description: eventDescription,
+      attendees: { pending: eventAttendees },
       startDate: eventStartDate,
       endDate: eventEndDate,
       creatorId: user.uid,
@@ -184,6 +187,12 @@ const CreateEvent = () => {
             onChange={handleChangeDescription}
           />
           <FormErrorMessage>{errors.description}</FormErrorMessage>
+        </FormControl>
+
+        <FormControl isRequired isInvalid={errors.attendees}>
+          <FormLabel>Attendees</FormLabel>
+          <Attendees onChange={setEventAttendees} />
+          <FormErrorMessage>{errors.attendees}</FormErrorMessage>
         </FormControl>
 
         <input
@@ -302,7 +311,6 @@ const CreateEvent = () => {
             </MenuList>
           </Menu>
         </Stack>
-
         <Button
           colorScheme="blue"
           width="100%"
