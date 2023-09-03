@@ -1,9 +1,11 @@
-import { Box, Button, Heading, Stack } from "@chakra-ui/react"
-import HeroImg from "../../assets/images/hero.png"
-import { useNavigate } from "react-router-dom"
+//final-react-project/final-project/src/components/Hero/Hero.jsx
+
+import { Box, Button, Heading, Stack } from "@chakra-ui/react";
+import HeroImg from "../../assets/images/hero.png";
+import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   return (
     <Box position="relative" direction="column">
@@ -38,7 +40,7 @@ const Hero = () => {
 
       {/* <Image height="100%" width="100%" opacity="70%" src={HeroImg} /> */}
     </Box>
-  )
-}
+  );
+};
 
-export default Hero
+export default Hero;
