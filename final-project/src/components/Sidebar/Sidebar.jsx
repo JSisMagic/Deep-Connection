@@ -1,4 +1,13 @@
-import { Box, Button, Flex, Heading, Icon, IconButton, Stack, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Icon,
+  IconButton,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 import { useContext } from "react";
 import { AppContext } from "../../context/AppContext";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -8,7 +17,8 @@ import { CloseIcon } from "@chakra-ui/icons";
 import { logoutUser } from "../../services/auth.services";
 
 const Sidebar = () => {
-  const { showSidebar, showMobileSidebar, hideMobileSidebar } = useContext(AppContext);
+  const { showSidebar, showMobileSidebar, hideMobileSidebar } =
+    useContext(AppContext);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -18,12 +28,16 @@ const Sidebar = () => {
 
   return (
     <Box
-      display={{ base: showMobileSidebar ? "block" : "none", lg: showSidebar ? "block" : "none" }}
+      display={{
+        base: showMobileSidebar ? "block" : "none",
+        lg: showSidebar ? "block" : "none",
+      }}
       h="100vh"
       zIndex={10}
       width={{ base: "50vw", md: "320px" }}
       pos={{ base: "fixed", md: "static" }}
-      bg="linear-gradient(#8232B2, #AD85EE)"
+      // Updated background gradient from purple to blue
+      bg="linear-gradient(135deg, #8232B2, #3490E3)"
       p="1rem"
       textColor="white"
     >
