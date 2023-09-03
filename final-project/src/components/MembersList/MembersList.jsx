@@ -76,7 +76,7 @@ const MembersList = ({ searchTerm, setSearchTerm }) => {
                   size="sm"
                   leftIcon={<FaUserPlus />}
                 >
-                  Add to contacts
+                  Add
                 </Button>
                 <Button
                   bgColor="#E9D8FD"
@@ -84,7 +84,7 @@ const MembersList = ({ searchTerm, setSearchTerm }) => {
                   size="sm"
                   leftIcon={<FaBan />}
                 >
-                  Block user
+                  Block
                 </Button>
               </Stack>
             </Flex>
