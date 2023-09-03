@@ -1,3 +1,5 @@
+import { useContext, useState, useEffect } from "react";
+import { AuthContext } from "../../context/AuthContext";
 import {
   Box,
   Flex,
@@ -12,11 +14,52 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
+  Button
 } from "@chakra-ui/react"
 import { format } from "date-fns"
 import { FaLocationDot } from "react-icons/fa6"
+import { acceptInvite, denyInvite } from "../../services/event.services"
 
-const DetailedEventCard = ({ detailedEventData, isOpen, onClose }) => {
+const DetailedEventCard = ({ detailedEventData, isOpen, onClose, onInviteAcceptDeny }) => {
+  const { user } = useContext(AuthContext);
+  const { attendees } = detailedEventData;
+
+  const handleAccept = async () => {
+    const event = await acceptInvite(user.email, detailedEventData.id);
+    onInviteAcceptDeny(event);
+  }
+
+  const handleDeny = async () => {
+    const event = await denyInvite(user.email, detailedEventData.id);
+    onInviteAcceptDeny(event);
+  }
+
+  const hasPendingInvite = () => {
+    const { pending } = attendees || [];
+    return pending && pending.indexOf(user.email) !== -1;
+  }
+
+  const hasAccepted = () => {
+    const { accepted } = attendees || [];
+    return accepted && accepted.indexOf(user.email) !== -1;
+  }
+
+  const hasDenied = () => {
+    const { denied } = attendees || [];
+    return denied && denied.indexOf(user.email) !== -1;
+  }
+
+  const messageContainer = (text) => (<Flex
+    p={5}
+    bg="gray.100"
+    borderRadius="lg"
+    gap={3}
+    justifyContent="space-between"
+    align="center"
+  >
+    {text}
+  </Flex>)
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -51,10 +94,40 @@ const DetailedEventCard = ({ detailedEventData, isOpen, onClose }) => {
                   </Text>
                 </Flex>
               )}
+              
             </Flex>
             <Image src={detailedEventData.image} borderRadius="lg" />
             <Box dangerouslySetInnerHTML={{ __html: detailedEventData.description }} />
           </Stack>
+          { hasPendingInvite() && (<Flex
+              p={5}
+              bg="gray.100"
+              borderRadius="lg"
+              gap={3}
+              justifyContent="space-between"
+              align="center"
+            >
+              <Button
+                colorScheme="blue"
+                width="100%"
+                height="50px"
+                fontSize="xl"
+                onClick={handleAccept}
+              >
+                Accept
+              </Button>
+              <Button
+                colorScheme="blue"
+                width="100%"
+                height="50px"
+                fontSize="xl"
+                onClick={handleDeny}
+              >
+                Deny
+              </Button>
+            </Flex>)}
+            { hasAccepted() && messageContainer("You have accepted this event")}
+            { hasDenied() && messageContainer("You have denied this event")}
         </ModalBody>
       </ModalContent>
     </Modal>

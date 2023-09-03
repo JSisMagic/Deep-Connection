@@ -12,7 +12,7 @@ import { getUserByEmail } from "../../services/users.services";
 const EMAIL_REGEXP = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const isValidEmail = (email) => EMAIL_REGEXP.test(email);
 
-const Attendees = ({ initialData = [], onChange }) => {
+const Attendees = ({ initialData = [], onChange, disabled }) => {
   const [value, setValue] = useState("");
   const [data, setData] = useState(initialData)
 
@@ -105,6 +105,7 @@ const Attendees = ({ initialData = [], onChange }) => {
         onKeyDown={handleKeyDown} 
         onChange={handleChange} 
         value={value} 
+        disabled={disabled}
       />
     </Box>
     </>

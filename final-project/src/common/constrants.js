@@ -3,6 +3,7 @@ import {
   BiCalendarEvent,
   BiUserPlus,
   BiGroup,
+  BiNotification
 } from "react-icons/bi";
 
 export const navLinks = [
@@ -25,6 +26,11 @@ export const navLinks = [
     title: "Members",
     path: "/members",
     icon: BiGroup,
+  },
+  {
+    title: "Notifications",
+    path: "/notifications",
+    icon: BiNotification,
   },
 ];
 

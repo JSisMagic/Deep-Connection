@@ -11,6 +11,7 @@ import ProfilePage from "./components/Profile/ProfilePage"
 import CreateEvent from "./components/Events/CreateEvents"
 import { useLoadScript } from "@react-google-maps/api";
 import ContactList from "./components/ContactList/ContactList"
+import Notifications from "./components/Notifications/Notifications"
 import MembersPage from "./pages/Members/Members"
 import EventsPage from "./pages/Events/EventsPage"
 
@@ -36,6 +37,7 @@ function App() {
             <Route path="/members" element={<MembersPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/contacts" element={<ContactList />} />
+            <Route path="/notifications" element={<Notifications />} />
           </Routes>
         </ApplicationLayout>
       ) : (

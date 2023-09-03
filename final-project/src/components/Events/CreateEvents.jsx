@@ -191,7 +191,7 @@ const CreateEvent = () => {
 
         <FormControl isRequired isInvalid={errors.attendees}>
           <FormLabel>Attendees</FormLabel>
-          <Attendees onChange={setEventAttendees} />
+          <Attendees onChange={setEventAttendees} disabled={isPrivate} />
           <FormErrorMessage>{errors.attendees}</FormErrorMessage>
         </FormControl>
 

@@ -77,6 +77,7 @@ const EventsList = ({ events = [] }) => {
         isOpen={isOpen}
         onClose={onClose}
         detailedEventData={detailedEventData}
+        onInviteAcceptDeny={setDetailedEventData}
       />
     </Stack>
   );
