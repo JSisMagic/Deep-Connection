@@ -1,18 +1,21 @@
+import React, { useState, useEffect } from "react";
 import {
   Avatar,
   Box,
   Button,
-  ButtonGroup,
   Flex,
   Heading,
+  Input,
+  InputGroup,
+  InputRightElement,
   Stack,
   Text,
+  SimpleGrid,
 } from "@chakra-ui/react";
-import { useState } from "react";
-import { useEffect } from "react";
+import { FaUserPlus, FaBan, FaSearch } from "react-icons/fa";
 import { getAllUsers } from "../../services/users.services";
 
-const MembersList = ({ searchTerm }) => {
+const MembersList = ({ searchTerm, setSearchTerm }) => {
   const [allMembers, setAllMembers] = useState([]);
   const [filteredMembers, setFilteredMembers] = useState([]);
 
@@ -37,37 +40,61 @@ const MembersList = ({ searchTerm }) => {
   }, [searchTerm, allMembers]);
 
   return (
-    <Stack marginTop={5}>
-      {filteredMembers.length ? (
-        filteredMembers.map((user) => (
-          <Flex
-            key={user.uid}
-            background="gray.100"
-            p={3}
-            borderRadius="md"
-            justify="space-between"
-            align="center"
-          >
-            <Flex gap={3}>
-              <Avatar />
-              <Box>
-                <Heading size="sm">
-                  {user.firstName} {user.lastName}
-                </Heading>
-                <Text fontWeight={600}>@{user.username}</Text>
-              </Box>
+    <Stack
+      marginTop={5}
+      p={4}
+      bg="gray.50"
+      borderRadius="md"
+      overflowY="auto"
+      maxHeight="100vh"
+    >
+      <SimpleGrid columns={1} spacing={3} marginTop={3}>
+        {filteredMembers.length ? (
+          filteredMembers.map((user) => (
+            <Flex
+              key={user.uid}
+              background="white"
+              p={3}
+              borderRadius="md"
+              justify="space-between"
+              align="center"
+              boxShadow="base"
+            >
+              <Flex gap={3}>
+                <Avatar />
+                <Box>
+                  <Heading size="sm">
+                    {user.firstName} {user.lastName}
+                  </Heading>
+                  <Text fontWeight={600}>@{user.username}</Text>
+                </Box>
+              </Flex>
+              <Stack spacing={2}>
+                <Button
+                  bgColor="#E9D8FD"
+                  fontWeight={600}
+                  size="sm"
+                  leftIcon={<FaUserPlus />}
+                >
+                  Add to contacts
+                </Button>
+                <Button
+                  bgColor="#E9D8FD"
+                  fontWeight={600}
+                  size="sm"
+                  leftIcon={<FaBan />}
+                >
+                  Block user
+                </Button>
+              </Stack>
             </Flex>
-            <ButtonGroup size="sm" flexDir="column">
-              <Button>Add to contacts</Button>
-              <Button>Block user</Button>
-            </ButtonGroup>
-          </Flex>
-        ))
-      ) : (
-        <Heading textAlign="center" marginTop={5}>
-          No users found
-        </Heading>
-      )}
+          ))
+        ) : (
+          <Heading textAlign="center" marginTop={5}>
+            No users found
+          </Heading>
+        )}
+      </SimpleGrid>
     </Stack>
   );
 };
