@@ -1,19 +1,11 @@
 //final-react-project/final-project/src/components/AboutUse/AboutUs.jsx
 
-import {
-  Box,
-  Heading,
-  Text,
-  Link,
-  Flex,
-  Image,
-  Stack,
-  IconButton,
-} from "@chakra-ui/react";
-import { SiGitlab, SiLinkedin } from "react-icons/si";
-import { Helmet } from "react-helmet";
-import Gergana from "../assets/images/Gergana.png";
-import Mariela from "../assets/images/Mariela.png";
+import { Box, Heading, Text, Link, Flex, Image, Stack, IconButton } from "@chakra-ui/react"
+import { SiGitlab, SiLinkedin } from "react-icons/si"
+import { Helmet } from "react-helmet"
+import Gergana from "../../assets/images/Gergana.png"
+import Mariela from "../../assets/images/Mariela.png"
+import { forwardRef } from "react"
 
 const team = [
   {
@@ -21,8 +13,7 @@ const team = [
     role: "Web Developer",
     imageUrl: Gergana,
     gitlabUrl: "https://gitlab.com/gerganadq",
-    linkedinUrl:
-      "https://www.linkedin.com/in/gergana-dragoeva-quievy-20b25b97/",
+    linkedinUrl: "https://www.linkedin.com/in/gergana-dragoeva-quievy-20b25b97/",
     bio: "Bio for Gergana goes here.",
   },
   {
@@ -33,25 +24,21 @@ const team = [
     linkedinUrl: "https://www.linkedin.com/in/mariela-ivanova-1270771a8/",
     bio: "Bio for Mariela goes here.",
   },
-];
+]
 
-export default function AboutUs() {
+const AboutUs = forwardRef(function AboutUs(props, ref) {
   return (
-    <Box>
+    <Box ref={ref}>
       <Helmet title="About us" />
       <Box bg="white" py={12} px={4} maxW="7xl" mx="auto" textAlign="center">
         <Heading as="h2" size="2xl" fontWeight="extrabold" mb={5}>
           About Us
         </Heading>
         <Text fontSize="xl" color="gray.500" mb={12}>
-          Our mission is to help people organize their day-to-day life and help
-          them keep track of their upcoming events.
+          Our mission is to help people organize their day-to-day life and help them keep track of
+          their upcoming events.
         </Text>
-        <Flex
-          direction={{ base: "column", md: "row" }}
-          alignItems="center"
-          justify="center"
-        >
+        <Flex direction={{ base: "column", md: "row" }} alignItems="center" justify="center">
           <Image
             src={Gergana}
             alt="Gergana"
@@ -147,5 +134,7 @@ export default function AboutUs() {
         </Flex>
       </Box>
     </Box>
-  );
-}
+  )
+})
+
+export default AboutUs
