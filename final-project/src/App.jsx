@@ -14,6 +14,7 @@ import ContactList from "./components/ContactList/ContactList"
 import Notifications from "./components/Notifications/Notifications"
 import MembersPage from "./pages/Members/Members"
 import EventsPage from "./pages/Events/EventsPage"
+import AboutUsPage from "./components/AboutUs/AboutUs"
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyCs89FEdCghqxYJoWMICN59cqhVOYyRLgs";
 
@@ -35,7 +36,7 @@ function App() {
             <Route path="/create-event" element={<CreateEvent />} />
             <Route path="/events" element={<EventsPage />} />
             <Route path="/members" element={<MembersPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/profile/:uid" element={<ProfilePage />} />
             <Route path="/contacts" element={<ContactList />} />
             <Route path="/notifications" element={<Notifications />} />
           </Routes>
