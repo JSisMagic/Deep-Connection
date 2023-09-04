@@ -39,14 +39,14 @@ const Hero = () => {
       </Stack>
 
       <Box position="absolute" left={8} bottom={8} maxWidth="60%" padding={6}>
-        <Text fontSize="lg" color="white" fontWeight="bold">
-          {" "}
-          {/* Set color to white and font weight to bold */}
-          Deep Connection is more than just an event planning platform; it's a
-          gateway to a world of deep connections and meaningful experiences. We
-          believe that connecting with like-minded individuals can lead to
-          personal growth, and our platform is designed to make that journey
-          effortless.
+        <Text
+          fontSize="lg"
+          color="white"
+          fontWeight="bold"
+          fontStyle="italic"
+          textAlign="center"
+        >
+          Gateway to a world of deep connections and meaningful experiences...
         </Text>
       </Box>
     </Box>
