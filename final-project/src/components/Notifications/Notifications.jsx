@@ -10,7 +10,9 @@ import {
   CardHeader,
   Text,
   Card,
+  Icon
 } from "@chakra-ui/react";
+import { FaLocationDot } from "react-icons/fa6";
 import { updateNotification } from "../../services/notification.services";
 import DetailedEventCard from "../DetailedEventCard/DetailedEventCard";
 import { getEventData } from "../../services/event.services";
@@ -69,7 +71,11 @@ const Notifications = ({ data, onNotificationRead }) => {
               <Heading size='xs' textTransform='uppercase'>
                 {n.title}
               </Heading>
-              <Text dangerouslySetInnerHTML={{ __html: `Event at ${n.location}` }} pt='2' fontSize='sm' flexGrow={1}/>
+              <Text pt='2' fontSize='sm' flexGrow={1}>
+                Event at 
+                <Icon as={FaLocationDot} boxSize={6} color="red.700" />
+                <Text as="span" fontWeight="bold">{n.location}</Text>
+              </Text>
             </Box>
           ))}
         </Stack>
