@@ -14,7 +14,8 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
-  Button
+  Button,
+  Grid
 } from "@chakra-ui/react"
 import { format } from "date-fns"
 import { FaLocationDot } from "react-icons/fa6"
@@ -154,16 +155,13 @@ return (
           { hasAccepted() && messageContainer("You have accepted this event")}
           { hasDenied() && messageContainer("You have denied this event")}
         { !detailedEventData.isPrivate && (
-          <Box
-            p={5}
-            bg="gray.100"
-            borderRadius="lg"
-            mt={5}
-          >
-            {renderInvitees('All Invited', getAllInvited().all)}
-            {renderInvitees('Accepted', getAllInvited().accepted)}
-            {renderInvitees('Denied', getAllInvited().denied)}
-          </Box>
+          <Box p={5} bg="gray.100" borderRadius="lg" mt={5}>
+          <Grid templateColumns="repeat(3, 1fr)" gap={6}>
+            <Box>{renderInvitees('All Invited', getAllInvited().all)}</Box>
+            <Box>{renderInvitees('Accepted', getAllInvited().accepted)}</Box>
+            <Box>{renderInvitees('Denied', getAllInvited().denied)}</Box>
+          </Grid>
+        </Box>
         )}
       </ModalBody>
     </ModalContent>
