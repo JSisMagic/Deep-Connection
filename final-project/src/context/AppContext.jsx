@@ -6,6 +6,7 @@ export const AppContextProvider = ({ children }) => {
   const [appState, setAppState] = useState({
     showSidebar: true,
     showMobileSidebar: false,
+    selectedNavSection: null,
   })
 
   const toggleSidebar = () => {
@@ -22,6 +23,10 @@ export const AppContextProvider = ({ children }) => {
     }))
   }
 
+  const handleClickNavLink = link => {
+    setAppState(prev => ({ ...prev, selectedNavSection: link }))
+  }
+
   return (
     <AppContext.Provider
       value={{
@@ -29,6 +34,8 @@ export const AppContextProvider = ({ children }) => {
         showMobileSidebar: appState.showMobileSidebar,
         toggleSidebar,
         hideMobileSidebar,
+        selectedNavSection: appState.selectedNavSection,
+        handleClickNavLink,
       }}
     >
       {children}
