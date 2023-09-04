@@ -14,84 +14,84 @@ import {
   Switch,
   Text,
   VStack,
-} from "@chakra-ui/react";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { useContext, useState } from "react";
-import { BiTag } from "react-icons/bi";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-import { useNavigate } from "react-router-dom";
-import { v4 } from "uuid";
-import { categoryColors } from "../../common/colors";
-import { SUPPORTED_FORMATS } from "../../common/constrants";
-import { validateDescription, validateTitle } from "../../common/helpers";
-import validation from "../../common/validation-enums";
-import { storage } from "../../config/firebase";
-import { AuthContext } from "../../context/AuthContext";
-import { createEvent } from "../../services/event.services";
-import PlacesAutocomplete from "../Location/PlacesAutocomplete";
-import Attendees from "./Attendees";
+} from "@chakra-ui/react"
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
+import { useContext, useState } from "react"
+import { BiTag } from "react-icons/bi"
+import ReactQuill from "react-quill"
+import "react-quill/dist/quill.snow.css"
+import { useNavigate } from "react-router-dom"
+import { v4 } from "uuid"
+import { categoryColors } from "../../common/colors"
+import { SUPPORTED_FORMATS } from "../../common/constrants"
+import { validateDescription, validateTitle } from "../../common/helpers"
+import validation from "../../common/validation-enums"
+import { storage } from "../../config/firebase"
+import { AuthContext } from "../../context/AuthContext"
+import { createEvent } from "../../services/event.services"
+import PlacesAutocomplete from "../Location/PlacesAutocomplete"
+import Attendees from "./Attendees"
 
 const CreateEvent = () => {
-  const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
-  const [eventTitle, setEventTitle] = useState("");
-  const [eventLocation, setEventLocation] = useState("");
-  const [eventDescription, setEventDescription] = useState("");
-  const [eventStartDate, setEventStartDate] = useState("");
-  const [eventEndDate, setEventEndDate] = useState("");
-  const [eventColor, setEventColor] = useState("blue");
-  const [eventAttendees, setEventAttendees] = useState([]);
-  const [isPrivate, setIsPrivate] = useState(true);
-  const [image, setImage] = useState("");
+  const navigate = useNavigate()
+  const { user } = useContext(AuthContext)
+  const [eventTitle, setEventTitle] = useState("")
+  const [eventLocation, setEventLocation] = useState("")
+  const [eventDescription, setEventDescription] = useState("")
+  const [eventStartDate, setEventStartDate] = useState("")
+  const [eventEndDate, setEventEndDate] = useState("")
+  const [eventColor, setEventColor] = useState("blue")
+  const [eventAttendees, setEventAttendees] = useState([])
+  const [isPrivate, setIsPrivate] = useState(true)
+  const [image, setImage] = useState("")
   const [errors, setErrors] = useState({
     title: "",
     location: "",
     description: "",
     startDate: "",
     endDate: "",
-  });
+  })
 
-  const handleImageUpload = (e) => {
+  const handleImageUpload = e => {
     if (!SUPPORTED_FORMATS.includes(e.target.files[0].type)) {
-      console.log("Unsupported file format!");
+      console.log("Unsupported file format!")
     }
-    setImage(e.target.files[0]);
-  };
+    setImage(e.target.files[0])
+  }
 
   const validateForm = () => {
     if (!validateTitle(eventTitle)) {
-      return setErrors((prev) => ({
+      return setErrors(prev => ({
         ...prev,
         title: `Length should be between ${validation.MIN_TITLE_LENGTH} and ${validation.MAX_TITLE_LENGTH} characters.`,
-      }));
+      }))
     }
 
     if (!validateDescription(eventDescription)) {
-      return setErrors((prev) => ({
+      return setErrors(prev => ({
         ...prev,
         description: `Length should be between ${validation.MIN_ADDITIONAL_INFO_LENGTH} and ${validation.MAX_ADDITIONAL_INFO_LENGTH} characters.`,
-      }));
+      }))
     }
 
-    return true;
-  };
+    return true
+  }
 
   const handleCreateEvent = async () => {
     if (!user) {
-      console.error("No user authenticated. Event not created.");
-      return;
+      console.error("No user authenticated. Event not created.")
+      return
     }
 
     if (!validateForm()) {
-      return;
+      return
     }
 
-    const imageRef = ref(storage, `images/${v4()}`);
-    let url = image;
+    const imageRef = ref(storage, `images/${v4()}`)
+    let url = image
     if (typeof image !== "string") {
-      const result = await uploadBytes(imageRef, image);
-      url = await getDownloadURL(result.ref);
+      const result = await uploadBytes(imageRef, image)
+      url = await getDownloadURL(result.ref)
     }
 
     const newEvent = {
@@ -105,45 +105,46 @@ const CreateEvent = () => {
       color: eventColor,
       isPrivate: isPrivate,
       image: url,
-    };
+    }
 
     try {
-      const id = await createEvent(newEvent);
-      console.log("New event created with ID:", id);
-      navigate("/calendar");
+      const id = await createEvent(newEvent)
+      console.log("New event created with ID:", id)
+      navigate("/calendar")
     } catch (error) {
-      console.error("Error creating event:", error);
+      console.error("Error creating event:", error)
     }
-  };
+  }
 
-  const handleChangeTitle = (e) => {
-    const value = e.target.value;
+  const handleChangeTitle = e => {
+    const value = e.target.value
 
     if (validateTitle(value) && errors.title) {
-      setErrors((prev) => ({ ...prev, title: "" }));
+      setErrors(prev => ({ ...prev, title: "" }))
     }
 
-    setEventTitle(value);
-  };
+    setEventTitle(value)
+  }
 
-  const handleChangeDescription = (value) => {
+  const handleChangeDescription = value => {
     if (validateDescription(value) && errors.description) {
-      setErrors((prev) => ({ ...prev, description: "" }));
+      setErrors(prev => ({ ...prev, description: "" }))
     }
 
-    setEventDescription(value);
-  };
+    setEventDescription(value)
+  }
 
-  const handleChangeEventColor = (value) => {
-    setEventColor(value);
-  };
+  const handleChangeEventColor = value => {
+    setEventColor(value)
+  }
 
   return (
     <Flex
       height="100%"
       justify="center"
       align="center"
-      padding={5}
+      paddingTop="12rem"
+      paddingBottom="2rem"
       overflowY="auto"
       flexDirection={{ base: "column", md: "row" }}
     >
@@ -157,20 +158,12 @@ const CreateEvent = () => {
       >
         <FormControl isRequired isInvalid={errors.title}>
           <FormLabel>Title</FormLabel>
-          <Input
-            value={eventTitle}
-            onChange={handleChangeTitle}
-            placeholder="Title"
-            size="lg"
-          />
+          <Input value={eventTitle} onChange={handleChangeTitle} placeholder="Title" size="lg" />
           <FormErrorMessage>{errors.title}</FormErrorMessage>
         </FormControl>
 
         <FormLabel>Location</FormLabel>
-        <PlacesAutocomplete
-          selected={eventLocation}
-          setSelected={setEventLocation}
-        />
+        <PlacesAutocomplete selected={eventLocation} setSelected={setEventLocation} />
 
         <FormControl isRequired isInvalid={errors.description}>
           <FormLabel>Description</FormLabel>
@@ -197,20 +190,22 @@ const CreateEvent = () => {
 
         <input
           type="file"
-          onChange={(e) => handleImageUpload(e)}
+          onChange={e => handleImageUpload(e)}
           style={{ display: "none" }}
           id="upload-image"
         />
         <label
           htmlFor="upload-image"
           style={{
-            backgroundColor: `rgb(${categoryColors[eventColor]})`,
+            backgroundColor: `rgb(${categoryColors.blue})`,
             color: "white",
             borderRadius: "5px",
             padding: "10px",
             cursor: "pointer",
             width: "100%", // Set width to 100%
             textAlign: "center", // Center text
+            fontSize: "18px",
+            fontWeight: "600",
           }}
         >
           Upload Image
@@ -220,7 +215,7 @@ const CreateEvent = () => {
           <Text>Private</Text>
           <Switch
             isChecked={isPrivate}
-            onChange={(e) => setIsPrivate(e.target.checked)}
+            onChange={e => setIsPrivate(e.target.checked)}
             colorScheme="blue"
           />
           <Text>Public</Text>
@@ -230,14 +225,14 @@ const CreateEvent = () => {
         <Input
           type="datetime-local"
           value={eventStartDate}
-          onChange={(e) => setEventStartDate(e.target.value)}
+          onChange={e => setEventStartDate(e.target.value)}
         />
 
         <FormLabel>End Date and Time</FormLabel>
         <Input
           type="datetime-local"
           value={eventEndDate}
-          onChange={(e) => setEventEndDate(e.target.value)}
+          onChange={e => setEventEndDate(e.target.value)}
         />
 
         <Stack direction="row" alignItems="center" spacing={4} width="100%">
@@ -254,11 +249,7 @@ const CreateEvent = () => {
               Categorize
             </MenuButton>
             <MenuList width="100%" maxH="300px">
-              <MenuOptionGroup
-                type="radio"
-                defaultValue="blue"
-                onChange={handleChangeEventColor}
-              >
+              <MenuOptionGroup type="radio" defaultValue="blue" onChange={handleChangeEventColor}>
                 <MenuItemOption
                   value="pink"
                   _hover={{ bgColor: `rgba(${categoryColors.pink}, .3)` }}
@@ -322,7 +313,7 @@ const CreateEvent = () => {
         </Button>
       </VStack>
     </Flex>
-  );
-};
+  )
+}
 
-export default CreateEvent;
+export default CreateEvent
