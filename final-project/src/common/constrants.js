@@ -26,12 +26,7 @@ export const navLinks = [
     title: "Members",
     path: "/members",
     icon: BiGroup,
-  },
-  {
-    title: "Notifications",
-    path: "/notifications",
-    icon: BiNotification,
-  },
+  }
 ];
 
 export const HEADER_HEIGHT = "64px";

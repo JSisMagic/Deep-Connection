@@ -31,6 +31,7 @@ import { AuthContext } from "../../context/AuthContext";
 import { createEvent } from "../../services/event.services";
 import PlacesAutocomplete from "../Location/PlacesAutocomplete";
 import Attendees from "./Attendees";
+import { createNotificationByEmail } from "../../services/notification.services";
 
 const CreateEvent = () => {
   const navigate = useNavigate();
@@ -110,11 +111,31 @@ const CreateEvent = () => {
     try {
       const id = await createEvent(newEvent);
       console.log("New event created with ID:", id);
+
+      await eventAttendees.map(att => notify(id, newEvent, att))
       navigate("/calendar");
     } catch (error) {
       console.error("Error creating event:", error);
     }
   };
+
+  const notify = async (id, event, email) => {
+    const notification = {
+      title: 'New Event Invitation',
+      location: event.location,
+      date: new Date().getTime(),
+      read: false,
+      meta: {
+        eventId: id
+      }
+    };
+
+    try {
+      await createNotificationByEmail(email, notification);
+    } catch (error) {
+      console.error("Error sending notification", error);
+    }
+  }
 
   const handleChangeTitle = (e) => {
     const value = e.target.value;
@@ -191,7 +212,17 @@ const CreateEvent = () => {
 
         <FormControl isRequired isInvalid={errors.attendees}>
           <FormLabel>Attendees</FormLabel>
-          <Attendees onChange={setEventAttendees} disabled={isPrivate} />
+          <Attendees 
+            onChange={setEventAttendees} 
+            disabled={isPrivate} 
+            eventDetails={{
+              title: eventTitle,
+              description: eventDescription,
+              startDate: eventStartDate,
+              endDate: eventEndDate,
+              location: eventLocation,
+            }} 
+          />
           <FormErrorMessage>{errors.attendees}</FormErrorMessage>
         </FormControl>
 

@@ -12,7 +12,7 @@ import { getUserByEmail } from "../../services/users.services";
 const EMAIL_REGEXP = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const isValidEmail = (email) => EMAIL_REGEXP.test(email);
 
-const Attendees = ({ initialData = [], onChange, disabled }) => {
+const Attendees = ({ initialData = [], onChange, disabled, eventDetails }) => {
   const [value, setValue] = useState("");
   const [data, setData] = useState(initialData)
 
@@ -50,7 +50,7 @@ const Attendees = ({ initialData = [], onChange, disabled }) => {
     setValue(e.target.value);
   };
 
-  // Validate and add the email if we press tab, enter or comma.
+  // Validate and add the email if we press tab or enter.
   const handleKeyDown = (e) => {
     if (["Enter", "Tab"].includes(e.key)) {
       e.preventDefault();

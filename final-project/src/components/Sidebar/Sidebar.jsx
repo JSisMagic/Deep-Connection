@@ -15,8 +15,9 @@ import { navLinks } from "../../common/constrants";
 import ProfileCard from "./ProfileCard";
 import { CloseIcon } from "@chakra-ui/icons";
 import { logoutUser } from "../../services/auth.services";
+import { BiNotification } from "react-icons/bi";
 
-const Sidebar = () => {
+const Sidebar = ({ notificationCount }) => {
   const { showSidebar, showMobileSidebar, hideMobileSidebar } =
     useContext(AppContext);
   const navigate = useNavigate();
@@ -25,6 +26,24 @@ const Sidebar = () => {
     logoutUser();
     navigate("/");
   };
+
+  const navLink = (link) => (
+    <NavLink
+      key={link.title}
+      to={link.path}
+      style={({ isActive }) => ({
+        background: isActive && "rgba(0,0,0,.1)",
+        borderRadius: "8px",
+        padding: "1rem",
+      })}
+      onClick={hideMobileSidebar}
+    >
+      <Flex align="center" gap={2}>
+        <Icon boxSize={6} as={link.icon} />
+        <Text>{link.title} {link.notificationCount ? `(${link.notificationCount})` : ''}</Text>
+      </Flex>
+    </NavLink>
+  )
 
   return (
     <Box
@@ -54,23 +73,8 @@ const Sidebar = () => {
           />
         </Flex>
         <Stack flex={1} marginTop={6} fontWeight={600}>
-          {navLinks.map((link) => (
-            <NavLink
-              key={link.title}
-              to={link.path}
-              style={({ isActive }) => ({
-                background: isActive && "rgba(0,0,0,.1)",
-                borderRadius: "8px",
-                padding: "1rem",
-              })}
-              onClick={hideMobileSidebar}
-            >
-              <Flex align="center" gap={2}>
-                <Icon boxSize={6} as={link.icon} />
-                <Text>{link.title}</Text>
-              </Flex>
-            </NavLink>
-          ))}
+          {navLinks.map((link) => navLink(link))}
+          {navLink({ title: "Notifications", path: "/notifications", icon: BiNotification, notificationCount })}
         </Stack>
         <Flex mt="auto" alignItems="center" paddingLeft="1rem">
           <Button size="sm" width="1/3" onClick={handleLogout}>

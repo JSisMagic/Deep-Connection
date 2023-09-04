@@ -156,13 +156,13 @@ export const denyInvite = async (email, eventId) => {
   const event = await getEventData(eventId);
   const attendees = { ...event.attendees, denied: event.attendees.denied || [] }
 
-  if (attendees.denied.indexOf(email) === -1) {
+  if (attendees.pending.indexOf(email) === -1) {
     alert("Cannot deny invite, user has no invitation");
     return;
   }
 
   attendees.denied.push(email);
-  attendees.denied.splice(event.attendees.denied.indexOf(email), 1);
+  attendees.pending.splice(event.attendees.pending.indexOf(email), 1);
 
   await update(ref(db, `events/${eventId}/attendees`), { ...attendees });
   return await getEventData(eventId);

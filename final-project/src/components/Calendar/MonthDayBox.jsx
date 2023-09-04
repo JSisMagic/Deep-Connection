@@ -17,7 +17,7 @@ const MonthDayBox = ({ day, date, events = [], onOpenDetailedModal }) => {
     }
   }, [day, events])
 
-  console.log(eventsForDay, day)
+  // console.log(eventsForDay, day)
   return (
     <Box
       key={day}
