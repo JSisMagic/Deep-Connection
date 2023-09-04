@@ -1,22 +1,37 @@
 //final-react-project/final-project/src/pages/Landing/LandingPage.jsx
-import { Box, Link as ChakraLink } from "@chakra-ui/react";
-import Hero from "../../components/Hero/Hero";
-import Weather from "../../components/Weather/Weather";
-import { Link } from "react-router-dom"; // Import Link from react-router-dom
+import { Box } from "@chakra-ui/react"
+import AboutUs from "../../components/AboutUs/AboutUs"
+import Hero from "../../components/Hero/Hero"
+import Weather from "../../components/Weather/Weather"
+import { useContext, useEffect, useRef } from "react"
+import { AppContext } from "../../context/AppContext"
+import { publicNavLinks } from "../../common/constrants"
 
 const LandingPage = () => {
+  const { selectedNavSection } = useContext(AppContext)
+
+  const eventsRef = useRef(null)
+  const aboutUsRef = useRef(null)
+
+  useEffect(() => {
+    if (selectedNavSection === publicNavLinks.events) {
+      eventsRef.current?.scrollIntoView({ behavior: "smooth" })
+    } else if (selectedNavSection === publicNavLinks.aboutUs) {
+      aboutUsRef.current?.scrollIntoView({ behavior: "smooth" })
+    } else if (selectedNavSection === publicNavLinks.home) {
+      window.scrollTo({ top: 0 , behavior: "smooth"})
+    }
+  }, [selectedNavSection])
+
   return (
     <Box>
       <Hero />
       <Weather />
       <Box textAlign="center" mt={4}>
-        {/* Add a Link to AboutUs page */}
-        <ChakraLink as={Link} to="/aboutus" color="blue.500" fontSize="xl">
-          About Us
-        </ChakraLink>
+        <AboutUs ref={aboutUsRef} />
       </Box>
     </Box>
-  );
-};
+  )
+}
 
-export default LandingPage;
+export default LandingPage

@@ -1,14 +1,18 @@
-import { Avatar, Box, Flex, Heading, Text } from "@chakra-ui/react"
-import { useContext } from "react"
-import { AuthContext } from "../../context/AuthContext"
-import { useNavigate } from "react-router-dom"
+import { Avatar, Box, Flex, Heading, Text } from "@chakra-ui/react";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const ProfileCard = () => {
-  const { userData } = useContext(AuthContext)
+  const { userData } = useContext(AuthContext);
   const navigate = useNavigate();
 
   return (
-    <Flex gap={3} onClick={() => navigate("/profile")} cursor="pointer">
+    <Flex
+      gap={3}
+      onClick={() => navigate(`/profile/${userData.uid}`)}
+      cursor="pointer"
+    >
       <Avatar />
       <Box>
         <Heading size="md">
@@ -17,7 +21,7 @@ const ProfileCard = () => {
         <Text fontWeight={600}>@{userData?.username}</Text>
       </Box>
     </Flex>
-  )
-}
+  );
+};
 
-export default ProfileCard
+export default ProfileCard;

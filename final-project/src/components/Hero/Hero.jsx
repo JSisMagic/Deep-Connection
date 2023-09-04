@@ -1,6 +1,6 @@
 //final-react-project/final-project/src/components/Hero/Hero.jsx
 
-import { Box, Button, Heading, Stack } from "@chakra-ui/react";
+import { Box, Button, Heading, Stack, Text } from "@chakra-ui/react";
 import HeroImg from "../../assets/images/hero.png";
 import { useNavigate } from "react-router-dom";
 
@@ -14,21 +14,21 @@ const Hero = () => {
         color="white"
         left={0}
         right={0}
-        textAlign="center"
+        textAlign="left"
         height="100vh"
         bgImage={HeroImg}
         justify="center"
+        spacing={6}
+        padding={6}
       >
-        <Stack>
-          <Heading size="2xl" maxWidth={{ lg: "40%" }} marginInline="auto">
-            Welcome to Deep Connection!
-          </Heading>
-          <Heading maxWidth={{ lg: "50%" }} marginInline="auto" size="lg">
-            Unite, Innovate, and Empower
-          </Heading>
-        </Stack>
+        <Heading size="4xl" maxWidth="80%" marginInline="auto">
+          Deep Connection
+        </Heading>
+        <Heading size="xl" maxWidth="80%" marginInline="auto">
+          Synchronizing Connections Through Events
+        </Heading>
         <Button
-          marginTop={10}
+          marginTop={8}
           size="lg"
           width="200px"
           marginInline="auto"
@@ -38,7 +38,17 @@ const Hero = () => {
         </Button>
       </Stack>
 
-      {/* <Image height="100%" width="100%" opacity="70%" src={HeroImg} /> */}
+      <Box position="absolute" left={8} bottom={8} maxWidth="60%" padding={6}>
+        <Text
+          fontSize="lg"
+          color="white"
+          fontWeight="bold"
+          fontStyle="italic"
+          textAlign="center"
+        >
+          Gateway to a world of deep connections and meaningful experiences...
+        </Text>
+      </Box>
     </Box>
   );
 };

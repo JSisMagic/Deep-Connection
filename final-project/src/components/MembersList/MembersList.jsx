@@ -14,8 +14,10 @@ import {
 } from "@chakra-ui/react";
 import { FaUserPlus, FaBan, FaSearch } from "react-icons/fa";
 import { getAllUsers } from "../../services/users.services";
+import { useNavigate } from "react-router-dom";
 
 const MembersList = ({ searchTerm, setSearchTerm }) => {
+  const navigate = useNavigate();
   const [allMembers, setAllMembers] = useState([]);
   const [filteredMembers, setFilteredMembers] = useState([]);
 
@@ -52,6 +54,8 @@ const MembersList = ({ searchTerm, setSearchTerm }) => {
         {filteredMembers.length ? (
           filteredMembers.map((user) => (
             <Flex
+              onClick={() => navigate(`/profile/${user.uid}`)}
+              cursor="pointer"
               key={user.uid}
               background="white"
               p={3}
