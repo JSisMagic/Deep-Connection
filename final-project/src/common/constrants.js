@@ -34,6 +34,12 @@ export const navLinks = [
   },
 ];
 
+export const publicNavLinks = {
+  events: "events",
+  aboutUs: "about-us",
+  home: "home",
+}
+
 export const HEADER_HEIGHT = "64px";
 
 export const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg", "image/png"];
