@@ -19,6 +19,7 @@ import {
 } from "@chakra-ui/react"
 import { format } from "date-fns"
 import { FaLocationDot } from "react-icons/fa6"
+import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
 import { acceptInvite, denyInvite } from "../../services/event.services"
 
 const DetailedEventCard = ({ detailedEventData, isOpen, onClose, onInviteAcceptDeny }) => {
@@ -134,20 +135,28 @@ return (
             align="center"
           >
             <Button
-              colorScheme="blue"
-              width="100%"
-              height="50px"
+              colorScheme="grey"
+              border="2px solid"
+              borderColor="green"
+              color="black"
+              width="80%"
+              height="40px"
               fontSize="xl"
               onClick={handleAccept}
+              leftIcon={<CheckIcon />}
             >
               Accept
             </Button>
             <Button
-              colorScheme="blue"
-              width="100%"
-              height="50px"
+              colorScheme="grey"
+              border="2px solid"
+              borderColor="red"
+              color="black"
+              width="80%"
+              height="40px"
               fontSize="xl"
               onClick={handleDeny}
+              leftIcon={<CloseIcon />}
             >
               Deny
             </Button>
