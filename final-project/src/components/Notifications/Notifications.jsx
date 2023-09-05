@@ -10,7 +10,9 @@ import {
   CardHeader,
   Text,
   Card,
-  Icon
+  Icon,
+  useToast,
+  Button,
 } from "@chakra-ui/react";
 import { FaLocationDot } from "react-icons/fa6";
 import { updateNotification } from "../../services/notification.services";
@@ -38,14 +40,31 @@ export const useInterval = (callback, delay) => {
 
 const Notifications = ({ data, onNotificationRead }) => {
   const { user } = useContext(AuthContext);
+  const toast = useToast();
   const [event, setEvent] = useState();
   const [eventDialogOpen, setEventDialogOpen] = useState(false);
 
   const openEventDetails = async (notification) => {
     const eventData = await getEventData(notification.meta.eventId);
-    setEvent(eventData);
-    setEventDialogOpen(true);
-    setRead(notification)
+    if (!eventData) {
+      toast({
+        position: "top",
+        render: ({ onClose }) => (
+          <Box color="white" p={3} bg="red.500" borderRadius="md" display="flex" alignItems="center" justifyContent="center">
+            <Text>The event has been deleted.</Text>
+            <Button size="sm" ml={3} onClick={onClose}>
+              Close
+            </Button>
+          </Box>
+        ),
+        duration: 3000,
+        isClosable: true,
+      });
+    } else {
+      setEvent(eventData);
+      setEventDialogOpen(true);
+      setRead(notification);
+    }
   };
 
   const setRead = async (notification) => {
