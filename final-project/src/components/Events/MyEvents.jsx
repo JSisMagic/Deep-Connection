@@ -3,7 +3,7 @@ import EventsList from "../EventsList/EventsList"
 import { getEventsForUser } from "../../services/event.services"
 import { AuthContext } from "../../context/AuthContext"
 
-const MyEvents = () => {
+const MyEvents = ({ inUserProfile = false }) => {
   const { user } = useContext(AuthContext)
   const [events, setEvents] = useState([])
 
@@ -13,7 +13,7 @@ const MyEvents = () => {
     }
   }, [user?.uid])
 
-  return <EventsList events={events} />
+  return <EventsList inUserProfile={inUserProfile} events={events} />
 }
 
 export default MyEvents
