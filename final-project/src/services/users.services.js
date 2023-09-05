@@ -19,7 +19,8 @@ export const createUser = async (data = {}) => {
 
   await set(ref(db, `users/${data.uid}`), {
     ...data,
-    contactLists: {}
+    contactLists: {},
+    todos: {},
   });
 
   return { ...data }

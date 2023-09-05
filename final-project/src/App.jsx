@@ -18,6 +18,7 @@ import EventsPage from "./pages/Events/EventsPage"
 import AboutUsPage from "./components/AboutUs/AboutUs"
 import { useInterval } from "./components/Notifications/Notifications"
 import { getNotifications } from "./services/notification.services"
+import TodoComponent from "./components/Todo/ToDo";
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyCs89FEdCghqxYJoWMICN59cqhVOYyRLgs";
 const LIBRARIES = ["places"];
@@ -59,6 +60,7 @@ function App() {
             <Route path="/members" element={<MembersPage />} />
             <Route path="/profile/:uid" element={<ProfilePage />} />
             <Route path="/contacts" element={<ContactList />} />
+            <Route path="/todo" element={<TodoComponent />} />
             <Route path="/notifications" element={<Notifications data={notifications || []} onNotificationRead={handleNotificationRead} />} />
           </Routes>
         </ApplicationLayout>
