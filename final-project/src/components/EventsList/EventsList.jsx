@@ -10,7 +10,7 @@ import EventPageCard from "../EventCard/EventCard";
 import { useEffect, useState } from "react";
 import DetailedEventCard from "../DetailedEventCard/DetailedEventCard";
 
-const EventsList = ({ events = [] }) => {
+const EventsList = ({ events = [], inUserProfile }) => {
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -60,7 +60,7 @@ const EventsList = ({ events = [] }) => {
         <SearchIcon />
       </InputLeftElement>
     </InputGroup>
-    <Stack height="700px" overflowY="auto">
+    <Stack height={!inUserProfile && "700px"} overflowY="auto">
       {filteredEvents.length > 0 ? (
         filteredEvents.map((event) => (
           <EventPageCard
