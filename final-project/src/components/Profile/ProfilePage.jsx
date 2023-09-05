@@ -1,4 +1,4 @@
-import { EditIcon, Icon } from "@chakra-ui/icons";
+import { EditIcon, Icon } from "@chakra-ui/icons"
 import {
   Avatar,
   Box,
@@ -15,14 +15,10 @@ import {
   FormLabel,
   FormErrorMessage,
   ButtonGroup,
-} from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
-import {
-  BiSolidQuoteAltLeft,
-  BiSolidQuoteAltRight,
-  BiUpload,
-} from "react-icons/bi";
+} from "@chakra-ui/react"
+import React, { useEffect, useState } from "react"
+import { useAuthState } from "react-firebase-hooks/auth"
+import { BiSolidQuoteAltLeft, BiSolidQuoteAltRight, BiUpload } from "react-icons/bi"
 import {
   FaFacebook,
   FaGitlab,
@@ -32,32 +28,23 @@ import {
   FaLinkedin,
   FaPlus,
   FaTiktok,
-} from "react-icons/fa";
-import { HiPencilAlt } from "react-icons/hi";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-import { Form, useParams } from "react-router-dom";
-import {
-  COOL_BLUE,
-  COOL_GREEN,
-  COOL_PURPLE,
-  categoryColors,
-} from "../../common/colors";
-import { auth } from "../../config/firebase";
-import {
-  getUserByUid,
-  updateUser,
-  uploadImage,
-} from "../../services/users.services";
-import MyEvents from "../Events/MyEvents";
-import { useForm } from "react-hook-form";
-import validation from "../../common/validation-enums";
-import { SUPPORTED_FORMATS } from "../../common/constrants";
-import { validateDescription } from "../../common/helpers";
+} from "react-icons/fa"
+import { HiPencilAlt } from "react-icons/hi"
+import ReactQuill from "react-quill"
+import "react-quill/dist/quill.snow.css"
+import { Form, useParams } from "react-router-dom"
+import { COOL_BLUE, COOL_GREEN, COOL_PURPLE, categoryColors } from "../../common/colors"
+import { auth } from "../../config/firebase"
+import { getUserByUid, updateUser, uploadImage } from "../../services/users.services"
+import MyEvents from "../Events/MyEvents"
+import { useForm } from "react-hook-form"
+import validation from "../../common/validation-enums"
+import { SUPPORTED_FORMATS } from "../../common/constrants"
+import { validateDescription } from "../../common/helpers"
 
 const ProfilePage = () => {
-  const { uid } = useParams();
-  const [user, loading] = useAuthState(auth);
+  const { uid } = useParams()
+  const [user, loading] = useAuthState(auth)
   const [profileData, setProfileData] = useState({
     email: "",
     username: "",
@@ -66,49 +53,41 @@ const ProfilePage = () => {
     phone: "",
     socialMediaLinks: [],
     description: "",
-  });
-  const [editState, setEditState] = useState(false);
+  })
+  const [editState, setEditState] = useState(false)
 
   const fetchProfileData = async () => {
     if (uid) {
-      const userData = await getUserByUid(uid);
-      setProfileData(userData);
+      const userData = await getUserByUid(uid)
+      setProfileData(userData)
     }
-  };
+  }
 
   useEffect(() => {
-    fetchProfileData();
-  }, [uid]);
+    fetchProfileData()
+  }, [uid])
 
-  const initials = (
-    profileData.firstName.charAt(0) + profileData.lastName.charAt(0)
-  ).toUpperCase();
+  const initials = (profileData.firstName.charAt(0) + profileData.lastName.charAt(0)).toUpperCase()
 
   const addSocialMediaLink = (link, platform) => {
     setProfileData({
       ...profileData,
       socialMediaLinks: [...profileData.socialMediaLinks, { link, platform }],
-    });
-  };
+    })
+  }
 
-  const removeSocialMediaLink = (index) => {
-    const updatedLinks = [...profileData.socialMediaLinks];
-    updatedLinks.splice(index, 1);
+  const removeSocialMediaLink = index => {
+    const updatedLinks = [...profileData.socialMediaLinks]
+    updatedLinks.splice(index, 1)
     setProfileData({
       ...profileData,
       socialMediaLinks: updatedLinks,
-    });
-  };
+    })
+  }
 
   return (
     <Box h="100%" p={5} overflowY="auto">
-      <Flex
-        direction="column"
-        width="100%"
-        justify="center"
-        align="center"
-        overflowY="auto"
-      >
+      <Flex direction="column" width="100%" justify="center" align="center" overflowY="auto">
         <Box
           width={{ base: "90%", lg: "60%" }} // Increase the size of the background picture container
           bgColor="white"
@@ -145,15 +124,10 @@ const ProfilePage = () => {
         </Box>
       )}
     </Box>
-  );
-};
+  )
+}
 
-const ProfileComponent = ({
-  profileData,
-  isMyProfile,
-  setEditState,
-  initials,
-}) => {
+const ProfileComponent = ({ profileData, isMyProfile, setEditState, initials }) => {
   return (
     <Box w="100%" m="auto" p="4" bg="white" borderRadius="lg" boxShadow="md">
       <Flex justify="space-between">
@@ -183,9 +157,7 @@ const ProfileComponent = ({
             )}
           </Stack>
         </Flex>
-        {isMyProfile && (
-          <IconButton icon={<EditIcon />} onClick={() => setEditState(true)} />
-        )}
+        {isMyProfile && <IconButton icon={<EditIcon />} onClick={() => setEditState(true)} />}
       </Flex>
       {profileData.description && (
         <>
@@ -200,29 +172,15 @@ const ProfileComponent = ({
       )}
       <Divider my={3} w="40%" marginInline="auto" borderColor={COOL_BLUE} />
       <Flex justify="center" gap={2}>
-        <IconButton
-          icon={getSocialMediaIcon("Facebook")}
-          isDisabled={!profileData.facebookUrl}
-        />
-        <IconButton
-          icon={getSocialMediaIcon("Instagram")}
-          isDisabled={!profileData.instagramUrl}
-        />
-        <IconButton
-          icon={getSocialMediaIcon("LinkedIn")}
-          isDisabled={!profileData.linkedInUrl}
-        />
+        <IconButton icon={getSocialMediaIcon("Facebook")} isDisabled={!profileData.facebookUrl} />
+        <IconButton icon={getSocialMediaIcon("Instagram")} isDisabled={!profileData.instagramUrl} />
+        <IconButton icon={getSocialMediaIcon("LinkedIn")} isDisabled={!profileData.linkedInUrl} />
       </Flex>
     </Box>
-  );
-};
+  )
+}
 
-const EditProfileComponent = ({
-  profileData,
-  setProfileData,
-  initials,
-  setEditState,
-}) => {
+const EditProfileComponent = ({ profileData, setProfileData, initials, setEditState }) => {
   const {
     register,
     handleSubmit,
@@ -237,43 +195,43 @@ const EditProfileComponent = ({
       profilePicture: profileData.profilePicture,
       slogan: profileData.slogan,
     },
-  });
-  const [description, setDescription] = useState(profileData.description);
-  console.log(errors);
-  const handleChangeDescription = (value) => {
+  })
+  const [description, setDescription] = useState(profileData.description)
+  console.log(errors)
+  const handleChangeDescription = value => {
     if (validateDescription(value)) {
-      clearErrors("description");
+      clearErrors("description")
     }
 
-    setDescription(value);
-  };
-  console.log(profileData);
-  const onSaveChanges = async (values) => {
+    setDescription(value)
+  }
+  console.log(profileData)
+  const onSaveChanges = async values => {
     if (!validateDescription(description)) {
       return setError("description", {
         message: `Length should be between ${validation.MIN_ADDITIONAL_INFO_LENGTH} and ${validation.MAX_ADDITIONAL_INFO_LENGTH} characters.`,
-      });
+      })
     }
 
     try {
-      const newUserData = { ...values, description };
+      const newUserData = { ...values, description }
       if (values.profilePicture !== profileData.profilePicture) {
-        const image = values.profilePicture.item(0);
-        const fileType = image.type;
+        const image = values.profilePicture.item(0)
+        const fileType = image.type
         if (!SUPPORTED_FORMATS.includes(fileType)) {
-          return setError("profilePicture", { message: "Invalid format!" });
+          return setError("profilePicture", { message: "Invalid format!" })
         }
 
-        const url = await uploadImage(image);
-        newUserData.profilePicture = url;
+        const url = await uploadImage(image)
+        newUserData.profilePicture = url
       }
 
-      await updateUser(profileData.uid, newUserData);
-      setEditState(false);
+      await updateUser(profileData.uid, newUserData)
+      setEditState(false)
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
-  };
+  }
 
   return (
     <Box w="100%" m="auto" p="4" bg="white" borderRadius="lg" boxShadow="md">
@@ -289,15 +247,8 @@ const EditProfileComponent = ({
                 size="xl"
               />
             </FormLabel>
-            <Input
-              type="file"
-              id="avatar"
-              display="none"
-              {...register("profilePicture")}
-            />
-            <FormErrorMessage>
-              {errors?.profilePicture?.message}
-            </FormErrorMessage>
+            <Input type="file" id="avatar" display="none" {...register("profilePicture")} />
+            <FormErrorMessage>{errors?.profilePicture?.message}</FormErrorMessage>
           </FormControl>
           <ButtonGroup>
             <Button onClick={() => setEditState(false)}>Cancel</Button>
@@ -323,7 +274,7 @@ const EditProfileComponent = ({
                   message: `Maximum length should be ${validation.MAX_FIRSTNAME_LENGTH}`,
                 },
                 validate: {
-                  containsOnlyLetters: (value) =>
+                  containsOnlyLetters: value =>
                     /^[a-zA-Z]+$/.test(value) ||
                     "First name must contain only uppercase and lowercase letters!",
                 },
@@ -347,7 +298,7 @@ const EditProfileComponent = ({
                   message: `Maximum length should be ${validation.MAX_LASTNAME_LENGTH}`,
                 },
                 validate: {
-                  containsOnlyLetters: (value) =>
+                  containsOnlyLetters: value =>
                     /^[a-zA-Z]+$/.test(value) ||
                     "Last name must contain only uppercase and lowercase letters!",
                 },
@@ -363,12 +314,11 @@ const EditProfileComponent = ({
               {...register("phone", {
                 required: "This is required!",
                 validate: {
-                  haveFixedLength: (value) =>
+                  haveFixedLength: value =>
                     value.length === validation.PHONE_NUM_LENGTH ||
                     "Phone number must have 10 digit!",
-                  containsOnlyDigits: (value) =>
-                    /^[0-9]+$/.test(value) ||
-                    "Phone number must have only digits!",
+                  containsOnlyDigits: value =>
+                    /^[0-9]+$/.test(value) || "Phone number must have only digits!",
                 },
               })}
             />
@@ -406,30 +356,30 @@ const EditProfileComponent = ({
         </Stack>
       </form>
     </Box>
-  );
-};
+  )
+}
 
-const getSocialMediaIcon = (platform) => {
+const getSocialMediaIcon = platform => {
   switch (platform) {
     case "Instagram":
-      return <FaInstagram />;
+      return <FaInstagram />
     case "Facebook":
-      return <FaFacebook />;
+      return <FaFacebook />
     case "LinkedIn":
-      return <FaLinkedin />;
+      return <FaLinkedin />
     case "Gitlab":
-      return <FaGitlab />;
+      return <FaGitlab />
     case "IMDb":
-      return <FaImdb />;
+      return <FaImdb />
     case "TikTok":
-      return <FaTiktok />;
+      return <FaTiktok />
     case "Personal Site":
-      return <FaGlobe />;
+      return <FaGlobe />
     case "Add":
-      return <FaPlus />;
+      return <FaPlus />
     default:
-      return null;
+      return null
   }
-};
+}
 
-export default ProfilePage;
+export default ProfilePage
