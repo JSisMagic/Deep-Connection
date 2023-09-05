@@ -13,7 +13,7 @@ const ProfileCard = () => {
       onClick={() => navigate(`/profile/${userData.uid}`)}
       cursor="pointer"
     >
-      <Avatar />
+      <Avatar src={userData?.profilePicture} />
       <Box>
         <Heading size="md">
           {userData?.firstName} {userData?.lastName}
