@@ -65,7 +65,7 @@ const MembersList = ({ searchTerm, setSearchTerm }) => {
               boxShadow="base"
             >
               <Flex gap={3}>
-                <Avatar />
+                <Avatar src={user.profilePicture} />
                 <Box>
                   <Heading size="sm">
                     {user.firstName} {user.lastName}
