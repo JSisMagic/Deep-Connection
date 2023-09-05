@@ -76,7 +76,7 @@ export const getEventData = async eventId => {
       startDate: new Date(eventData.startDate),
       endDate: new Date(eventData.endDate),
     }
-    : null;
+    : {};
 }
 
 export const getEventsForUser = async uid => {

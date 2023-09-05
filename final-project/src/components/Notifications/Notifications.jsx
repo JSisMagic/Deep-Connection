@@ -46,7 +46,7 @@ const Notifications = ({ data, onNotificationRead }) => {
 
   const openEventDetails = async (notification) => {
     const eventData = await getEventData(notification.meta.eventId);
-    if (!eventData) {
+    if (!eventData.id) {
       toast({
         position: "top",
         render: ({ onClose }) => (
@@ -57,7 +57,7 @@ const Notifications = ({ data, onNotificationRead }) => {
             </Button>
           </Box>
         ),
-        duration: 3000,
+        duration: 5000,
         isClosable: true,
       });
     } else {
