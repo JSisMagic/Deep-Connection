@@ -5,6 +5,7 @@ import {
   BiGroup,
   BiNotification
 } from "react-icons/bi";
+import { FaTasks } from "react-icons/fa";
 
 export const navLinks = [
   {
@@ -26,6 +27,11 @@ export const navLinks = [
     title: "Members",
     path: "/members",
     icon: BiGroup,
+  },
+  {
+    title: "Tasks",
+    path: "/todo",
+    icon: FaTasks,
   }
 ];
 

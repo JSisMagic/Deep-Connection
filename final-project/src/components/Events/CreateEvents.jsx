@@ -110,7 +110,6 @@ const CreateEvent = () => {
 
     try {
       const id = await createEvent(newEvent)
-      console.log("New event created with ID:", id)
 
       await eventAttendees.map(att => notify(id, newEvent, att))
       navigate("/calendar")

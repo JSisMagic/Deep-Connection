@@ -40,7 +40,6 @@ export const fetchEventsForInterval = (startDate, endDate, userUid) => {
       eventsQuery,
       snapshot => {
         const data = snapshot.val()
-        console.log("Fetched Data:", data)
         if (data) {
           const eventsArray = Object.keys(data).map(key => ({
             ...data[key],

@@ -4,7 +4,6 @@ import Sidebar from "../components/Sidebar/Sidebar"
 import { HEADER_HEIGHT } from "../common/constrants"
 
 const ApplicationLayout = ({ children, notificationCount }) => {
-  console.log(notificationCount)
   return (
     <Flex height="100vh" w={{ base: "fit-content", sm: "full" }}>
       <Sidebar notificationCount={notificationCount}/>
