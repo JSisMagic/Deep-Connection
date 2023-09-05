@@ -33,12 +33,14 @@ const EventsList = ({ events = [] }) => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      const filtered = events.filter(
-        (ev) =>
-          ev.title?.toLowerCase().includes(searchTerm) ||
-          ev.description?.toLowerCase().includes(searchTerm) ||
-          ev.location?.toLowerCase().includes(searchTerm)
-      );
+      const filtered = events
+        .filter(
+          (ev) =>
+            ev.title?.toLowerCase().includes(searchTerm) ||
+            ev.description?.toLowerCase().includes(searchTerm) ||
+            ev.location?.toLowerCase().includes(searchTerm)
+        )
+        .sort((a, b) => new Date(a.startDate) - new Date(b.startDate)); 
 
       setFilteredEvents(filtered);
     }, 300);
@@ -48,38 +50,38 @@ const EventsList = ({ events = [] }) => {
 
   return (
     <Stack gap={5}>
-      <InputGroup>
-        <Input
-          placeholder="Search for events.."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
-        />
-        <InputLeftElement>
-          <SearchIcon />
-        </InputLeftElement>
-      </InputGroup>
-      <Stack height="700px" overflowY="auto">
-        {filteredEvents.length > 0 ? (
-          filteredEvents.map((event) => (
-            <EventPageCard
-              key={event.id}
-              eventData={event}
-              onOpenDetailedEvent={onOpen}
-            />
-          ))
-        ) : (
-          <Heading size="lg" textAlign="center" marginTop={10}>
-            No events found
-          </Heading>
-        )}
-      </Stack>
-      <DetailedEventCard
-        isOpen={isOpen}
-        onClose={onClose}
-        detailedEventData={detailedEventData}
-        onInviteAcceptDeny={setDetailedEventData}
+    <InputGroup>
+      <Input
+        placeholder="Search for events.."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
       />
+      <InputLeftElement>
+        <SearchIcon />
+      </InputLeftElement>
+    </InputGroup>
+    <Stack height="700px" overflowY="auto">
+      {filteredEvents.length > 0 ? (
+        filteredEvents.map((event) => (
+          <EventPageCard
+            key={event.id}
+            eventData={event}
+            onOpenDetailedEvent={onOpen}
+          />
+        ))
+      ) : (
+        <Heading size="lg" textAlign="center" marginTop={10}>
+          No events found
+        </Heading>
+      )}
     </Stack>
+    <DetailedEventCard
+      isOpen={isOpen}
+      onClose={onClose}
+      detailedEventData={detailedEventData}
+      onInviteAcceptDeny={setDetailedEventData}
+    />
+  </Stack>
   );
 };
 
