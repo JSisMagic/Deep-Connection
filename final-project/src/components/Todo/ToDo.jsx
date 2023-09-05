@@ -6,10 +6,14 @@ import {
   Box,
   Text,
   Input,
+  InputGroup,
+  InputRightElement,
   Button,
   Heading,
-  Checkbox
+  Checkbox,
+  Icon,
 } from '@chakra-ui/react';
+import { AddIcon } from '@chakra-ui/icons';
 import { AuthContext } from '../../context/AuthContext';
 import { createTodoForUser, getTodosForUser, updateTodoForUser, deleteTodoForUser } from '../../services/todos.services';
 
@@ -54,12 +58,16 @@ const TodoComponent = () => {
     overflowY="auto"
     maxHeight="100vh"
   >
-    <Input
-      placeholder="Add new todo"
-      value={newTodo}
-      onChange={(e) => setNewTodo(e.target.value)}
-    />
-    <Button onClick={addTodo}>Add</Button>
+    <InputGroup>
+      <Input
+        placeholder="Add new todo"
+        value={newTodo}
+        onChange={(e) => setNewTodo(e.target.value)}
+      />
+      <InputRightElement>
+        <Icon as={AddIcon} color="gray.500" onClick={addTodo} cursor="pointer"/>
+      </InputRightElement>
+    </InputGroup>
     <SimpleGrid columns={1} spacing={3} marginTop={3}>
       {Object.entries(todos).length ? (
         Object.entries(todos).map(([todoId, todo]) => (

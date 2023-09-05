@@ -79,7 +79,7 @@ const renderInvitees = (title, list) => (
       {title}:
     </Text>
     {list.map((email) => (
-      <Text key={email} fontSize="sm">{email}</Text>
+      <Text key={email} fontSize="sm" isTruncated>{email}</Text>
     ))}
   </>
 );
@@ -89,7 +89,7 @@ if (detailedEventData === undefined) {
 }
 
 return (
-  <Modal isOpen={isOpen} onClose={onClose}>
+  <Modal isOpen={isOpen} onClose={onClose} size="xl">
     <ModalOverlay />
     <ModalContent>
       <ModalHeader></ModalHeader>
@@ -165,12 +165,12 @@ return (
           { hasDenied() && messageContainer("You have denied this event")}
         { !detailedEventData.isPrivate && (
           <Box p={5} bg="gray.100" borderRadius="lg" mt={5}>
-          <Grid templateColumns="repeat(3, 1fr)" gap={6}>
-            <Box>{renderInvitees('All Invited', getAllInvited().all)}</Box>
-            <Box>{renderInvitees('Accepted', getAllInvited().accepted)}</Box>
-            <Box>{renderInvitees('Denied', getAllInvited().denied)}</Box>
+          <Grid templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }} gap={6}>
+              <Box>{renderInvitees('All Invited', getAllInvited().all)}</Box>
+              <Box>{renderInvitees('Accepted', getAllInvited().accepted)}</Box>
+              <Box>{renderInvitees('Denied', getAllInvited().denied)}</Box>
           </Grid>
-        </Box>
+      </Box>
         )}
       </ModalBody>
     </ModalContent>
