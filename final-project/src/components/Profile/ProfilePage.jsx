@@ -1,4 +1,4 @@
-import { EditIcon } from "@chakra-ui/icons";
+import { EditIcon, Icon } from "@chakra-ui/icons";
 import {
   Avatar,
   Box,
@@ -11,10 +11,18 @@ import {
   Link,
   Stack,
   Text,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  ButtonGroup,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { BiSolidQuoteAltLeft, BiSolidQuoteAltRight } from "react-icons/bi";
+import {
+  BiSolidQuoteAltLeft,
+  BiSolidQuoteAltRight,
+  BiUpload,
+} from "react-icons/bi";
 import {
   FaFacebook,
   FaGitlab,
@@ -28,10 +36,24 @@ import {
 import { HiPencilAlt } from "react-icons/hi";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { useParams } from "react-router-dom";
-import { COOL_BLUE } from "../../common/colors";
+import { Form, useParams } from "react-router-dom";
+import {
+  COOL_BLUE,
+  COOL_GREEN,
+  COOL_PURPLE,
+  categoryColors,
+} from "../../common/colors";
 import { auth } from "../../config/firebase";
-import { getUserByUid } from "../../services/users.services";
+import {
+  getUserByUid,
+  updateUser,
+  uploadImage,
+} from "../../services/users.services";
+import MyEvents from "../Events/MyEvents";
+import { useForm } from "react-hook-form";
+import validation from "../../common/validation-enums";
+import { SUPPORTED_FORMATS } from "../../common/constrants";
+import { validateDescription } from "../../common/helpers";
 
 const ProfilePage = () => {
   const { uid } = useParams();
@@ -45,7 +67,6 @@ const ProfilePage = () => {
     socialMediaLinks: [],
     description: "",
   });
-
   const [editState, setEditState] = useState(false);
 
   const fetchProfileData = async () => {
@@ -80,48 +101,70 @@ const ProfilePage = () => {
   };
 
   return (
-    <Flex
-      direction="column"
-      height="100%"
-      width="100%"
-      paddingTop="8rem"
-      paddingBottom="2rem"
-      justify="center"
-      align="center"
-      overflowY="auto"
-    >
-      <Box
-        width="40%" // Increase the size of the background picture container
-        bgColor="white"
-        padding="0.5rem"
-        borderRadius="lg"
-        boxShadow="2xl"
-        bg="linear-gradient(135deg, #8232B2, #3490E3)"
-        backgroundSize="cover"
-        backgroundPosition="center"
+    <Box h="100%" p={5} overflowY="auto">
+      <Flex
+        direction="column"
+        width="100%"
+        justify="center"
+        align="center"
+        overflowY="auto"
       >
-        {editState ? (
-          <EditProfileComponent
-            profileData={profileData}
-            setProfileData={setProfileData}
-          />
-        ) : (
-          <ProfileComponent
-            profileData={profileData}
-            isMyProfile={user.uid === uid}
-          />
-        )}
-      </Box>
-    </Flex>
+        <Box
+          width={{ base: "90%", lg: "60%" }} // Increase the size of the background picture container
+          bgColor="white"
+          padding="0.5rem"
+          borderRadius="lg"
+          boxShadow="2xl"
+          bg="linear-gradient(135deg, #8232B2, #3490E3)"
+          backgroundSize="cover"
+          backgroundPosition="center"
+        >
+          {editState ? (
+            <EditProfileComponent
+              profileData={profileData}
+              setProfileData={setProfileData}
+              initials={initials}
+              setEditState={setEditState}
+            />
+          ) : (
+            <ProfileComponent
+              profileData={profileData}
+              isMyProfile={user.uid === uid}
+              setEditState={setEditState}
+              initials={initials}
+            />
+          )}
+        </Box>
+      </Flex>
+      {!editState && (
+        <Box w={{ lg: "60%" }} marginInline="auto" marginTop={8}>
+          <Heading size="md" mb={3}>
+            {profileData.firstName}'s events
+          </Heading>
+          <MyEvents inUserProfile={true} />
+        </Box>
+      )}
+    </Box>
   );
 };
 
-const ProfileComponent = ({ profileData, isMyProfile }) => {
+const ProfileComponent = ({
+  profileData,
+  isMyProfile,
+  setEditState,
+  initials,
+}) => {
   return (
     <Box w="100%" m="auto" p="4" bg="white" borderRadius="lg" boxShadow="md">
       <Flex justify="space-between">
         <Flex gap={3}>
-          <Avatar src={profileData.profilePhoto} size="xl" />
+          <Avatar
+            borderRadius="10px"
+            src={profileData.profilePicture || ""}
+            bg={COOL_BLUE}
+            name={initials}
+            size="xl"
+          />
           <Stack gap={1}>
             <Heading size="md">
               {profileData.firstName} {profileData.lastName}
@@ -140,14 +183,19 @@ const ProfileComponent = ({ profileData, isMyProfile }) => {
             )}
           </Stack>
         </Flex>
-        {isMyProfile && <IconButton icon={<EditIcon />} />}
+        {isMyProfile && (
+          <IconButton icon={<EditIcon />} onClick={() => setEditState(true)} />
+        )}
       </Flex>
       {profileData.description && (
         <>
           <Divider my={3} w="60%" marginInline="auto" borderColor={COOL_BLUE} />
-          <Text p={3} bg="gray.50" borderRadius="md">
-            {profileData.description}
-          </Text>
+          <Text
+            p={3}
+            bg="gray.50"
+            borderRadius="md"
+            dangerouslySetInnerHTML={{ __html: profileData.description }}
+          />
         </>
       )}
       <Divider my={3} w="40%" marginInline="auto" borderColor={COOL_BLUE} />
@@ -169,92 +217,194 @@ const ProfileComponent = ({ profileData, isMyProfile }) => {
   );
 };
 
-const EditProfileComponent = ({ profileData, setProfileData }) => {
+const EditProfileComponent = ({
+  profileData,
+  setProfileData,
+  initials,
+  setEditState,
+}) => {
+  const {
+    register,
+    handleSubmit,
+    setError,
+    clearErrors,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      firstName: profileData.firstName,
+      lastName: profileData.lastName,
+      phone: profileData.phone,
+      profilePicture: profileData.profilePicture,
+      slogan: profileData.slogan,
+    },
+  });
+  const [description, setDescription] = useState(profileData.description);
+  console.log(errors);
+  const handleChangeDescription = (value) => {
+    if (validateDescription(value)) {
+      clearErrors("description");
+    }
+
+    setDescription(value);
+  };
+  console.log(profileData);
+  const onSaveChanges = async (values) => {
+    if (!validateDescription(description)) {
+      return setError("description", {
+        message: `Length should be between ${validation.MIN_ADDITIONAL_INFO_LENGTH} and ${validation.MAX_ADDITIONAL_INFO_LENGTH} characters.`,
+      });
+    }
+
+    try {
+      const newUserData = { ...values, description };
+      if (values.profilePicture !== profileData.profilePicture) {
+        const image = values.profilePicture.item(0);
+        const fileType = image.type;
+        if (!SUPPORTED_FORMATS.includes(fileType)) {
+          return setError("profilePicture", { message: "Invalid format!" });
+        }
+
+        const url = await uploadImage(image);
+        newUserData.profilePicture = url;
+      }
+
+      await updateUser(profileData.uid, newUserData);
+      setEditState(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <Box w="100%" m="auto" p="4" bg="white" borderRadius="lg" boxShadow="md">
-      <Flex alignItems="center">
-        <Avatar
-          size="xl"
-          name={initials}
-          src={profileData.avatarUrl || ""}
-          mr="4"
-        />
-        <Text fontSize="lg" fontWeight="bold">
-          {profileData.username}
-        </Text>
-        <IconButton ml="2" size="sm" aria-label="Edit" icon={<HiPencilAlt />} />
-      </Flex>
-      <Text fontSize="sm" color="gray.500" mt="2">
-        Member Since: {profileData.memberSince}
-      </Text>
-      <Text fontSize="md" mt="4">
-        {profileData.description || "No description available."}
-      </Text>
-      <Text fontSize="md" mt="4">
-        Social Media Links:
-      </Text>
-      {profileData.socialMediaLinks &&
-        profileData.socialMediaLinks.map((link, index) => (
-          <Flex key={index} alignItems="center" mt="2">
-            <Link href={link.link} isExternal>
-              {getSocialMediaIcon(link.platform)}
-            </Link>
-            <Text ml="2">{link.platform}</Text>
-            <Button
-              ml="2"
-              size="sm"
-              colorScheme="red"
-              onClick={() => removeSocialMediaLink(index)}
-            >
-              Remove
+      <form onSubmit={handleSubmit(onSaveChanges)}>
+        <Flex justify="space-between">
+          <FormControl isInvalid={errors?.profilePicture}>
+            <FormLabel htmlFor="avatar" cursor="pointer" w="max-content">
+              <Avatar
+                borderRadius="10px"
+                src={profileData.profilePicture}
+                bg="gray.400"
+                name={initials}
+                size="xl"
+              />
+            </FormLabel>
+            <Input
+              type="file"
+              id="avatar"
+              display="none"
+              {...register("profilePicture")}
+            />
+            <FormErrorMessage>
+              {errors?.profilePicture?.message}
+            </FormErrorMessage>
+          </FormControl>
+          <ButtonGroup>
+            <Button onClick={() => setEditState(false)}>Cancel</Button>
+            <Button colorScheme="green" type="submit">
+              Save changes
             </Button>
-          </Flex>
-        ))}
-      <Flex alignItems="center" mt="2">
-        {getSocialMediaIcon("Add")}
-        <Button ml="2" size="sm" onClick={() => addSocialMediaLink("", "Add")}>
-          Add Social Media Link
-        </Button>
-      </Flex>
-      {/* Add input fields for username, name, surname, phone, email, and personal slogan/quote */}
-      <Input
-        value={profileData.username}
-        placeholder="Username"
-        size="lg"
-        mt="4"
-      />
-      <Input
-        value={profileData.firstName}
-        placeholder="First Name"
-        size="lg"
-        mt="2"
-      />
-      <Input
-        value={profileData.lastName}
-        placeholder="Last Name"
-        size="lg"
-        mt="2"
-      />
-      <Input value={profileData.phone} placeholder="Phone" size="lg" mt="2" />
-      <Input value={profileData.email} placeholder="Email" size="lg" mt="2" />
-      <Input
-        value={profileData.slogan}
-        placeholder="Personal Slogan/Quote"
-        size="lg"
-        mt="2"
-      />
-      {/* Use ReactQuill for the description */}
-      <ReactQuill
-        style={{
-          minHeight: "180px",
-          borderColor: "gray",
-          borderRadius: "10px",
-          marginTop: "2rem",
-        }}
-        theme="snow"
-        value={profileData.description || ""}
-        readOnly={true}
-      />
+          </ButtonGroup>
+        </Flex>
+        <Stack>
+          <FormControl isRequired isInvalid={errors?.firstName}>
+            <FormLabel>First name</FormLabel>
+            <Input
+              type="text"
+              id="firstName"
+              {...register("firstName", {
+                required: "This is required!",
+                minLength: {
+                  value: validation.MIN_FIRSTNAME_LENGTH,
+                  message: `Minimum length should be ${validation.MIN_FIRSTNAME_LENGTH}`,
+                },
+                maxLength: {
+                  value: validation.MAX_FIRSTNAME_LENGTH,
+                  message: `Maximum length should be ${validation.MAX_FIRSTNAME_LENGTH}`,
+                },
+                validate: {
+                  containsOnlyLetters: (value) =>
+                    /^[a-zA-Z]+$/.test(value) ||
+                    "First name must contain only uppercase and lowercase letters!",
+                },
+              })}
+            />
+            <FormErrorMessage>{errors?.firstName?.message}</FormErrorMessage>
+          </FormControl>
+          <FormControl isRequired isInvalid={errors?.lastName}>
+            <FormLabel>Last name</FormLabel>
+            <Input
+              type="text"
+              id="lastName"
+              {...register("lastName", {
+                required: "This is required!",
+                minLength: {
+                  value: validation.MIN_LASTNAME_LENGTH,
+                  message: `Minimum length should be ${validation.MIN_LASTNAME_LENGTH}`,
+                },
+                maxLength: {
+                  value: validation.MAX_LASTNAME_LENGTH,
+                  message: `Maximum length should be ${validation.MAX_LASTNAME_LENGTH}`,
+                },
+                validate: {
+                  containsOnlyLetters: (value) =>
+                    /^[a-zA-Z]+$/.test(value) ||
+                    "Last name must contain only uppercase and lowercase letters!",
+                },
+              })}
+            />
+            <FormErrorMessage>{errors?.lastName?.message}</FormErrorMessage>
+          </FormControl>
+          <FormControl isRequired isInvalid={errors?.phone}>
+            <FormLabel>Phone number</FormLabel>
+            <Input
+              type="number"
+              id="phone"
+              {...register("phone", {
+                required: "This is required!",
+                validate: {
+                  haveFixedLength: (value) =>
+                    value.length === validation.PHONE_NUM_LENGTH ||
+                    "Phone number must have 10 digit!",
+                  containsOnlyDigits: (value) =>
+                    /^[0-9]+$/.test(value) ||
+                    "Phone number must have only digits!",
+                },
+              })}
+            />
+            <FormErrorMessage>{errors?.phone?.message}</FormErrorMessage>
+          </FormControl>
+          <FormControl isInvalid={errors?.description}>
+            <FormLabel>Profile Description</FormLabel>
+            <ReactQuill
+              placeholder="Add profile description"
+              style={{
+                borderColor: "gray",
+                borderRadius: "10px",
+              }}
+              className="w-full mb-10 md:m"
+              theme="snow"
+              value={description}
+              onChange={handleChangeDescription}
+            />
+            <FormErrorMessage>{errors?.description?.message}</FormErrorMessage>
+          </FormControl>
+          <FormControl isInvalid={errors?.slogan}>
+            <FormLabel>Personal Slogan</FormLabel>
+            <Input
+              type="text"
+              id="slogan"
+              {...register("slogan", {
+                maxLength: {
+                  value: validation.MAX_SLOGAN_LENGTH,
+                  message: `Maximum length is ${validation.MAX_SLOGAN_LENGTH} characters`,
+                },
+              })}
+            />
+            <FormErrorMessage>{errors?.slogan?.message}</FormErrorMessage>
+          </FormControl>
+        </Stack>
+      </form>
     </Box>
   );
 };
