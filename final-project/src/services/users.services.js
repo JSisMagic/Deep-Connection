@@ -31,8 +31,14 @@ export const createUser = async (data = {}) => {
 export const getUserByUid = async uid => {
   const snapshot = await get(query(ref(db, "users"), orderByChild("uid"), equalTo(uid)))
   const value = snapshot.val()
-  return value ? Object.values(value)[0] : null
+  return value ? Object.values(value)[0] : []
 }
+
+export const getUsersByUsernamePartial = async partial => {
+  const allUsers = await getAllUsers();
+  return allUsers.filter(user => user.username && user.username.includes(partial));
+}
+
 
 export const uploadImage = async img => {
   const imageRef = storageRef(storage, `images/${v4()}`)

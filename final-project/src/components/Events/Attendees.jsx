@@ -5,16 +5,34 @@ import {
   Tag,
   TagLabel,
   TagCloseButton,
-  Wrap
+  Wrap,
+  Avatar,
+  Flex,
+  Heading,
+  SimpleGrid,
+  Text
 } from "@chakra-ui/react";
-import { getUserByEmail } from "../../services/users.services";
+import { getUserByEmail, getUsersByUsernamePartial } from "../../services/users.services";
 
 const EMAIL_REGEXP = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const isValidEmail = (email) => EMAIL_REGEXP.test(email);
 
 const Attendees = ({ initialData = [], onChange }) => {
   const [value, setValue] = useState("");
-  const [data, setData] = useState(initialData)
+  const [data, setData] = useState(initialData);
+  const [searchResults, setSearchResults] = useState([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const searchUsers = async (usernamePartial) => {
+    if (usernamePartial.length >= 3) {
+      const results = await getUsersByUsernamePartial(usernamePartial);
+      // debugger;
+      setSearchResults(results);
+      setIsDropdownOpen(true);
+    } else {
+      setIsDropdownOpen(false);
+    }
+  };
 
   useEffect(() => {
     onChange(data);
@@ -48,22 +66,13 @@ const Attendees = ({ initialData = [], onChange }) => {
 
   const handleChange = (e) => {
     setValue(e.target.value);
+    searchUsers(e.target.value);
   };
 
-  // Validate and add the email if we press tab or enter.
-  const handleKeyDown = (e) => {
-    if (["Enter", "Tab"].includes(e.key)) {
-      e.preventDefault();
-
-      addEmail(value);
-    }
-  };
-
-  const handlePaste = (e) => {
-    e.preventDefault();
-
-    const clipboard = e.clipboardData.getData("text");
-    addEmail(clipboard);
+  const handleSelectUser = (user) => {
+    addEmail(user.email);
+    setIsDropdownOpen(false);
+    setValue("");
   };
 
   const handleCloseClick = (email) => {
@@ -97,17 +106,54 @@ const Attendees = ({ initialData = [], onChange }) => {
   return (
     <>
     <ChipList data={data} onCloseClick={handleCloseClick} />
-    <Box>
+    <Box position="relative">
       <Input 
-        type="email" 
-        placeholder="Add email"
-        onPaste={handlePaste} 
-        onKeyDown={handleKeyDown} 
+        type="text" 
+        placeholder="Search by username"
         onChange={handleChange} 
         value={value} 
       />
+      {isDropdownOpen && (
+        <Box 
+          position="absolute"
+          mt={2}
+          w="100%"
+          zIndex="dropdown"
+          borderRadius="md"
+          boxShadow="md"
+          bg="gray.50"
+          overflowY="auto"
+          maxHeight="300px"  // Optional: you can set your own height
+        >
+          <SimpleGrid columns={1} spacing={3} marginTop={3}>
+            {searchResults.map(user => (
+              <Flex
+                key={user.uid}
+                background="white"
+                p={3}
+                borderRadius="md"
+                justify="space-between"
+                align="center"
+                boxShadow="base"
+                onClick={() => handleSelectUser(user)}
+                cursor="pointer"
+              >
+                <Flex gap={3}>
+                  <Avatar src={user.profilePicture} />
+                  <Box>
+                    <Heading size="sm">
+                      {user.firstName} {user.lastName}
+                    </Heading>
+                    <Text fontWeight={600}>@{user.username}</Text>
+                  </Box>
+                </Flex>
+              </Flex>
+            ))}
+          </SimpleGrid>
+        </Box>
+      )}
     </Box>
-    </>
+  </>
   )
 }
 
