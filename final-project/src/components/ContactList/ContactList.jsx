@@ -144,8 +144,6 @@ const ContactList = () => {
   return (
     <Flex
       flexDirection={{ base: "column", md: "row" }}
-      height="100vh"
-      overflowY="hidden"
     >
       {/* Contact Lists */}
       <Box
