@@ -21,10 +21,24 @@ import { format } from "date-fns"
 import { FaLocationDot } from "react-icons/fa6"
 import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
 import { acceptInvite, denyInvite } from "../../services/event.services"
+import { getUserByUid } from "../../services/users.services";
+import EventCreatorInfo from "../Events/EventCreatorInfor";
 
 const DetailedEventCard = ({ detailedEventData, isOpen, onClose, onInviteAcceptDeny }) => {
   const { user } = useContext(AuthContext);
   const { attendees } = detailedEventData || {};
+  const [creator, setCreator] = useState(null);
+
+  useEffect(() => {
+    const fetchCreator = async () => {
+        if (detailedEventData && detailedEventData.creatorId) {
+            const user = await getUserByUid(detailedEventData.creatorId);
+            setCreator(user);
+        }
+    };
+    
+    fetchCreator();
+}, [detailedEventData]);
 
   const handleAccept = async () => {
     const event = await acceptInvite(user.email, detailedEventData.id);
@@ -97,6 +111,7 @@ return (
       <ModalBody>
         <Stack gap={3} py={5}>
           <Heading size="lg">{detailedEventData.title}</Heading>
+          {creator && <EventCreatorInfo creator={creator} />}
           <Flex
             p={5}
             bg="gray.100"

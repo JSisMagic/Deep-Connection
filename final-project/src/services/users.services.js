@@ -31,7 +31,7 @@ export const createUser = async (data = {}) => {
 export const getUserByUid = async uid => {
   const snapshot = await get(query(ref(db, "users"), orderByChild("uid"), equalTo(uid)))
   const value = snapshot.val()
-  return value ? Object.values(value)[0] : []
+  return value ? Object.values(value)[0] : null
 }
 
 export const getUsersByUsernamePartial = async partial => {
