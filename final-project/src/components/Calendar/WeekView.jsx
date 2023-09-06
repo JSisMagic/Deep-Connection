@@ -9,6 +9,7 @@ import { addDaysToDate, getStartOfWeek } from "../../services/calendar.services"
 import { getEventsForUser } from "../../services/event.services"
 import EventsColumn from "./EventsColumn"
 import HoursColumn from "./HoursColumn"
+import { CALENDAR_HEIGHT } from "../../common/constrants"
 
 const WeekView = ({ date, setDate, isWorkWeek = false, onOpenDetailedModal }) => {
   const { userData } = useContext(AuthContext)
@@ -45,7 +46,7 @@ const WeekView = ({ date, setDate, isWorkWeek = false, onOpenDetailedModal }) =>
   }
 
   return (
-    <Box>
+    <>
       <Grid templateColumns="repeat(3, 1fr)" py={2}>
         <Button onClick={handleNavigate("today")} width="max-content">
           Today
@@ -61,7 +62,7 @@ const WeekView = ({ date, setDate, isWorkWeek = false, onOpenDetailedModal }) =>
         </Flex>
       </Grid>
       <Grid
-        height="700px"
+        height={CALENDAR_HEIGHT}
         overflowY="auto"
         templateRows="40px 1fr"
         templateColumns={`50px repeat(${daysCount}, 1fr)`}
@@ -91,7 +92,7 @@ const WeekView = ({ date, setDate, isWorkWeek = false, onOpenDetailedModal }) =>
           </GridItem>
         ))}
       </Grid>
-    </Box>
+    </>
   )
 }
 
