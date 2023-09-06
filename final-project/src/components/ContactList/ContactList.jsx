@@ -142,22 +142,28 @@ const ContactList = () => {
   }
 
   return (
-    <Flex
-      flexDirection={{ base: "column", md: "row" }}
+    <Flex flexDirection={{ base: "column", md: "row" }}>
+    {/* Contact Lists */}
+    <Box
+      width={{ base: "100%", md: "30%" }}
+      padding="4"
+      backgroundColor="rgba(255,255,255)"
+      maxHeight="100vh"
+      overflowY="auto"
     >
-      {/* Contact Lists */}
-      <Box
-        width={{ base: "100%", md: "30%" }}
-        padding="4"
-        backgroundColor="rgba(255,255,255)"
-        maxHeight="100vh"
-        overflowY="auto"
-      >
-        <VStack spacing={4}>
-          <Heading fontWeight={600}>Contact Lists</Heading>
-          <Divider />
-          <VStack width="100%" align="stretch">
-            {Object.values(contactLists).map((list) => (
+      <VStack spacing={4}>
+        <Heading fontWeight={600}>Contact Lists</Heading>
+        <Divider />
+        <VStack width="100%" align="stretch">
+
+          {Object.keys(contactLists).length === 0 ? (
+            // Display the prompt if there are no contact lists
+            <Box p={4} textAlign="center">
+              <p>You don't have any contact lists yet.</p>
+              <p>Create one to get started!</p>
+            </Box>
+          ) : (
+            Object.values(contactLists).map((list) => (
               <Box
                 key={list.id}
                 p={4}
@@ -221,63 +227,65 @@ const ContactList = () => {
                   </List>
                 </Collapse>
               </Box>
+            ))
+          )}
+
+        </VStack>
+      </VStack>
+    </Box>
+
+    {/* Main Content */}
+    <Box width={{ base: "100%", md: "70%" }} padding="4">
+      <VStack spacing={4} width="100%">
+        <Heading fontWeight={600}>Manage Contact Lists</Heading>
+        <Divider />
+
+        {/* Create List */}
+        <Stack direction="column" spacing={4} width="100%">
+          <Input
+            value={listName}
+            onChange={(e) => setListName(e.target.value)}
+            placeholder="Enter list name"
+          />
+          <Button
+            onClick={handleCreateList}
+            bgColor="#E9D8FD"
+            rightIcon={<FaPlus />}
+          >
+            Create List
+          </Button>
+        </Stack>
+
+        <Divider />
+
+        {/* Add User to List */}
+        <Stack direction="column" spacing={4} width="100%">
+          <Input
+            value={emailToAdd}
+            onChange={(e) => setEmailToAdd(e.target.value)}
+            placeholder="Enter user email to add"
+          />
+          <Select
+            placeholder="Select a contact list"
+            onChange={(e) => setSelectedList(e.target.value)}
+          >
+            {Object.values(contactLists).map((list) => (
+              <option key={list.id} value={list.id}>
+                {list.name}
+              </option>
             ))}
-          </VStack>
-        </VStack>
-      </Box>
-
-      {/* Main Content */}
-      <Box width={{ base: "100%", md: "70%" }} padding="4">
-        <VStack spacing={4} width="100%">
-          <Heading fontWeight={600}>Manage Contact Lists</Heading>
-          <Divider />
-
-          {/* Create List */}
-          <Stack direction="column" spacing={4} width="100%">
-            <Input
-              value={listName}
-              onChange={(e) => setListName(e.target.value)}
-              placeholder="Enter list name"
-            />
-            <Button
-              onClick={handleCreateList}
-              bgColor="#E9D8FD"
-              rightIcon={<FaPlus />}
-            >
-              Create List
-            </Button>
-          </Stack>
-
-          <Divider />
-
-          {/* Add User to List */}
-          <Stack direction="column" spacing={4} width="100%">
-            <Input
-              value={emailToAdd}
-              onChange={(e) => setEmailToAdd(e.target.value)}
-              placeholder="Enter user email to add"
-            />
-            <Select
-              placeholder="Select a contact list"
-              onChange={(e) => setSelectedList(e.target.value)}
-            >
-              {Object.values(contactLists).map((list) => (
-                <option key={list.id} value={list.id}>
-                  {list.name}
-                </option>
-              ))}
-            </Select>
-            <Button
-              onClick={handleAddUserToList}
-              bgColor="#E9D8FD"
-              rightIcon={<FaUserPlus />}
-            >
-              Add User to List
-            </Button>
-          </Stack>
-        </VStack>
-      </Box>
-    </Flex>
+          </Select>
+          <Button
+            onClick={handleAddUserToList}
+            bgColor="#E9D8FD"
+            rightIcon={<FaUserPlus />}
+          >
+            Add User to List
+          </Button>
+        </Stack>
+      </VStack>
+    </Box>
+  </Flex>
   );
 };
 
