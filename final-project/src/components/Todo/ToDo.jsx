@@ -63,7 +63,7 @@ const TodoComponent = () => {
     <form onSubmit={addTodo}> 
       <InputGroup>
         <Input
-          placeholder="Add new todo"
+          placeholder="Add new task"
           value={newTodo}
           onChange={(e) => setNewTodo(e.target.value)}
         />
