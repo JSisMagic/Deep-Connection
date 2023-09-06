@@ -1,9 +1,11 @@
 import {
   Button,
+  ButtonGroup,
   Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
+  Icon,
   Input,
   Menu,
   MenuButton,
@@ -17,13 +19,13 @@ import {
 } from "@chakra-ui/react"
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
 import { useContext, useState } from "react"
-import { BiTag } from "react-icons/bi"
+import { BiLockAlt, BiLockOpenAlt, BiRepeat, BiTag } from "react-icons/bi"
 import ReactQuill from "react-quill"
 import "react-quill/dist/quill.snow.css"
 import { useNavigate } from "react-router-dom"
 import { v4 } from "uuid"
 import { categoryColors } from "../../common/colors"
-import { SUPPORTED_FORMATS } from "../../common/constrants"
+import { SUPPORTED_FORMATS, eventRepetitions } from "../../common/constrants"
 import { validateDescription, validateTitle } from "../../common/helpers"
 import validation from "../../common/validation-enums"
 import { storage } from "../../config/firebase"
@@ -31,7 +33,7 @@ import { AuthContext } from "../../context/AuthContext"
 import { createEvent } from "../../services/event.services"
 import PlacesAutocomplete from "../Location/PlacesAutocomplete"
 import Attendees from "./Attendees"
-import { createNotificationByEmail } from "../../services/notification.services";
+import { createNotificationByEmail } from "../../services/notification.services"
 
 const CreateEvent = () => {
   const navigate = useNavigate()
@@ -43,6 +45,7 @@ const CreateEvent = () => {
   const [eventEndDate, setEventEndDate] = useState("")
   const [eventColor, setEventColor] = useState("blue")
   const [eventAttendees, setEventAttendees] = useState([])
+  const [eventRepeat, setEventRepeat] = useState("never")
   const [isPrivate, setIsPrivate] = useState(true)
   const [image, setImage] = useState("")
   const [errors, setErrors] = useState({
@@ -105,6 +108,7 @@ const CreateEvent = () => {
       creatorId: user.uid,
       color: eventColor,
       isPrivate: isPrivate,
+      repeat: eventRepeat,
       image: url,
     }
 
@@ -116,23 +120,23 @@ const CreateEvent = () => {
     } catch (error) {
       console.error("Error creating event:", error)
     }
-  };
+  }
 
   const notify = async (id, event, email) => {
     const notification = {
-      title: 'New Event Invitation',
+      title: "New Event Invitation",
       location: event.location,
       date: new Date().getTime(),
       read: false,
       meta: {
-        eventId: id
-      }
-    };
+        eventId: id,
+      },
+    }
 
     try {
-      await createNotificationByEmail(email, notification);
+      await createNotificationByEmail(email, notification)
     } catch (error) {
-      console.error("Error sending notification", error);
+      console.error("Error sending notification", error)
     }
   }
 
@@ -158,13 +162,16 @@ const CreateEvent = () => {
     setEventColor(value)
   }
 
+  const handleChangeRepetitions = value => {
+    setEventRepeat(value)
+  }
+
   return (
     <Flex
       height="100%"
       justify="center"
       align="center"
-      paddingTop="12rem"
-      paddingBottom="2rem"
+      py={2}
       overflowY="auto"
       flexDirection={{ base: "column", md: "row" }}
     >
@@ -182,15 +189,16 @@ const CreateEvent = () => {
           <FormErrorMessage>{errors.title}</FormErrorMessage>
         </FormControl>
 
-        <FormLabel>Location</FormLabel>
-        <PlacesAutocomplete selected={eventLocation} setSelected={setEventLocation} />
+        <FormControl>
+          <FormLabel>Location</FormLabel>
+          <PlacesAutocomplete selected={eventLocation} setSelected={setEventLocation} />
+        </FormControl>
 
         <FormControl isRequired isInvalid={errors.description}>
           <FormLabel>Description</FormLabel>
           <ReactQuill
             placeholder="Add event description"
             style={{
-              minHeight: "180px",
               borderColor: "gray",
               borderRadius: "10px",
             }}
@@ -204,16 +212,15 @@ const CreateEvent = () => {
 
         <FormControl isRequired isInvalid={errors.attendees}>
           <FormLabel>Attendees</FormLabel>
-          <Attendees 
-            onChange={setEventAttendees} 
-            disabled={isPrivate} 
+          <Attendees
+            onChange={setEventAttendees}
             eventDetails={{
               title: eventTitle,
               description: eventDescription,
               startDate: eventStartDate,
               endDate: eventEndDate,
               location: eventLocation,
-            }} 
+            }}
           />
           <FormErrorMessage>{errors.attendees}</FormErrorMessage>
         </FormControl>
@@ -241,31 +248,51 @@ const CreateEvent = () => {
           Upload Image
         </label>
 
-        <Stack direction="row" alignItems="center" spacing={4}>
-          <Text>Private</Text>
-          <Switch
-            isChecked={isPrivate}
-            onChange={e => setIsPrivate(e.target.checked)}
-            colorScheme="blue"
+        <FormControl>
+          <FormLabel>Start Date and Time</FormLabel>
+          <Input
+            type="datetime-local"
+            value={eventStartDate}
+            onChange={e => setEventStartDate(e.target.value)}
           />
-          <Text>Public</Text>
-        </Stack>
+        </FormControl>
 
-        <FormLabel>Start Date and Time</FormLabel>
-        <Input
-          type="datetime-local"
-          value={eventStartDate}
-          onChange={e => setEventStartDate(e.target.value)}
-        />
-
-        <FormLabel>End Date and Time</FormLabel>
-        <Input
-          type="datetime-local"
-          value={eventEndDate}
-          onChange={e => setEventEndDate(e.target.value)}
-        />
+        <FormControl>
+          <FormLabel>End Date and Time</FormLabel>
+          <Input
+            type="datetime-local"
+            value={eventEndDate}
+            onChange={e => setEventEndDate(e.target.value)}
+          />
+        </FormControl>
 
         <Stack direction="row" alignItems="center" spacing={4} width="100%">
+          <Button
+            onClick={() => setIsPrivate(prev => !prev)}
+            w="110px"
+            rightIcon={isPrivate ? <BiLockAlt /> : <BiLockOpenAlt />}
+          >
+            {isPrivate ? "Private" : "Public"}
+          </Button>
+          <Menu width="50%">
+            <MenuButton as={Button} rightIcon={<BiRepeat />}>
+              {eventRepetitions[eventRepeat]}
+            </MenuButton>
+            <MenuList width="100%" maxH="300px">
+              <MenuOptionGroup
+                type="radio"
+                defaultValue="never"
+                onChange={handleChangeRepetitions}
+                fontWeight={600}
+              >
+                {Object.entries(eventRepetitions).map(([key, value]) => (
+                  <MenuItemOption key={key} value={key}>
+                    {value}
+                  </MenuItemOption>
+                ))}
+              </MenuOptionGroup>
+            </MenuList>
+          </Menu>
           <Menu closeOnSelect={false} width="50%">
             <MenuButton
               as={Button}
@@ -332,15 +359,14 @@ const CreateEvent = () => {
             </MenuList>
           </Menu>
         </Stack>
-        <Button
-          colorScheme="blue"
-          width="100%"
-          height="50px"
-          fontSize="xl"
-          onClick={handleCreateEvent}
-        >
-          Create Event
-        </Button>
+        <ButtonGroup width="100%" height="50px" fontSize="xl">
+          <Button width="full" onClick={() => navigate("..")}>
+            Cancel
+          </Button>
+          <Button width="full" colorScheme="blue" onClick={handleCreateEvent}>
+            Create Event
+          </Button>
+        </ButtonGroup>
       </VStack>
     </Flex>
   )
