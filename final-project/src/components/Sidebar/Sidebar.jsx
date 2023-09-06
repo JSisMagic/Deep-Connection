@@ -52,7 +52,7 @@ const Sidebar = ({ notificationCount }) => {
         lg: showSidebar ? "block" : "none",
       }}
       h="100vh"
-      zIndex={10}
+      zIndex={100}
       width={{ base: "50vw", md: "320px" }}
       pos={{ base: "fixed", md: "static" }}
       // Updated background gradient from purple to blue
