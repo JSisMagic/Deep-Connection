@@ -1,4 +1,4 @@
-import { Box, Button, Flex, FormControl, FormErrorMessage, FormLabel, Heading, Input, InputGroup, InputRightElement, Stack, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, FormControl, FormErrorMessage, FormLabel, Heading, useBreakpointValue, Input, InputGroup, InputRightElement, Stack, Text } from '@chakra-ui/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import bgImage from '../../assets/images/hero.png';
@@ -12,6 +12,8 @@ import validation from '../../common/validation-enums';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 
 const RegisterPage = () => {
+  const formWidth = useBreakpointValue({ base: "90%", md: "60%", lg: "30%" });
+
   const {
     register,
     handleSubmit,
@@ -58,8 +60,13 @@ const RegisterPage = () => {
   console.log('errors', errors);
   return (
     <Flex direction="column" height="100%" width="100%" justify="center" align="center" bgImage={bgImage}>
-      <Box width="30%" bgColor="rgba(255,255,255)" padding="2rem" borderRadius="lg" boxShadow="2xl">
-        <Heading textAlign="center">Register</Heading>
+    <Box 
+      width={formWidth}
+      bgColor="rgba(255,255,255)"
+      padding={["1rem", "2rem"]}   // Smaller padding for mobile, larger for desktop
+      borderRadius="lg" 
+      boxShadow="2xl">
+      <Heading mb={4} textAlign="center">Register</Heading>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Stack mt={10}>
             <FormControl id="email" isRequired isInvalid={errors.email}>

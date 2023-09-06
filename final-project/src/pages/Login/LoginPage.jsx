@@ -48,68 +48,70 @@ const LoginPage = () => {
   };
 
   return (
-    <Flex
-      direction="column"
-      height="100%"
-      width="100%"
-      justify="center"
-      align="center"
-      bgImage={bgImage}
-    >
-      <Box
-        width="30%"
-        bgColor="rgba(255,255,255, .1)"
-        backdropFilter="blur(16px)"
-        color="white"
-        padding="2rem"
-        borderRadius="lg"
-        boxShadow="2xl"
+      <Flex
+        direction="column"
+        height="100%"
+        width="100%"
+        justify="center"
+        align="center"
+        bgImage={bgImage}
       >
-        <Heading textAlign="center">Log in</Heading>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Stack mt={10}>
-            <FormControl isInvalid={errors.email}>
-              <FormLabel>Email</FormLabel>
-              <Input type="email" {...register("email")} />
-              <FormErrorMessage>{errors?.email?.message}</FormErrorMessage>
-            </FormControl>
-            <FormControl isInvalid={errors.password}>
-              <FormLabel>Password</FormLabel>
-              <InputGroup>
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  {...register("password")}
-                />
-                <InputRightElement>
-                  <Button
-                    onClick={handleTogglePassword}
-                    variant="ghost"
-                    aria-label="Toggle password visibility"
-                  >
-                    {showPassword ? <ViewIcon /> : <ViewOffIcon />}
-                  </Button>
-                </InputRightElement>
-              </InputGroup>
-              <FormErrorMessage>{errors?.password?.message}</FormErrorMessage>
-            </FormControl>
-            <Button type="submit">Log in</Button>
-          </Stack>
-        </form>
-        <Stack pt={6}>
-          {errors.email && (
-            <Text color="red.500" align="center">
-              Invalid email or password
+        <Box
+          width={["90%", "80%", "60%", "30%"]} // responsive width
+          maxWidth="500px" // example max width to set
+          bgColor="rgba(255,255,255, .1)"
+          backdropFilter="blur(16px)"
+          color="white"
+          padding={["1rem", "2rem"]} // smaller padding for mobile and larger for other devices
+          borderRadius="lg"
+          boxShadow="2xl"
+        >
+          <Heading textAlign="center" fontSize={["2xl", "3xl", "4xl"]}>Log in</Heading>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Stack mt={10} spacing={4}> 
+              <FormControl isInvalid={errors.email}>
+                <FormLabel>Email</FormLabel>
+                <Input type="email" width="100%" {...register("email")} />
+                <FormErrorMessage>{errors?.email?.message}</FormErrorMessage>
+              </FormControl>
+              <FormControl isInvalid={errors.password}>
+                <FormLabel>Password</FormLabel>
+                <InputGroup>
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    width="100%"
+                    {...register("password")}
+                  />
+                  <InputRightElement>
+                    <Button
+                      onClick={handleTogglePassword}
+                      variant="ghost"
+                      aria-label="Toggle password visibility"
+                    >
+                      {showPassword ? <ViewIcon /> : <ViewOffIcon />}
+                    </Button>
+                  </InputRightElement>
+                </InputGroup>
+                <FormErrorMessage>{errors?.password?.message}</FormErrorMessage>
+              </FormControl>
+              <Button type="submit" width="100%">Log in</Button>
+            </Stack>
+          </form>
+          <Stack pt={6}>
+            {errors.email && (
+              <Text color="red.500" align="center">
+                Invalid email or password
+              </Text>
+            )}
+            <Text align="center">
+              Don't have an account? Create one{" "}
+              <Link to="/register" style={{ color: "purple" }}>
+                here
+              </Link>
             </Text>
-          )}
-          <Text align="center">
-            Don't have an account? Create one{" "}
-            <Link to="/register" style={{ color: "purple" }}>
-              here
-            </Link>
-          </Text>
-        </Stack>
-      </Box>
-    </Flex>
+          </Stack>
+        </Box>
+      </Flex>
   );
 };
 

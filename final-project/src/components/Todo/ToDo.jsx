@@ -27,7 +27,9 @@ const TodoComponent = () => {
     setTodos(todos);
   };
 
-  const addTodo = async () => {
+  const addTodo = async (e) => {
+    e.preventDefault();
+
     if (newTodo) {
       await createTodoForUser(user.uid, { text: newTodo, completed: false });
       setNewTodo('');
@@ -58,16 +60,18 @@ const TodoComponent = () => {
     overflowY="auto"
     maxHeight="100vh"
   >
-    <InputGroup>
-      <Input
-        placeholder="Add new todo"
-        value={newTodo}
-        onChange={(e) => setNewTodo(e.target.value)}
-      />
-      <InputRightElement>
-        <Icon as={AddIcon} color="gray.500" onClick={addTodo} cursor="pointer"/>
-      </InputRightElement>
-    </InputGroup>
+    <form onSubmit={addTodo}> 
+      <InputGroup>
+        <Input
+          placeholder="Add new todo"
+          value={newTodo}
+          onChange={(e) => setNewTodo(e.target.value)}
+        />
+        <InputRightElement>
+          <Icon as={AddIcon} color="gray.500" onClick={addTodo} cursor="pointer"/>
+        </InputRightElement>
+      </InputGroup>
+    </form>
     <SimpleGrid columns={1} spacing={3} marginTop={3}>
       {Object.entries(todos).length ? (
         Object.entries(todos).map(([todoId, todo]) => (
