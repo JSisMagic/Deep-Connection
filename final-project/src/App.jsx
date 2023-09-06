@@ -33,7 +33,7 @@ function App() {
 
   useInterval(() => {
     const fetchNotifications = async () => {
-      const fetchedNotifications = await getNotifications(user.uid);
+      const fetchedNotifications = await getNotifications(user?.uid);
       setNotifications(fetchedNotifications);
     };
   
