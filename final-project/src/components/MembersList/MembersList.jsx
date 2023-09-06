@@ -15,6 +15,7 @@ import {
 import { FaUserPlus, FaBan, FaSearch } from "react-icons/fa";
 import { getAllUsers } from "../../services/users.services";
 import { useNavigate } from "react-router-dom";
+import { MEMBERS_LIST_HEIGHT } from "../../common/constrants";
 
 const MembersList = ({ searchTerm, setSearchTerm }) => {
   const navigate = useNavigate();
@@ -48,7 +49,7 @@ const MembersList = ({ searchTerm, setSearchTerm }) => {
       bg="gray.50"
       borderRadius="md"
       overflowY="auto"
-      maxHeight="100vh"
+      maxHeight={MEMBERS_LIST_HEIGHT}
     >
       <SimpleGrid columns={1} spacing={3} marginTop={3}>
         {filteredMembers.length ? (
