@@ -53,8 +53,6 @@ const Calendar = () => {
         return (
           <MonthView date={currentDate} setDate={setCurrentDate} onOpenDetailedModal={onOpen} />
         )
-      case "year":
-        return <YearView date={currentDate} />
       case "workWeek":
         return (
           <WeekView
@@ -80,7 +78,7 @@ const Calendar = () => {
   }
 
   return (
-    <Box className="calendar-container" paddingInline={5} height="100%">
+    <Box className="calendar-container" paddingInline={5}>
       <Grid
         zIndex={10}
         templateColumns="repeat(3, 1fr)"
@@ -113,7 +111,7 @@ const Calendar = () => {
         </GridItem>
       </Grid>
 
-      {renderView()}
+      <Box pb={3}>{renderView()}</Box>
 
       <DetailedEventCard isOpen={isOpen} onClose={onClose} detailedEventData={detailedEventData} />
     </Box>
