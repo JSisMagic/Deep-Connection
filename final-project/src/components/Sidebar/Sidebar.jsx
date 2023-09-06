@@ -15,7 +15,7 @@ import { navLinks } from "../../common/constrants";
 import ProfileCard from "./ProfileCard";
 import { CloseIcon } from "@chakra-ui/icons";
 import { logoutUser } from "../../services/auth.services";
-import { BiNotification } from "react-icons/bi";
+import { IoIosNotificationsOutline } from "react-icons/io";
 
 const Sidebar = ({ notificationCount }) => {
   const { showSidebar, showMobileSidebar, hideMobileSidebar } =
@@ -74,7 +74,7 @@ const Sidebar = ({ notificationCount }) => {
         </Flex>
         <Stack flex={1} marginTop={6} fontWeight={600}>
           {navLinks.map((link) => navLink(link))}
-          {navLink({ title: "Notifications", path: "/notifications", icon: BiNotification, notificationCount })}
+          {navLink({ title: "Notifications", path: "/notifications", icon: IoIosNotificationsOutline, notificationCount })}
         </Stack>
         <Flex mt="auto" alignItems="center" paddingLeft="1rem">
           <Button size="sm" width="1/3" onClick={handleLogout}>

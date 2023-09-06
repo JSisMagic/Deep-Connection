@@ -14,7 +14,7 @@ import {
   useToast,
   Button,
 } from "@chakra-ui/react";
-import { FaLocationDot } from "react-icons/fa6";
+import { FaLocationDot, FaFlag } from "react-icons/fa6";
 import { updateNotification } from "../../services/notification.services";
 import DetailedEventCard from "../DetailedEventCard/DetailedEventCard";
 import { getEventData } from "../../services/event.services";
@@ -85,10 +85,17 @@ const Notifications = ({ data, onNotificationRead }) => {
       </CardHeader>
       <CardBody>
         <Stack divider={<StackDivider />} spacing='4'>
-          {data.map(n => (
-            <Box key={n.id} onClick={() => openEventDetails(n)} mt='1'  bgColor={n.read ? "" : "gray.100"} cursor="pointer" >
+        {data.map(n => (
+            <Box 
+                key={n.id} 
+                onClick={() => openEventDetails(n)} 
+                mt='1'  
+                bgColor={n.read ? "" : "gray.100"} 
+                cursor="pointer" 
+            >
               <Heading size='xs' textTransform='uppercase'>
                 {n.title}
+                {!n.read && <Icon as={FaFlag} ml="2" color="red.500" />} 
               </Heading>
               <Text pt='2' fontSize='sm' flexGrow={1}>
                 Event at 
