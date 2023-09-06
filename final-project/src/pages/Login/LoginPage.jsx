@@ -59,9 +59,8 @@ const LoginPage = () => {
         <Box
           width={["90%", "80%", "60%", "30%"]} // responsive width
           maxWidth="500px" // example max width to set
-          bgColor="rgba(255,255,255, .1)"
+          bgColor="rgba(255,255,255)"
           backdropFilter="blur(16px)"
-          color="white"
           padding={["1rem", "2rem"]} // smaller padding for mobile and larger for other devices
           borderRadius="lg"
           boxShadow="2xl"
