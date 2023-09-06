@@ -1,17 +1,15 @@
-import { useContext, useEffect, useState } from "react"
-import EventsList from "../EventsList/EventsList"
+import { useEffect, useState } from "react"
 import { getEventsForUser } from "../../services/event.services"
-import { AuthContext } from "../../context/AuthContext"
+import EventsList from "../EventsList/EventsList"
 
-const MyEvents = ({ inUserProfile = false }) => {
-  const { user } = useContext(AuthContext)
+const MyEvents = ({ inUserProfile = false, uid = null }) => {
   const [events, setEvents] = useState([])
 
   useEffect(() => {
-    if (user?.uid) {
-      getEventsForUser(user.uid).then(setEvents).catch(console.error)
+    if (uid) {
+      getEventsForUser(uid).then(setEvents).catch(console.error)
     }
-  }, [user?.uid])
+  }, [uid])
 
   return <EventsList inUserProfile={inUserProfile} events={events} />
 }
