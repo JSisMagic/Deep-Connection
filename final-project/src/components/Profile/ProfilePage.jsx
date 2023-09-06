@@ -1,24 +1,24 @@
-import { EditIcon, Icon } from "@chakra-ui/icons"
+import { EditIcon } from "@chakra-ui/icons"
 import {
   Avatar,
   Box,
   Button,
+  ButtonGroup,
   Divider,
   Flex,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
   Heading,
   IconButton,
   Input,
-  Link,
   Stack,
-  Text,
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
-  ButtonGroup,
+  Text
 } from "@chakra-ui/react"
 import React, { useEffect, useState } from "react"
 import { useAuthState } from "react-firebase-hooks/auth"
-import { BiSolidQuoteAltLeft, BiSolidQuoteAltRight, BiUpload } from "react-icons/bi"
+import { useForm } from "react-hook-form"
+import { BiSolidQuoteAltLeft, BiSolidQuoteAltRight } from "react-icons/bi"
 import {
   FaFacebook,
   FaGitlab,
@@ -29,18 +29,16 @@ import {
   FaPlus,
   FaTiktok,
 } from "react-icons/fa"
-import { HiPencilAlt } from "react-icons/hi"
 import ReactQuill from "react-quill"
 import "react-quill/dist/quill.snow.css"
-import { Form, useParams } from "react-router-dom"
-import { COOL_BLUE, COOL_GREEN, COOL_PURPLE, categoryColors } from "../../common/colors"
+import { useParams } from "react-router-dom"
+import { COOL_BLUE } from "../../common/colors"
+import { SUPPORTED_FORMATS } from "../../common/constrants"
+import { validateDescription } from "../../common/helpers"
+import validation from "../../common/validation-enums"
 import { auth } from "../../config/firebase"
 import { getUserByUid, updateUser, uploadImage } from "../../services/users.services"
 import MyEvents from "../Events/MyEvents"
-import { useForm } from "react-hook-form"
-import validation from "../../common/validation-enums"
-import { SUPPORTED_FORMATS } from "../../common/constrants"
-import { validateDescription } from "../../common/helpers"
 
 const ProfilePage = () => {
   const { uid } = useParams()
@@ -55,7 +53,7 @@ const ProfilePage = () => {
     description: "",
   })
   const [editState, setEditState] = useState(false)
-
+  
   const fetchProfileData = async () => {
     if (uid) {
       const userData = await getUserByUid(uid)
@@ -86,7 +84,7 @@ const ProfilePage = () => {
   }
 
   return (
-    <Box h="100%" p={5} overflowY="auto">
+    <Box p={5}>
       <Flex direction="column" width="100%" justify="center" align="center" overflowY="auto">
         <Box
           width={{ base: "90%", lg: "60%" }} // Increase the size of the background picture container
@@ -120,7 +118,7 @@ const ProfilePage = () => {
           <Heading size="md" mb={3}>
             {profileData.firstName}'s events
           </Heading>
-          <MyEvents inUserProfile={true} />
+          <MyEvents inUserProfile={true} uid={uid} />
         </Box>
       )}
     </Box>
@@ -250,7 +248,7 @@ const EditProfileComponent = ({ profileData, setProfileData, initials, setEditSt
             <Input type="file" id="avatar" display="none" {...register("profilePicture")} />
             <FormErrorMessage>{errors?.profilePicture?.message}</FormErrorMessage>
           </FormControl>
-          <ButtonGroup>
+          <ButtonGroup flexDirection={{ base: "column", md: "row" }}>
             <Button onClick={() => setEditState(false)}>Cancel</Button>
             <Button colorScheme="green" type="submit">
               Save changes
