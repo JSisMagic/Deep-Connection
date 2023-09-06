@@ -15,6 +15,7 @@ import { useState, useEffect, useContext } from "react"
 import MonthDayBox from "./MonthDayBox"
 import { getEventsForUser } from "../../services/event.services"
 import { AuthContext } from "../../context/AuthContext"
+import { CALENDAR_HEIGHT } from "../../common/constrants"
 
 const MonthView = ({ date, setDate, onOpenDetailedModal }) => {
   const [events, setEvents] = useState()
@@ -52,7 +53,7 @@ const MonthView = ({ date, setDate, onOpenDetailedModal }) => {
   }
 
   return (
-    <Box>
+    <>
       <Grid templateColumns="repeat(3, 1fr)" py={2}>
         <Button onClick={handleNavigate("today")} width="max-content">
           Today
@@ -67,7 +68,7 @@ const MonthView = ({ date, setDate, onOpenDetailedModal }) => {
         </Flex>
       </Grid>
       <Box
-        height="700px"
+        height={CALENDAR_HEIGHT}
         overflowY="auto"
         borderTop="1px solid"
         borderLeft="1px solid"
@@ -104,7 +105,7 @@ const MonthView = ({ date, setDate, onOpenDetailedModal }) => {
           })}
         </Grid>
       </Box>
-    </Box>
+    </>
   )
 }
 
