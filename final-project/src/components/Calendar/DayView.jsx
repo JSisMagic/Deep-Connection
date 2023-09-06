@@ -6,6 +6,7 @@ import { getEventsForUser } from "../../services/event.services"
 import EventsColumn from "./EventsColumn"
 import HoursColumn from "./HoursColumn"
 import { addDays, format, subDays } from "date-fns"
+import { CALENDAR_HEIGHT } from "../../common/constrants"
 
 const DayView = ({ date, setDate, onOpenDetailedModal }) => {
   const { user } = useContext(AuthContext)
@@ -33,7 +34,7 @@ const DayView = ({ date, setDate, onOpenDetailedModal }) => {
   }
 
   return (
-    <Box>
+    <>
       <Grid templateColumns="repeat(3, 1fr)" py={2} borderBottom="1px solid" borderColor="gray.200">
         <Button onClick={handleNavigate("today")} width="max-content">
           Today
@@ -48,7 +49,7 @@ const DayView = ({ date, setDate, onOpenDetailedModal }) => {
           <IconButton size="sm" icon={<ArrowForwardIcon />} onClick={handleNavigate("next")} />
         </Flex>
       </Grid>
-      <Box height="700px" overflowY="scroll">
+      <Box height={CALENDAR_HEIGHT} overflowY="scroll">
         <Flex>
           <HoursColumn />
           <EventsColumn
@@ -59,7 +60,7 @@ const DayView = ({ date, setDate, onOpenDetailedModal }) => {
           />
         </Flex>
       </Box>
-    </Box>
+    </>
   )
 }
 
