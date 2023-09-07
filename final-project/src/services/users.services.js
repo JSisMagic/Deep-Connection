@@ -2,6 +2,7 @@ import { equalTo, set, get, orderByChild, query, ref, update, remove } from "fir
 import { getDownloadURL, uploadBytes, ref as storageRef } from "firebase/storage"
 import { db, storage } from "../config/firebase"
 import { v4 } from "uuid"
+import { userRole } from "../common/member-role"
 
 export const getUser = async username => {
   const snapshot = await get(ref(db, `users/${username}`))
@@ -23,6 +24,7 @@ export const createUser = async (data = {}) => {
     ...data,
     contactLists: {},
     todos: {},
+    role: userRole.BASIC,
   })
 
   return { ...data }
