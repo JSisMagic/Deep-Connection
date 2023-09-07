@@ -17,7 +17,11 @@ import {
   Button,
   IconButton,
   useDisclosure,
-  Avatar
+  Avatar,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from "@chakra-ui/react"
 import { format } from "date-fns"
 import { FaLocationDot } from "react-icons/fa6"
@@ -194,29 +198,28 @@ const DetailedEventCard = ({ detailedEventData, isOpen, onClose, onInviteAcceptD
           )}
           {hasAccepted() && messageContainer("You have accepted this event")}
           {hasDenied() && messageContainer("You have denied this event")}
-          <Stack>
-            {attendees?.accepted?.map((userDetail, index) => (
-              <Flex
-              key={index}
-              background="white"
-              p={3}
-              borderRadius="md"
-              justify="space-between"
-              align="center"
-              boxShadow="base"
-            >
-              <Flex gap={3} onClick={() => navigate(`/profile/${userDetail.uid}`)} cursor="pointer">
-                <Avatar src={userDetail.profilePicture} />
-                <Box>
-                  <Heading size="sm">
-                    {userDetail.firstName} {userDetail.lastName}
-                  </Heading>
-                  <Text fontWeight={600}>@{userDetail.username}</Text>
-                </Box>
-              </Flex>
-            </Flex>
-            ))}
-          </Stack>
+          <Menu>
+            <MenuButton as={Button} rightIcon="▼">
+              Participants
+            </MenuButton>
+            <MenuList maxH="200px" overflowY="auto">
+              {attendees?.accepted?.map((userDetail, index) => (
+                <MenuItem key={index} onClick={() => navigate(`/profile/${userDetail.uid}`)}>
+                  <Flex background="white" p={3} borderRadius="md" justify="space-between" align="center" boxShadow="base">
+                    <Flex gap={3} cursor="pointer">
+                      <Avatar src={userDetail.profilePicture} />
+                      <Box>
+                        <Heading size="sm">
+                          {userDetail.firstName} {userDetail.lastName}
+                        </Heading>
+                        <Text fontWeight={600}>@{userDetail.username}</Text>
+                      </Box>
+                    </Flex>
+                  </Flex>
+                </MenuItem>
+              ))}
+            </MenuList>
+          </Menu>
 
         </ModalBody>
       </ModalContent>
