@@ -142,14 +142,15 @@ export const acceptInvite = async (email, eventId) => {
     ...event.attendees,
     accepted: event.attendees.accepted || [],
   }
+  const attendee = attendees.pending.find(e => e.email === email);
 
-  if (attendees.pending.indexOf(email) === -1) {
+  if (attendee === undefined) {
     alert("Cannot accept invite, user has no invitation")
     return
   }
 
-  attendees.accepted.push(email)
-  attendees.pending.splice(event.attendees.pending.indexOf(email), 1)
+  attendees.accepted.push(attendee)
+  attendees.pending = attendees.pending.filter(e => e.email !== email);
 
   await update(ref(db, `events/${eventId}/attendees`), { ...attendees })
   return await getEventData(eventId)
@@ -162,13 +163,15 @@ export const denyInvite = async (email, eventId) => {
     denied: event.attendees.denied || [],
   }
 
-  if (attendees.pending.indexOf(email) === -1) {
+  const attendee = attendees.pending.find(e => e.email === email)
+
+  if (attendee === undefined) {
     alert("Cannot deny invite, user has no invitation")
     return
   }
 
-  attendees.denied.push(email)
-  attendees.pending.splice(event.attendees.pending.indexOf(email), 1)
+  attendees.denied.push(attendee)
+  attendees.pending = attendees.pending.filter(e => e.email !== email)
 
   await update(ref(db, `events/${eventId}/attendees`), { ...attendees })
   return await getEventData(eventId)

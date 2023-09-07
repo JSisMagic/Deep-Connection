@@ -203,7 +203,7 @@ const EditProfileComponent = ({ profileData, setProfileData, initials, setEditSt
 
     setDescription(value)
   }
-  console.log(profileData)
+  // console.log(profileData)
   const onSaveChanges = async values => {
     if (!validateDescription(description)) {
       return setError("description", {

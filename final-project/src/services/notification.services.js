@@ -1,6 +1,6 @@
 import { db } from "../config/firebase";
 import { set, get, ref, update, remove, push } from "firebase/database";
-import { getUserByEmail } from "./users.services";
+import { getUserByEmail, getUserByUid } from "./users.services";
 
 
 export const getNotifications = async (uid) => {
@@ -24,6 +24,10 @@ export const createNotificationByEmail = async (email, notification) => {
   }
 
   return await createNotification(user.uid, notification);
+};
+
+export const createNotificationByUserID = async (uid, notification) => {
+  return await createNotification(uid, notification);
 };
 
 

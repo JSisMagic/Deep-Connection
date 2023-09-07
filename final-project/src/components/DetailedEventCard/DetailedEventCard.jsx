@@ -17,6 +17,7 @@ import {
   Button,
   IconButton,
   useDisclosure,
+  Avatar
 } from "@chakra-ui/react"
 import { format } from "date-fns"
 import { FaLocationDot } from "react-icons/fa6"
@@ -33,7 +34,7 @@ const DetailedEventCard = ({ detailedEventData, isOpen, onClose, onInviteAcceptD
   const { onOpen } = useDisclosure()
   const confirmationModal = useDisclosure()
   const navigate = useNavigate()
-  console.log(detailedEventData)
+  // console.log(detailedEventData)
 
   const handleAccept = async () => {
     const event = await acceptInvite(user.email, detailedEventData.id)
@@ -47,28 +48,20 @@ const DetailedEventCard = ({ detailedEventData, isOpen, onClose, onInviteAcceptD
 
   const hasPendingInvite = () => {
     const { pending } = attendees || []
-    return pending && pending.indexOf(user.email) !== -1
+    return pending && pending.find(e => e.email === user.email) !== undefined
   }
 
   const hasAccepted = () => {
     const { accepted } = attendees || []
-    return accepted && accepted.indexOf(user.email) !== -1
+    // debugger;
+    return accepted && accepted.find(e => e.email === user.email) !== undefined
   }
 
   const hasDenied = () => {
     const { denied } = attendees || []
-    return denied && denied.indexOf(user.email) !== -1
+    return denied && denied.find(e => e.email === user.email) !== undefined
   }
 
-  const getAllInvited = () => {
-    const { accepted = [], pending = [], denied = [] } = attendees || {}
-
-    return {
-      all: [...accepted, ...pending, ...denied],
-      accepted,
-      denied,
-    }
-  }
 
   const handleDeleteEvent = async () => {
     try {
@@ -89,19 +82,6 @@ const DetailedEventCard = ({ detailedEventData, isOpen, onClose, onInviteAcceptD
     >
       {text}
     </Flex>
-  )
-
-  const renderInvitees = (title, list) => (
-    <>
-      <Text fontSize="sm" color="gray.600" mt={3}>
-        {title}:
-      </Text>
-      {list.map(email => (
-        <Text key={email} fontSize="sm" isTruncated>
-          {email}
-        </Text>
-      ))}
-    </>
   )
 
   if (detailedEventData === undefined) {
@@ -215,10 +195,29 @@ const DetailedEventCard = ({ detailedEventData, isOpen, onClose, onInviteAcceptD
           {hasAccepted() && messageContainer("You have accepted this event")}
           {hasDenied() && messageContainer("You have denied this event")}
           <Stack>
-            {attendees?.accepted?.map(item => (
-              <p>{item}</p>
+            {attendees?.accepted?.map((userDetail, index) => (
+              <Flex
+              key={index}
+              background="white"
+              p={3}
+              borderRadius="md"
+              justify="space-between"
+              align="center"
+              boxShadow="base"
+            >
+              <Flex gap={3} onClick={() => navigate(`/profile/${userDetail.uid}`)} cursor="pointer">
+                <Avatar src={userDetail.profilePicture} />
+                <Box>
+                  <Heading size="sm">
+                    {userDetail.firstName} {userDetail.lastName}
+                  </Heading>
+                  <Text fontWeight={600}>@{userDetail.username}</Text>
+                </Box>
+              </Flex>
+            </Flex>
             ))}
           </Stack>
+
         </ModalBody>
       </ModalContent>
     </Modal>

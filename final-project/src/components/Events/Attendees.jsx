@@ -10,18 +10,35 @@ import {
   Flex,
   Heading,
   SimpleGrid,
-  Text
+  Text,
+  WrapItem
 } from "@chakra-ui/react";
-import { getUserByEmail, getUsersByUsernamePartial } from "../../services/users.services";
+import {  getUserByUid, getUsersByUsernamePartial } from "../../services/users.services";
 
-const EMAIL_REGEXP = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const isValidEmail = (email) => EMAIL_REGEXP.test(email);
 
 const Attendees = ({ initialData = [], onChange }) => {
   const [value, setValue] = useState("");
-  const [data, setData] = useState(initialData);
+  const [data, setData] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    let prevInitialData = JSON.stringify(initialData);
+  
+    const fetchInitialData = async () => {
+      try {
+        const usersData = await Promise.all(initialData.map(uid => getUserByUid(uid)));
+        setData(usersData);
+      } catch (error) {
+        console.error('Failed to fetch initial data', error);
+      }
+    };
+  
+    if (prevInitialData !== JSON.stringify(initialData)) {
+      fetchInitialData();
+      prevInitialData = JSON.stringify(initialData);
+    }
+  }, [initialData]);
 
   const searchUsers = async (usernamePartial) => {
     if (usernamePartial.length >= 3) {
@@ -38,29 +55,14 @@ const Attendees = ({ initialData = [], onChange }) => {
     onChange(data);
   }, [data, onChange])
 
-  const exists = (email) => data.includes(email);
+  const exists = (uid) => data.some(user => user.uid === uid);
 
-  const addEmail = async (email) => {
-    email.trim();
-
-    if (!isValidEmail(email)) {
-      alert("Please input a valid email");
-      return;
-    }
-
-    if (exists(email)) {
+  const addParticipant = async (user) => {
+    if (exists(user.uid)) {
       alert("Attendee already added");
       return;
     }
-
-    const user = await getUserByEmail(email);
-
-    if (user === null) {
-      alert ("Cannot find such user");
-      return;
-    }
-
-    setData([...data, email]);
+    setData([...data, user]);
     setValue("");
   };
 
@@ -70,35 +72,39 @@ const Attendees = ({ initialData = [], onChange }) => {
   };
 
   const handleSelectUser = (user) => {
-    addEmail(user.email);
+    addParticipant(user);
     setIsDropdownOpen(false);
     setValue("");
   };
 
-  const handleCloseClick = (email) => {
-    const index = data.findIndex((e) => e === email);
+  const handleCloseClick = (uid) => {
+    const index = data.findIndex((user) => user.uid === uid);
     if (index !== -1) {
-      const newEmails = [...data];
-      newEmails.splice(index, 1);
-      setData(newEmails);
+      const newUsers = [...data];
+      newUsers.splice(index, 1);
+      setData(newUsers);
     }
   };
 
-  const Chip = ({ email, onCloseClick }) => (
-    <Tag key={email} borderRadius="full" variant="solid" colorScheme="green">
-      <TagLabel>{email}</TagLabel>
-      <TagCloseButton
-        onClick={() => {
-          onCloseClick(email);
-        }}
-      />
-    </Tag>
+  const Chip = ({ user, onCloseClick }) => (
+    <WrapItem>
+      <Tag size="lg" borderRadius="full" variant="solid" bg="gray.300">
+        <Avatar 
+          size="xs" 
+          name={`${user.firstName || ''} ${user.lastName || ''}`} 
+          src={user.profilePicture} 
+          mr={2} 
+        />
+        <TagLabel>{`${user.firstName || ''} ${user.lastName || ''}`}</TagLabel>
+        <TagCloseButton onClick={() => onCloseClick(user.uid)} />
+      </Tag>
+    </WrapItem>
   );
 
   const ChipList = ({ data = [], onCloseClick }) => (
     <Wrap spacing={1} mb={3}>
-      {data.map((email) => (
-        <Chip email={email} key={email} onCloseClick={onCloseClick} />
+      {data.map((user) => (
+        <Chip user={user} key={user.uid} onCloseClick={handleCloseClick} />
       ))}
     </Wrap>
   );
@@ -123,7 +129,7 @@ const Attendees = ({ initialData = [], onChange }) => {
           boxShadow="md"
           bg="gray.50"
           overflowY="auto"
-          maxHeight="300px"  // Optional: you can set your own height
+          maxHeight="300px"  
         >
           <SimpleGrid columns={1} spacing={3} marginTop={3}>
             {searchResults.map(user => (

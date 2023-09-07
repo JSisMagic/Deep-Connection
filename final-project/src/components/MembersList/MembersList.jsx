@@ -42,7 +42,7 @@ const MembersList = ({ searchTerm, setSearchTerm }) => {
     }
   }, [searchTerm, allMembers])
 
-  console.log(filteredMembers)
+  // console.log(filteredMembers)
   return (
     <Stack
       marginTop={5}

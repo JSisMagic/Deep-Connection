@@ -28,7 +28,7 @@ import validation from "../../common/validation-enums"
 import { storage } from "../../config/firebase"
 import { AuthContext } from "../../context/AuthContext"
 import { createEvent, updateEvent } from "../../services/event.services"
-import { createNotificationByEmail } from "../../services/notification.services"
+import { createNotificationByUserID } from "../../services/notification.services"
 import PlacesAutocomplete from "../Location/PlacesAutocomplete"
 import Attendees from "./Attendees"
 
@@ -122,14 +122,14 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
         id = await createEvent(newEvent)
       }
 
-      await eventAttendees.map(att => notify(id, newEvent, att))
+      await eventAttendees.map(att => notify(id, newEvent, att.uid))
       navigate("/calendar")
     } catch (error) {
       console.error("Error creating event:", error)
     }
   }
 
-  const notify = async (id, event, email) => {
+  const notify = async (id, event, uid) => {
     const notification = {
       title: "New Event Invitation",
       location: event.location,
@@ -141,7 +141,7 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
     }
 
     try {
-      await createNotificationByEmail(email, notification)
+      await createNotificationByUserID(uid, notification)
     } catch (error) {
       console.error("Error sending notification", error)
     }
