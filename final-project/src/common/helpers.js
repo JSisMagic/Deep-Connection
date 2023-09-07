@@ -12,4 +12,9 @@ const validateDescription = htmlValue => {
   )
 }
 
-export { validateTitle, validateDescription }
+const dateISOTimezoneAdjust = date =>
+  date
+    ? new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, -8)
+    : null
+
+export { validateTitle, validateDescription, dateISOTimezoneAdjust }
