@@ -24,7 +24,7 @@ const EventsPage = () => {
           <PrivateEvents />
         </TabPanel>
         <TabPanel>
-          <MyEvents uid={user} />
+          <MyEvents uid={user?.uid} />
         </TabPanel>
       </TabPanels>
     </Tabs>
