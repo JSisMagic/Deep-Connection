@@ -5,7 +5,6 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
-  Icon,
   Input,
   Menu,
   MenuButton,
@@ -13,8 +12,6 @@ import {
   MenuList,
   MenuOptionGroup,
   Stack,
-  Switch,
-  Text,
   VStack,
 } from "@chakra-ui/react"
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
@@ -26,28 +23,30 @@ import { useNavigate } from "react-router-dom"
 import { v4 } from "uuid"
 import { categoryColors } from "../../common/colors"
 import { SUPPORTED_FORMATS, eventRepetitions } from "../../common/constrants"
-import { validateDescription, validateTitle } from "../../common/helpers"
+import { dateISOTimezoneAdjust, validateDescription, validateTitle } from "../../common/helpers"
 import validation from "../../common/validation-enums"
 import { storage } from "../../config/firebase"
 import { AuthContext } from "../../context/AuthContext"
-import { createEvent } from "../../services/event.services"
+import { createEvent, updateEvent } from "../../services/event.services"
+import { createNotificationByEmail } from "../../services/notification.services"
 import PlacesAutocomplete from "../Location/PlacesAutocomplete"
 import Attendees from "./Attendees"
-import { createNotificationByEmail } from "../../services/notification.services"
 
-const CreateEvent = () => {
+const EventForm = ({ editMode = false, eventData = {} }) => {
   const navigate = useNavigate()
   const { user } = useContext(AuthContext)
-  const [eventTitle, setEventTitle] = useState("")
-  const [eventLocation, setEventLocation] = useState("")
-  const [eventDescription, setEventDescription] = useState("")
-  const [eventStartDate, setEventStartDate] = useState("")
-  const [eventEndDate, setEventEndDate] = useState("")
-  const [eventColor, setEventColor] = useState("blue")
-  const [eventAttendees, setEventAttendees] = useState([])
-  const [eventRepeat, setEventRepeat] = useState("never")
-  const [isPrivate, setIsPrivate] = useState(true)
-  const [image, setImage] = useState("")
+  const [eventTitle, setEventTitle] = useState(eventData?.title || "")
+  const [eventLocation, setEventLocation] = useState(eventData?.location || "")
+  const [eventDescription, setEventDescription] = useState(eventData?.description || "")
+  const [eventStartDate, setEventStartDate] = useState(
+    dateISOTimezoneAdjust(eventData?.startDate) || ""
+  )
+  const [eventEndDate, setEventEndDate] = useState(dateISOTimezoneAdjust(eventData?.endDate) || "")
+  const [eventColor, setEventColor] = useState(eventData?.color || "blue")
+  const [eventAttendees, setEventAttendees] = useState(eventData?.attendees?.length || [])
+  const [eventRepeat, setEventRepeat] = useState(eventData?.repeat || "never")
+  const [isPrivate, setIsPrivate] = useState(eventData?.isPrivate || true)
+  const [image, setImage] = useState(eventData?.image || "")
   const [errors, setErrors] = useState({
     title: "",
     location: "",
@@ -81,7 +80,7 @@ const CreateEvent = () => {
     return true
   }
 
-  const handleCreateEvent = async () => {
+  const handleSubmit = async () => {
     if (!user) {
       console.error("No user authenticated. Event not created.")
       return
@@ -91,11 +90,13 @@ const CreateEvent = () => {
       return
     }
 
-    const imageRef = ref(storage, `images/${v4()}`)
     let url = image
-    if (typeof image !== "string") {
-      const result = await uploadBytes(imageRef, image)
-      url = await getDownloadURL(result.ref)
+    if (image !== eventData?.image) {
+      const imageRef = ref(storage, `images/${v4()}`)
+      if (typeof image !== "string") {
+        const result = await uploadBytes(imageRef, image)
+        url = await getDownloadURL(result.ref)
+      }
     }
 
     const newEvent = {
@@ -113,7 +114,13 @@ const CreateEvent = () => {
     }
 
     try {
-      const id = await createEvent(newEvent)
+      let id = eventData?.id
+
+      if (editMode) {
+        await updateEvent(id, newEvent)
+      } else {
+        id = await createEvent(newEvent)
+      }
 
       await eventAttendees.map(att => notify(id, newEvent, att))
       navigate("/calendar")
@@ -165,7 +172,7 @@ const CreateEvent = () => {
   const handleChangeRepetitions = value => {
     setEventRepeat(value)
   }
-
+  
   return (
     <Flex
       height="100%"
@@ -251,6 +258,7 @@ const CreateEvent = () => {
         <FormControl>
           <FormLabel>Start Date and Time</FormLabel>
           <Input
+            defaultValue={eventStartDate}
             type="datetime-local"
             value={eventStartDate}
             onChange={e => setEventStartDate(e.target.value)}
@@ -260,6 +268,7 @@ const CreateEvent = () => {
         <FormControl>
           <FormLabel>End Date and Time</FormLabel>
           <Input
+            defaultValue={eventStartDate}
             type="datetime-local"
             value={eventEndDate}
             onChange={e => setEventEndDate(e.target.value)}
@@ -281,7 +290,7 @@ const CreateEvent = () => {
             <MenuList width="100%" maxH="300px">
               <MenuOptionGroup
                 type="radio"
-                defaultValue="never"
+                defaultValue={eventRepeat}
                 onChange={handleChangeRepetitions}
                 fontWeight={600}
               >
@@ -306,7 +315,11 @@ const CreateEvent = () => {
               Categorize
             </MenuButton>
             <MenuList width="100%" maxH="300px">
-              <MenuOptionGroup type="radio" defaultValue="blue" onChange={handleChangeEventColor}>
+              <MenuOptionGroup
+                type="radio"
+                defaultValue={eventColor}
+                onChange={handleChangeEventColor}
+              >
                 <MenuItemOption
                   value="pink"
                   _hover={{ bgColor: `rgba(${categoryColors.pink}, .3)` }}
@@ -363,8 +376,8 @@ const CreateEvent = () => {
           <Button width="full" onClick={() => navigate("..")}>
             Cancel
           </Button>
-          <Button width="full" colorScheme="blue" onClick={handleCreateEvent}>
-            Create Event
+          <Button width="full" colorScheme="blue" onClick={handleSubmit}>
+            {editMode ? "Save Changes" : "Create Event"}
           </Button>
         </ButtonGroup>
       </VStack>
@@ -372,4 +385,4 @@ const CreateEvent = () => {
   )
 }
 
-export default CreateEvent
+export default EventForm
