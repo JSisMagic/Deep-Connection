@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react"
 import {
   Avatar,
   Box,
@@ -11,37 +11,38 @@ import {
   Stack,
   Text,
   SimpleGrid,
-} from "@chakra-ui/react";
-import { FaUserPlus, FaBan, FaSearch } from "react-icons/fa";
-import { getAllUsers } from "../../services/users.services";
-import { useNavigate } from "react-router-dom";
-import { MEMBERS_LIST_HEIGHT } from "../../common/constrants";
+} from "@chakra-ui/react"
+import { FaUserPlus, FaBan, FaSearch } from "react-icons/fa"
+import { getAllUsers, updateUser } from "../../services/users.services"
+import { useNavigate } from "react-router-dom"
+import { MEMBERS_LIST_HEIGHT } from "../../common/constrants"
+import { userRole } from "../../common/member-role"
+import { AuthContext } from "../../context/AuthContext"
 
 const MembersList = ({ searchTerm, setSearchTerm }) => {
-  const navigate = useNavigate();
-  const [allMembers, setAllMembers] = useState([]);
-  const [filteredMembers, setFilteredMembers] = useState([]);
+  const [allMembers, setAllMembers] = useState([])
+  const [filteredMembers, setFilteredMembers] = useState([])
 
   useEffect(() => {
-    getAllUsers().then(setAllMembers).catch(console.error);
-  }, []);
+    getAllUsers().then(setAllMembers).catch(console.error)
+  }, [])
 
   useEffect(() => {
     const timer = setTimeout(() => {
       const filtered = allMembers.filter(
-        (user) =>
-          user?.username?.toLowerCase().includes(searchTerm) ||
-          user?.phone?.includes(searchTerm)
-      );
+        user =>
+          user?.username?.toLowerCase().includes(searchTerm) || user?.phone?.includes(searchTerm)
+      )
 
-      setFilteredMembers(filtered);
-    }, 300);
+      setFilteredMembers(filtered)
+    }, 300)
 
     return () => {
-      clearTimeout(timer);
-    };
-  }, [searchTerm, allMembers]);
+      clearTimeout(timer)
+    }
+  }, [searchTerm, allMembers])
 
+  console.log(filteredMembers)
   return (
     <Stack
       marginTop={5}
@@ -53,47 +54,7 @@ const MembersList = ({ searchTerm, setSearchTerm }) => {
     >
       <SimpleGrid columns={1} spacing={3} marginTop={3}>
         {filteredMembers.length ? (
-          filteredMembers.map((user) => (
-            <Flex
-              onClick={() => navigate(`/profile/${user.uid}`)}
-              cursor="pointer"
-              key={user.uid}
-              background="white"
-              p={3}
-              borderRadius="md"
-              justify="space-between"
-              align="center"
-              boxShadow="base"
-            >
-              <Flex gap={3}>
-                <Avatar src={user.profilePicture} />
-                <Box>
-                  <Heading size="sm">
-                    {user.firstName} {user.lastName}
-                  </Heading>
-                  <Text fontWeight={600}>@{user.username}</Text>
-                </Box>
-              </Flex>
-              <Stack spacing={2}>
-                <Button
-                  bgColor="#E9D8FD"
-                  fontWeight={600}
-                  size="sm"
-                  leftIcon={<FaUserPlus />}
-                >
-                  Add
-                </Button>
-                <Button
-                  bgColor="#E9D8FD"
-                  fontWeight={600}
-                  size="sm"
-                  leftIcon={<FaBan />}
-                >
-                  Block
-                </Button>
-              </Stack>
-            </Flex>
-          ))
+          filteredMembers.map(user => <MemberItem key={user.uid} user={user} />)
         ) : (
           <Heading textAlign="center" marginTop={5}>
             No users found
@@ -101,7 +62,57 @@ const MembersList = ({ searchTerm, setSearchTerm }) => {
         )}
       </SimpleGrid>
     </Stack>
-  );
-};
+  )
+}
 
-export default MembersList;
+const MemberItem = ({ user }) => {
+  const navigate = useNavigate()
+  const { userData } = useContext(AuthContext)
+  const [isCurrentlyBlocked, setIsCurrentlyBlocked] = useState(user?.isBlocked)
+
+  const toggleBlock = () => {
+    updateUser(user.uid, { isBlocked: isCurrentlyBlocked ? null : true })
+    setIsCurrentlyBlocked(prev => !prev)
+  }
+
+  return (
+    <Flex
+      background="white"
+      p={3}
+      borderRadius="md"
+      justify="space-between"
+      align="center"
+      boxShadow="base"
+    >
+      <Flex gap={3} onClick={() => navigate(`/profile/${user.uid}`)} cursor="pointer">
+        <Avatar src={user.profilePicture} />
+        <Box>
+          <Heading size="sm">
+            {user.firstName} {user.lastName}
+          </Heading>
+          <Text fontWeight={600}>@{user.username}</Text>
+        </Box>
+      </Flex>
+      {userData.uid !== user.uid && (
+        <Stack spacing={2}>
+          <Button bgColor="#E9D8FD" fontWeight={600} size="sm" leftIcon={<FaUserPlus />}>
+            Add
+          </Button>
+          {userData.role === userRole.ADMIN && (
+            <Button
+              bgColor="#E9D8FD"
+              fontWeight={600}
+              size="sm"
+              leftIcon={<FaBan />}
+              onClick={() => toggleBlock(user.uid, isCurrentlyBlocked)}
+            >
+              {isCurrentlyBlocked ? "Unblock" : "Block"}
+            </Button>
+          )}
+        </Stack>
+      )}
+    </Flex>
+  )
+}
+
+export default MembersList
