@@ -35,7 +35,7 @@ const EventPageCard = ({ eventData, onOpenDetailedEvent }) => {
             <Text fontWeight={600}>{eventData.location}</Text>
           </Flex>
         )}
-        <Text dangerouslySetInnerHTML={{ __html: eventData.description }} />
+        <Text dangerouslySetInnerHTML={{ __html: eventData.description }} overflow="hidden" />
       </Stack>
       <Box h="100%" w={{ lg: "30%" }}>
         <Image
