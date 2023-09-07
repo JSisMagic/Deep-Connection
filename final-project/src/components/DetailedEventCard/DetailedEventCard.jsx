@@ -1,5 +1,5 @@
-import { useContext, useState, useEffect } from "react";
-import { AuthContext } from "../../context/AuthContext";
+import { useContext, useState, useEffect } from "react"
+import { AuthContext } from "../../context/AuthContext"
 import {
   Box,
   Flex,
@@ -15,95 +15,70 @@ import {
   ModalHeader,
   ModalOverlay,
   Button,
-  Grid,
   IconButton,
   useDisclosure,
-} from "@chakra-ui/react";
-import { format } from "date-fns";
-import { FaLocationDot } from "react-icons/fa6";
-import { CheckIcon, CloseIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons";
-import {
-  acceptInvite,
-  deleteSingleEvent,
-  denyInvite,
-} from "../../services/event.services";
-import { getUserByUid } from "../../services/users.services";
-import EventCreatorInfo from "../Events/EventCreatorInfor";
-import ConfirmationModal from "../Modals/ConfirmationModal";
-import { confirmMessages } from "../../common/confirmation-messages";
-import { useNavigate } from "react-router-dom";
+} from "@chakra-ui/react"
+import { format } from "date-fns"
+import { FaLocationDot } from "react-icons/fa6"
+import { CheckIcon, CloseIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons"
+import { acceptInvite, deleteSingleEvent, denyInvite } from "../../services/event.services"
+import EventCreatorInfo from "../Events/EventCreatorInfor"
+import ConfirmationModal from "../Modals/ConfirmationModal"
+import { confirmMessages } from "../../common/confirmation-messages"
+import { useNavigate } from "react-router-dom"
 
-const DetailedEventCard = ({
-  detailedEventData,
-  isOpen,
-  onClose,
-  onInviteAcceptDeny,
-}) => {
-  const { user } = useContext(AuthContext);
-  const { attendees } = detailedEventData || {};
-  const [creator, setCreator] = useState(null);
-  const { onOpen } = useDisclosure();
-  const confirmationModal = useDisclosure();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchCreator = async () => {
-      if (detailedEventData && detailedEventData.creatorId) {
-        console.log(detailedEventData.id);
-        const creatorData = await getUserByUid(detailedEventData.creatorId);
-        console.log(creatorData);
-        setCreator(user);
-      }
-    };
-
-    fetchCreator();
-  }, [detailedEventData]);
+const DetailedEventCard = ({ detailedEventData, isOpen, onClose, onInviteAcceptDeny }) => {
+  const { user } = useContext(AuthContext)
+  const { attendees } = detailedEventData || {}
+  const { onOpen } = useDisclosure()
+  const confirmationModal = useDisclosure()
+  const navigate = useNavigate()
+  console.log(detailedEventData)
 
   const handleAccept = async () => {
-    const event = await acceptInvite(user.email, detailedEventData.id);
-    onInviteAcceptDeny(event);
-  };
+    const event = await acceptInvite(user.email, detailedEventData.id)
+    onInviteAcceptDeny(event)
+  }
 
   const handleDeny = async () => {
-    const event = await denyInvite(user.email, detailedEventData.id);
-    onInviteAcceptDeny(event);
-  };
+    const event = await denyInvite(user.email, detailedEventData.id)
+    onInviteAcceptDeny(event)
+  }
 
   const hasPendingInvite = () => {
-    const { pending } = attendees || [];
-    return pending && pending.indexOf(user.email) !== -1;
-  };
+    const { pending } = attendees || []
+    return pending && pending.indexOf(user.email) !== -1
+  }
 
   const hasAccepted = () => {
-    const { accepted } = attendees || [];
-    return accepted && accepted.indexOf(user.email) !== -1;
-  };
+    const { accepted } = attendees || []
+    return accepted && accepted.indexOf(user.email) !== -1
+  }
 
   const hasDenied = () => {
-    const { denied } = attendees || [];
-    return denied && denied.indexOf(user.email) !== -1;
-  };
+    const { denied } = attendees || []
+    return denied && denied.indexOf(user.email) !== -1
+  }
 
   const getAllInvited = () => {
-    const { accepted = [], pending = [], denied = [] } = attendees || {};
+    const { accepted = [], pending = [], denied = [] } = attendees || {}
 
     return {
       all: [...accepted, ...pending, ...denied],
       accepted,
       denied,
-    };
-  };
+    }
+  }
 
   const handleDeleteEvent = async () => {
     try {
-      await deleteSingleEvent(detailedEventData.id);
-      navigate(-1);
+      await deleteSingleEvent(detailedEventData.id, detailedEventData.creatorId)
     } catch (e) {
-      console.log(e);
+      console.log(e)
     }
-  };
+  }
 
-  const messageContainer = (text) => (
+  const messageContainer = text => (
     <Flex
       p={5}
       bg="gray.100"
@@ -114,23 +89,23 @@ const DetailedEventCard = ({
     >
       {text}
     </Flex>
-  );
+  )
 
   const renderInvitees = (title, list) => (
     <>
       <Text fontSize="sm" color="gray.600" mt={3}>
         {title}:
       </Text>
-      {list.map((email) => (
+      {list.map(email => (
         <Text key={email} fontSize="sm" isTruncated>
           {email}
         </Text>
       ))}
     </>
-  );
+  )
 
   if (detailedEventData === undefined) {
-    return;
+    return
   }
 
   return (
@@ -157,14 +132,14 @@ const DetailedEventCard = ({
         <ModalBody>
           <Stack gap={3} py={5}>
             <Heading size="lg">{detailedEventData.title}</Heading>
-            {creator && <EventCreatorInfo creator={creator} />}
+            <EventCreatorInfo creator={detailedEventData.creatorId} />
             {detailedEventData?.creatorId === user?.uid && (
               <div>
-                <IconButton icon={<EditIcon />} onClick={onOpen} />
                 <IconButton
-                  icon={<DeleteIcon />}
-                  onClick={confirmationModal.onOpen}
+                  icon={<EditIcon />}
+                  onClick={() => navigate(`/edit-event/${detailedEventData.id}`)}
                 />
+                <IconButton icon={<DeleteIcon />} onClick={confirmationModal.onOpen} />
               </div>
             )}
             <Flex
@@ -239,27 +214,15 @@ const DetailedEventCard = ({
           )}
           {hasAccepted() && messageContainer("You have accepted this event")}
           {hasDenied() && messageContainer("You have denied this event")}
-          {!detailedEventData.isPrivate && (
-            <Box p={5} bg="gray.100" borderRadius="lg" mt={5}>
-              <Grid
-                templateColumns={{
-                  base: "repeat(1, 1fr)",
-                  md: "repeat(3, 1fr)",
-                }}
-                gap={6}
-              >
-                <Box>{renderInvitees("All Invited", getAllInvited().all)}</Box>
-                <Box>
-                  {renderInvitees("Accepted", getAllInvited().accepted)}
-                </Box>
-                <Box>{renderInvitees("Denied", getAllInvited().denied)}</Box>
-              </Grid>
-            </Box>
-          )}
+          <Stack>
+            {attendees?.accepted?.map(item => (
+              <p>{item}</p>
+            ))}
+          </Stack>
         </ModalBody>
       </ModalContent>
     </Modal>
-  );
-};
+  )
+}
 
-export default DetailedEventCard;
+export default DetailedEventCard
