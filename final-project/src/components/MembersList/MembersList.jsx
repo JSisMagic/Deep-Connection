@@ -13,7 +13,7 @@ import {
   SimpleGrid,
 } from "@chakra-ui/react"
 import { FaUserPlus, FaBan, FaSearch } from "react-icons/fa"
-import { getAllUsers, updateUser } from "../../services/users.services"
+import { getAllUsers, toggleBlockUser, updateUser } from "../../services/users.services"
 import { useNavigate } from "react-router-dom"
 import { MEMBERS_LIST_HEIGHT } from "../../common/constrants"
 import { userRole } from "../../common/member-role"
@@ -31,7 +31,9 @@ const MembersList = ({ searchTerm, setSearchTerm }) => {
     const timer = setTimeout(() => {
       const filtered = allMembers.filter(
         user =>
-          user?.username?.toLowerCase().includes(searchTerm) || user?.phone?.includes(searchTerm)
+          user?.username?.toLowerCase().includes(searchTerm) ||
+          user?.firstName?.concat(user?.lastName).toLowerCase().includes(searchTerm) ||
+          user?.phone?.includes(searchTerm)
       )
 
       setFilteredMembers(filtered)
@@ -68,10 +70,12 @@ const MembersList = ({ searchTerm, setSearchTerm }) => {
 const MemberItem = ({ user }) => {
   const navigate = useNavigate()
   const { userData } = useContext(AuthContext)
-  const [isCurrentlyBlocked, setIsCurrentlyBlocked] = useState(user?.isBlocked)
-
+  const [isCurrentlyBlocked, setIsCurrentlyBlocked] = useState(user?.isBlocked || false)
+  
   const toggleBlock = () => {
-    updateUser(user.uid, { isBlocked: isCurrentlyBlocked ? null : true })
+    console.log(isCurrentlyBlocked, user.username);
+    // updateUser(user.uid, { isBlocked: isCurrentlyBlocked ? null : true })
+    toggleBlockUser(user.uid, !isCurrentlyBlocked)
     setIsCurrentlyBlocked(prev => !prev)
   }
 
