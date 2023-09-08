@@ -1,6 +1,5 @@
-
-import { useState, useEffect, useContext, useRef } from "react";
-import { AuthContext } from "../../context/AuthContext";
+import { useState, useEffect, useContext, useRef } from "react"
+import { AuthContext } from "../../context/AuthContext"
 import {
   Box,
   StackDivider,
@@ -13,44 +12,52 @@ import {
   Icon,
   useToast,
   Button,
-} from "@chakra-ui/react";
-import { FaLocationDot, FaFlag } from "react-icons/fa6";
-import { updateNotification } from "../../services/notification.services";
-import DetailedEventCard from "../DetailedEventCard/DetailedEventCard";
-import { getEventData } from "../../services/event.services";
+} from "@chakra-ui/react"
+import { FaLocationDot, FaFlag } from "react-icons/fa6"
+import { updateNotification } from "../../services/notification.services"
+import DetailedEventCard from "../DetailedEventCard/DetailedEventCard"
+import { getEventData } from "../../services/event.services"
 
 export const useInterval = (callback, delay) => {
-  const savedCallback = useRef();
+  const savedCallback = useRef()
 
   useEffect(() => {
-    savedCallback.current = callback;
-  }, [callback]);
+    savedCallback.current = callback
+  }, [callback])
 
   useEffect(() => {
     function tick() {
-      savedCallback.current();
+      savedCallback.current()
     }
 
     if (delay !== null) {
-      let id = setInterval(tick, delay);
-      return () => clearInterval(id);
+      let id = setInterval(tick, delay)
+      return () => clearInterval(id)
     }
-  }, [delay]);
+  }, [delay])
 }
 
 const Notifications = ({ data, onNotificationRead }) => {
-  const { user } = useContext(AuthContext);
-  const toast = useToast();
-  const [event, setEvent] = useState();
-  const [eventDialogOpen, setEventDialogOpen] = useState(false);
+  const { user } = useContext(AuthContext)
+  const toast = useToast()
+  const [event, setEvent] = useState()
+  const [eventDialogOpen, setEventDialogOpen] = useState(false)
 
-  const openEventDetails = async (notification) => {
-    const eventData = await getEventData(notification.meta.eventId);
+  const openEventDetails = async notification => {
+    const eventData = await getEventData(notification.meta.eventId)
     if (!eventData.id) {
       toast({
         position: "top",
         render: ({ onClose }) => (
-          <Box color="white" p={3} bg="red.500" borderRadius="md" display="flex" alignItems="center" justifyContent="center">
+          <Box
+            color="white"
+            p={3}
+            bg="red.500"
+            borderRadius="md"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
             <Text>The event has been deleted.</Text>
             <Button size="sm" ml={3} onClick={onClose}>
               Close
@@ -59,17 +66,17 @@ const Notifications = ({ data, onNotificationRead }) => {
         ),
         duration: 5000,
         isClosable: true,
-      });
+      })
     } else {
-      setEvent(eventData);
-      setEventDialogOpen(true);
-      setRead(notification);
+      setEvent(eventData)
+      setEventDialogOpen(true)
+      setRead(notification)
     }
-  };
+  }
 
-  const setRead = async (notification) => {
-    await updateNotification(user.uid, notification.id, { ...notification, read: true });
-    onNotificationRead(notification);
+  const setRead = async notification => {
+    await updateNotification(user.uid, notification.id, { ...notification, read: true })
+    onNotificationRead(notification)
   }
 
   return (
@@ -78,29 +85,35 @@ const Notifications = ({ data, onNotificationRead }) => {
         isOpen={eventDialogOpen}
         onClose={() => setEventDialogOpen(false)}
         detailedEventData={event}
-        onInviteAcceptDeny={(e) => setEvent(e)}
+        onInviteAcceptDeny={e => setEvent(e)}
       />
       <CardHeader>
-        <Heading size='md'>Notifications</Heading>
+        <Heading size="md">Notifications</Heading>
       </CardHeader>
       <CardBody>
-        <Stack divider={<StackDivider />} spacing='4'>
-        {data.map(n => (
-            <Box 
-                key={n.id} 
-                onClick={() => openEventDetails(n)} 
-                mt='1'  
-                bgColor={n.read ? "" : "gray.100"} 
-                cursor="pointer" 
+        <Stack divider={<StackDivider />} spacing="4">
+          {data.map(n => (
+            <Box
+              p={3}
+              border="1px solid"
+              borderColor="gray.400"
+              borderRadius="md"
+              key={n.id}
+              onClick={() => openEventDetails(n)}
+              mt="1"
+              bgColor={n.read ? "" : "gray.100"}
+              cursor="pointer"
             >
-              <Heading size='xs' textTransform='uppercase'>
+              <Heading size="xs" textTransform="uppercase">
                 {n.title}
-                {!n.read && <Icon as={FaFlag} ml="2" color="red.500" />} 
+                {!n.read && <Icon as={FaFlag} ml="2" color="red.500" />}
               </Heading>
-              <Text pt='2' fontSize='sm' flexGrow={1}>
-                Event at 
+              <Text pt="2" fontSize="sm" flexGrow={1}>
+                Event at
                 <Icon as={FaLocationDot} boxSize={6} color="red.700" />
-                <Text as="span" fontWeight="bold">{n.location}</Text>
+                <Text as="span" fontWeight="bold">
+                  {n.location}
+                </Text>
               </Text>
             </Box>
           ))}
@@ -108,7 +121,6 @@ const Notifications = ({ data, onNotificationRead }) => {
       </CardBody>
     </Card>
   )
-
 }
 
-export default Notifications;
+export default Notifications
