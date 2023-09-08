@@ -1,9 +1,23 @@
-import { Flex, Heading, Icon, Image, Stack, Text, Box } from "@chakra-ui/react"
+import { Box, Button, Flex, Heading, Icon, Image, Stack, Text } from "@chakra-ui/react"
 import { format } from "date-fns"
 import { FaLocationDot } from "react-icons/fa6"
 import FallbackImg from "../../assets/images/event.jpg"
+import { useContext } from "react"
+import { AuthContext } from "../../context/AuthContext"
+import { joinOrLeaveEvent } from "../../services/event.services"
+import { eventActions } from "../../common/event-enums"
 
 const EventPageCard = ({ eventData, onOpenDetailedEvent }) => {
+  const { userData } = useContext(AuthContext)
+
+  const hasJoined = userData?.events[eventData.id]
+
+  const handleJoinOrLeave = event => {
+    event.stopPropagation()
+
+    joinOrLeaveEvent(userData, eventData.id, hasJoined ? eventActions.leave : eventActions.join)
+  }
+
   return (
     <Flex
       p={3}
@@ -24,10 +38,17 @@ const EventPageCard = ({ eventData, onOpenDetailedEvent }) => {
         <Heading size="md">{format(eventData.startDate, "d")}</Heading>
       </Stack>
       <Stack h="100%" justify="space-between" flexGrow={1} width={{ lg: "60%" }}>
-        <Text fontWeight={500}>
-          {format(eventData.startDate, "MMMM")} @{format(eventData.startDate, "HH:mm")} -
-          {format(eventData.endDate, "HH:mm O")}
-        </Text>
+        <Flex justify="space-between" align="center">
+          <Text fontWeight={500}>
+            {format(eventData.startDate, "MMMM")} @{format(eventData.startDate, "HH:mm")} -
+            {format(eventData.endDate, "HH:mm O")}
+          </Text>
+          {userData.uid !== eventData.creatorId && (
+            <Button colorScheme="blue" onClick={handleJoinOrLeave}>
+              {hasJoined ? "Leave" : "Join"}
+            </Button>
+          )}
+        </Flex>
         <Heading size="lg">{eventData.title}</Heading>
         {eventData?.location && (
           <Flex gap={1}>
