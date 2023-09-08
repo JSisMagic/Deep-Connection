@@ -198,6 +198,7 @@ const DetailedEventCard = ({ detailedEventData, isOpen, onClose, onInviteAcceptD
           )}
           {hasAccepted() && messageContainer("You have accepted this event")}
           {hasDenied() && messageContainer("You have denied this event")}
+          {((detailedEventData.isPrivate && hasAccepted()) || !detailedEventData.isPrivate) && (
           <Menu>
             <MenuButton as={Button} rightIcon="▼">
               Participants
@@ -220,6 +221,7 @@ const DetailedEventCard = ({ detailedEventData, isOpen, onClose, onInviteAcceptD
               ))}
             </MenuList>
           </Menu>
+        )}
 
         </ModalBody>
       </ModalContent>

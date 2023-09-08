@@ -153,6 +153,7 @@ export const acceptInvite = async (email, eventId) => {
   attendees.pending = attendees.pending.filter(e => e.email !== email);
 
   await update(ref(db, `events/${eventId}/attendees`), { ...attendees })
+  await update(ref(db), { [`users/${attendee.uid}/events/${eventId}`]: true })
   return await getEventData(eventId)
 }
 
