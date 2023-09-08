@@ -12,13 +12,13 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
       <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-      <AuthContextProvider>
-        <AppContextProvider>
-          <BrowserRouter>
+      <BrowserRouter>
+        <AuthContextProvider>
+          <AppContextProvider>
             <App />
-          </BrowserRouter>
-        </AppContextProvider>
-      </AuthContextProvider>
+          </AppContextProvider>
+        </AuthContextProvider>
+      </BrowserRouter>
     </ChakraProvider>
   </React.StrictMode>
 )
