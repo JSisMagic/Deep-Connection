@@ -7,7 +7,7 @@ const ApplicationLayout = ({ children, notificationCount }) => {
   return (
     <Flex height="100vh" overflowY="hidden" w={{ base: "fit-content", sm: "full" }}>
       <Sidebar notificationCount={notificationCount}/>
-      <Box position="relative" flexGrow={1} height="100vh">
+      <Box position="relative" width="100%" height="100vh">
         <PrivateHeader />
         <Box overflowY="auto" height={`calc(100vh - ${HEADER_HEIGHT})`} position="relative">
           {children}
