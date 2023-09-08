@@ -1,39 +1,41 @@
-import { useContext, useState, useEffect } from "react"
-import { AuthContext } from "../../context/AuthContext"
+import { CheckIcon, CloseIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons"
 import {
+  Avatar,
   Box,
+  Button,
+  ButtonGroup,
   Flex,
-  Icon,
-  Text,
   Heading,
-  Stack,
+  Icon,
+  IconButton,
   Image,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalHeader,
   ModalOverlay,
-  Button,
-  IconButton,
+  Stack,
+  Text,
   useDisclosure,
-  Avatar,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
 } from "@chakra-ui/react"
 import { format } from "date-fns"
+import { useContext } from "react"
 import { FaLocationDot } from "react-icons/fa6"
-import { CheckIcon, CloseIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons"
+import { useNavigate } from "react-router-dom"
+import { confirmMessages } from "../../common/confirmation-messages"
+import { userRole } from "../../common/member-role"
+import { AuthContext } from "../../context/AuthContext"
 import { acceptInvite, deleteSingleEvent, denyInvite } from "../../services/event.services"
 import EventCreatorInfo from "../Events/EventCreatorInfor"
 import ConfirmationModal from "../Modals/ConfirmationModal"
-import { confirmMessages } from "../../common/confirmation-messages"
-import { useNavigate } from "react-router-dom"
 
 const DetailedEventCard = ({ detailedEventData, isOpen, onClose, onInviteAcceptDeny }) => {
-  const { user } = useContext(AuthContext)
+  const { user, userData } = useContext(AuthContext)
   const { attendees } = detailedEventData || {}
   const { onOpen } = useDisclosure()
   const confirmationModal = useDisclosure()
@@ -58,6 +60,7 @@ const DetailedEventCard = ({ detailedEventData, isOpen, onClose, onInviteAcceptD
   const hasAccepted = () => {
     const { accepted } = attendees || []
     // debugger;
+    console.log(accepted);
     return accepted && accepted.find(e => e.email === user.email) !== undefined
   }
 
@@ -65,7 +68,6 @@ const DetailedEventCard = ({ detailedEventData, isOpen, onClose, onInviteAcceptD
     const { denied } = attendees || []
     return denied && denied.find(e => e.email === user.email) !== undefined
   }
-
 
   const handleDeleteEvent = async () => {
     try {
@@ -115,17 +117,20 @@ const DetailedEventCard = ({ detailedEventData, isOpen, onClose, onInviteAcceptD
 
         <ModalBody>
           <Stack gap={3} py={5}>
-            <Heading size="lg">{detailedEventData.title}</Heading>
+            <Flex justify="space-between">
+              <Heading size="lg">{detailedEventData.title}</Heading>
+              {(detailedEventData?.creatorId === user?.uid || userData.role === userRole.ADMIN) && (
+                <ButtonGroup>
+                  <IconButton
+                    icon={<EditIcon />}
+                    onClick={() => navigate(`/edit-event/${detailedEventData.id}`)}
+                  />
+                  <IconButton icon={<DeleteIcon />} onClick={confirmationModal.onOpen} />
+                </ButtonGroup>
+              )}
+            </Flex>
             <EventCreatorInfo creator={detailedEventData.creatorId} />
-            {detailedEventData?.creatorId === user?.uid && (
-              <div>
-                <IconButton
-                  icon={<EditIcon />}
-                  onClick={() => navigate(`/edit-event/${detailedEventData.id}`)}
-                />
-                <IconButton icon={<DeleteIcon />} onClick={confirmationModal.onOpen} />
-              </div>
-            )}
+
             <Flex
               p={5}
               bg="gray.100"
@@ -199,30 +204,37 @@ const DetailedEventCard = ({ detailedEventData, isOpen, onClose, onInviteAcceptD
           {hasAccepted() && messageContainer("You have accepted this event")}
           {hasDenied() && messageContainer("You have denied this event")}
           {((detailedEventData.isPrivate && hasAccepted()) || !detailedEventData.isPrivate) && (
-          <Menu>
-            <MenuButton as={Button} rightIcon="▼">
-              Participants
-            </MenuButton>
-            <MenuList maxH="200px" overflowY="auto">
-              {attendees?.accepted?.map((userDetail, index) => (
-                <MenuItem key={index} onClick={() => navigate(`/profile/${userDetail.uid}`)}>
-                  <Flex background="white" p={3} borderRadius="md" justify="space-between" align="center" boxShadow="base">
-                    <Flex gap={3} cursor="pointer">
-                      <Avatar src={userDetail.profilePicture} />
-                      <Box>
-                        <Heading size="sm">
-                          {userDetail.firstName} {userDetail.lastName}
-                        </Heading>
-                        <Text fontWeight={600}>@{userDetail.username}</Text>
-                      </Box>
+            <Menu>
+              <MenuButton as={Button} rightIcon="▼">
+                Participants
+              </MenuButton>
+              <MenuList maxH="200px" overflowY="auto">
+                {attendees?.accepted?.map((userDetail, index) => (
+                  <MenuItem key={index} onClick={() => navigate(`/profile/${userDetail.uid}`)}>
+                    <Flex
+                      w="full"
+                      background="white"
+                      p={3}
+                      borderRadius="md"
+                      justify="space-between"
+                      align="center"
+                      boxShadow="base"
+                    >
+                      <Flex gap={3} cursor="pointer">
+                        <Avatar src={userDetail.profilePicture} />
+                        <Box>
+                          <Heading size="sm">
+                            {userDetail.firstName} {userDetail.lastName}
+                          </Heading>
+                          <Text fontWeight={600}>@{userDetail.username}</Text>
+                        </Box>
+                      </Flex>
                     </Flex>
-                  </Flex>
-                </MenuItem>
-              ))}
-            </MenuList>
-          </Menu>
-        )}
-
+                  </MenuItem>
+                ))}
+              </MenuList>
+            </Menu>
+          )}
         </ModalBody>
       </ModalContent>
     </Modal>
