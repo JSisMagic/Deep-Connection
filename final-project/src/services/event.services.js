@@ -13,6 +13,7 @@ import {
 } from "firebase/database"
 import { db } from "../config/firebase"
 import { dateISOTimezoneAdjust } from "../common/helpers"
+import { eventActions } from "../common/event-enums"
 
 export const createEvent = async event => {
   const { key } = await push(ref(db, "events"), event)
@@ -81,8 +82,8 @@ export const getEventData = async eventId => {
 
 export const getEventsForUser = async uid => {
   const snapshot = await get(ref(db, `users/${uid}/events`))
-
   const eventIds = Object.keys(snapshot.val() || {})
+
   const eventData = await Promise.all(eventIds.map(id => getEventData(id)))
 
   return eventData
@@ -142,7 +143,7 @@ export const acceptInvite = async (email, eventId) => {
     ...event.attendees,
     accepted: event.attendees.accepted || [],
   }
-  const attendee = attendees.pending.find(e => e.email === email);
+  const attendee = attendees.pending.find(e => e.email === email)
 
   if (attendee === undefined) {
     alert("Cannot accept invite, user has no invitation")
@@ -150,7 +151,7 @@ export const acceptInvite = async (email, eventId) => {
   }
 
   attendees.accepted.push(attendee)
-  attendees.pending = attendees.pending.filter(e => e.email !== email);
+  attendees.pending = attendees.pending.filter(e => e.email !== email)
 
   await update(ref(db, `events/${eventId}/attendees`), { ...attendees })
   await update(ref(db), { [`users/${attendee.uid}/events/${eventId}`]: true })
@@ -176,6 +177,22 @@ export const denyInvite = async (email, eventId) => {
 
   await update(ref(db, `events/${eventId}/attendees`), { ...attendees })
   return await getEventData(eventId)
+}
+
+export const joinOrLeaveEvent = async (userData, eventId, action) => {
+  const event = await getEventData(eventId)
+  let accepted = event.attendees.accepted || []
+
+  if (action === eventActions.join) {
+    accepted.push(userData)
+  } else {
+    accepted = accepted.filter(u => u.uid !== userData.uid)
+  }
+
+  return update(ref(db), {
+    [`events/${eventId}/attendees/accepted/`]: accepted,
+    [`users/${userData.uid}/events/${eventId}`]: action === eventActions.join ? true : null,
+  })
 }
 
 export const updateEvent = async (eventId, data) => {
