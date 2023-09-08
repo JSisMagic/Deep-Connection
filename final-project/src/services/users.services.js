@@ -37,10 +37,9 @@ export const getUserByUid = async uid => {
 }
 
 export const getUsersByUsernamePartial = async partial => {
-  const allUsers = await getAllUsers();
-  return allUsers.filter(user => user.username && user.username.includes(partial));
+  const allUsers = await getAllUsers()
+  return allUsers.filter(user => user.username && user.username.includes(partial))
 }
-
 
 export const uploadImage = async img => {
   const imageRef = storageRef(storage, `images/${v4()}`)
@@ -59,6 +58,13 @@ export const updateUser = async (uid, data) => {
 
   await update(ref(db, `users/${uid}`), { ...userSnapshot, ...data })
   return { ...data }
+}
+
+export const toggleBlockUser = async (uid, isBlocked) => {
+  console.log(isBlocked)
+  return update(ref(db), {
+    [`users/${uid}/isBlocked`]: isBlocked || null,
+  })
 }
 
 export const getUserContactLists = async uid => {
