@@ -21,10 +21,15 @@ import { getNotifications } from "./services/notification.services"
 import TodoComponent from "./components/Todo/ToDo"
 import EditEventPage from "./pages/EditEvent/EditEventPage"
 import CreateEventPage from "./pages/CreateEvent/CreateEventPage"
+import { useContext } from "react"
+import { AuthContext } from "./context/AuthContext"
+import BlockedUserPage from "./pages/BlockedUser/BlockedUserPage"
+import NotFoundPage from "./pages/NotFound/NotFoundPage"
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyCs89FEdCghqxYJoWMICN59cqhVOYyRLgs"
 const LIBRARIES = ["places"]
 function App() {
+  const { userData } = useContext(AuthContext)
   const [user, loading] = useAuthState(auth)
   const [notifications, setNotifications] = useState([])
 
@@ -73,6 +78,7 @@ function App() {
                 />
               }
             />
+            <Route path="/*" element={<NotFoundPage />} />
           </Routes>
         </ApplicationLayout>
       ) : (
@@ -81,6 +87,8 @@ function App() {
             <Route index element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/blocked" element={<BlockedUserPage />} />
+            <Route path="/*" element={<NotFoundPage />} />
           </Routes>
         </LandingLayout>
       )}
