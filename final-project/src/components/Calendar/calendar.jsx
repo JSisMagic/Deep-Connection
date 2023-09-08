@@ -19,8 +19,11 @@ import DayView from "./DayView"
 import MonthView from "./MonthView"
 import WeekView from "./WeekView"
 import YearView from "./YearView"
+import { useContext } from "react"
+import { AuthContext } from "../../context/AuthContext"
 
 const Calendar = () => {
+  // const {userData}= useContext(AuthContext)
   const [isOpen, setIsOpen] = useState(false)
   const [detailedEventData, setDetailedEventData] = useState({
     title: "",
