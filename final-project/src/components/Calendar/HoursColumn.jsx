@@ -8,15 +8,20 @@ const HoursColumn = () => {
   )
 
   return (
-    <Grid templateRows="repeat(48, 30px)">
+    <Grid templateRows={{ base: "repeat(48, 20px)", md: "repeat(48, 30px)" }}>
       {hoursWithMinutes.map((hour, i) => (
         <GridItem
           key={hour}
-          borderBottom={i % 2 === 0 && "1px dashed"}
-          borderTop={i % 2 === 0 && "1px solid"}
+          borderBottom={i % 2 === 0 ? "1px dashed" : "none"}
+          borderTop={i % 2 === 0 ? "1px solid" : "none"}
           borderColor="#CBD5E0"
         >
-          <Text fontSize={i % 2 === 0 ? "sm" : "xs"} px={2} pt={1} textAlign="right">
+          <Text 
+            fontSize={{ base: i % 2 === 0 ? "xs" : "2xs", md: i % 2 === 0 ? "sm" : "xs" }}
+            px={{ base: 1, md: 2 }}
+            pt={1}
+            textAlign="right"
+          >
             {hour}
           </Text>
         </GridItem>

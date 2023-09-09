@@ -81,33 +81,40 @@ const Calendar = () => {
   }
 
   return (
-    <Box className="calendar-container" paddingInline={5}>
+    <Box className="calendar-container" paddingInline={{ base: 3, md: 5 }}>
       <Grid
         zIndex={10}
-        templateColumns="repeat(3, 1fr)"
+        templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }}
         position="sticky"
         top={0}
         background="white"
         borderBottom="2px solid"
         borderColor="gray.100"
+        gap={4}
       >
-        <GridItem>
+        <GridItem colSpan={{ base: 1, md: 1 }}>
           <Button colorScheme="blue" onClick={() => navigate("/create-event")}>
             Create Event
           </Button>
         </GridItem>
-        <GridItem>
-          <ButtonGroup variant="outline" width="100%" justifyContent="center" paddingBottom={6}>
-            <Button background={COOL_PURPLE} color="white" onClick={handleChangeView("day")}>
+        <GridItem colSpan={{ base: 1, md: 1 }} display={{ base: "flex", md: "block" }} justifyContent="center">
+          <ButtonGroup 
+            variant="outline"
+            width="100%" 
+            justifyContent="center" 
+            paddingBottom={{ base: 2, md: 6 }}
+            flexWrap={{ base: "wrap", md: "nowrap" }}
+            >
+            <Button background={COOL_PURPLE} color="white" onClick={handleChangeView("day")} flex={{ base: 1, md: "auto" }}>
               Day
             </Button>
-            <Button background={COOL_GREEN} color="white" onClick={handleChangeView("week")}>
+            <Button background={COOL_GREEN} color="white" onClick={handleChangeView("week")} flex={{ base: 1, md: "auto" }}>
               Week
             </Button>
-            <Button background={COOL_BLUE} color="white" onClick={handleChangeView("workWeek")}>
+            <Button background={COOL_BLUE} color="white" onClick={handleChangeView("workWeek")} flex={{ base: 1, md: "auto" }}>
               Work Week
             </Button>
-            <Button background={COOL_BLUE_GREEN} color="white" onClick={handleChangeView("month")}>
+            <Button background={COOL_BLUE_GREEN} color="white" onClick={handleChangeView("month")} flex={{ base: 1, md: "auto" }}>
               Month
             </Button>
           </ButtonGroup>

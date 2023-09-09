@@ -217,16 +217,16 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
       flexDirection={{ base: "column", md: "row" }}
     >
       <VStack
-        spacing={4}
-        padding={5}
+        spacing={[2, 4, 6]}
+        padding={[3, 5]}
         width={{ base: "100%", md: "50%" }}
         bgColor="rgba(255,255,255)"
         borderRadius="lg"
         boxShadow="2xl"
       >
         <FormControl isRequired isInvalid={errors.title}>
-          <FormLabel>Title</FormLabel>
-          <Input value={eventTitle} onChange={handleChangeTitle} placeholder="Title" size="lg" />
+          <FormLabel fontSize={["sm", "md", "lg"]}>Title</FormLabel>
+          <Input value={eventTitle} onChange={handleChangeTitle} placeholder="Title" size="lg" width={{ base: "100%", md: "50%" }} />
           <FormErrorMessage>{errors.title}</FormErrorMessage>
         </FormControl>
 
@@ -275,12 +275,14 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
         <label
           htmlFor="upload-image"
           style={{
+          
+            maxWidth: "100%",
+            width: ["100%", "50%"],
             backgroundColor: `rgb(${categoryColors.blue})`,
             color: "white",
             borderRadius: "5px",
             padding: "10px",
             cursor: "pointer",
-            width: "100%", // Set width to 100%
             textAlign: "center", // Center text
             fontSize: "18px",
             fontWeight: "600",
@@ -326,7 +328,7 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
           <FormErrorMessage>{errors.endDate}</FormErrorMessage>
         </FormControl>
 
-        <Stack direction="row" alignItems="center" spacing={4} width="100%">
+        <Stack alignItems="center" spacing={{ base: 2, md: 4 }} width="100%" direction={{ base: "column", sm: "row" }} >
           <Button
             onClick={() => setIsPrivate(prev => !prev)}
             w="110px"
@@ -423,7 +425,7 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
             </MenuList>
           </Menu>
         </Stack>
-        <ButtonGroup width="100%" height="50px" fontSize="xl">
+        <ButtonGroup width="100%" height="50px" fontSize="xl" flexDirection={{ base: "column", md: "row" }}>
           <Button width="full" onClick={() => navigate("..")}>
             Cancel
           </Button>

@@ -232,9 +232,9 @@ const EditProfileComponent = ({ profileData, setProfileData, initials, setEditSt
   }
 
   return (
-    <Box w="100%" m="auto" p="4" bg="white" borderRadius="lg" boxShadow="md">
+    <Box width={{ base: "100%", md: "75%", lg: "50%" }} margin="auto" padding="4" backgroundColor="white" borderRadius="lg" boxShadow="md">
       <form onSubmit={handleSubmit(onSaveChanges)}>
-        <Flex justify="space-between">
+        <Flex direction={{ base: "column", md: "row" }} justify="space-between">
           <FormControl isInvalid={errors?.profilePicture}>
             <FormLabel htmlFor="avatar" cursor="pointer" w="max-content">
               <Avatar
@@ -248,14 +248,14 @@ const EditProfileComponent = ({ profileData, setProfileData, initials, setEditSt
             <Input type="file" id="avatar" display="none" {...register("profilePicture")} />
             <FormErrorMessage>{errors?.profilePicture?.message}</FormErrorMessage>
           </FormControl>
-          <ButtonGroup flexDirection={{ base: "column", md: "row" }}>
+          <ButtonGroup flexDirection={{ base: "column", md: "row" }} spacing="4">
             <Button onClick={() => setEditState(false)}>Cancel</Button>
             <Button colorScheme="green" type="submit">
               Save changes
             </Button>
           </ButtonGroup>
         </Flex>
-        <Stack>
+        <Stack spacing={{ base: "4", md: "6" }}>
           <FormControl isRequired isInvalid={errors?.firstName}>
             <FormLabel>First name</FormLabel>
             <Input

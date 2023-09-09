@@ -54,14 +54,14 @@ const MonthView = ({ date, setDate, onOpenDetailedModal }) => {
 
   return (
     <>
-      <Grid templateColumns="repeat(3, 1fr)" py={2}>
+      <Grid templateColumns={{ base: "repeat(1, 1fr)", sm: "repeat(3, 1fr)" }} py={2}>
         <Button onClick={handleNavigate("today")} width="max-content">
           Today
         </Button>
 
         <Flex justify="center" align="center" gap={3}>
           <IconButton size="sm" icon={<ArrowBackIcon />} onClick={handleNavigate("prev")} />
-          <Heading w="200px" size="md" textAlign="center">
+          <Heading w={{ base: "150px", sm: "200px" }} size="md" textAlign="center">
             {format(date, "MMMM, y")}
           </Heading>
           <IconButton size="sm" icon={<ArrowForwardIcon />} onClick={handleNavigate("next")} />
@@ -74,11 +74,11 @@ const MonthView = ({ date, setDate, onOpenDetailedModal }) => {
         borderLeft="1px solid"
         borderColor="gray.200"
       >
-        <Grid templateColumns="repeat(7, 1fr)">
+        <Grid templateColumns={{ base: "repeat(1, 1fr)", sm: "repeat(7, 1fr)" }}>
           {weekdays.map(weekday => (
             <Box
               key={weekday}
-              p={1}
+              p={{ base: 0.5, sm: 1 }}
               borderBottom="1px solid"
               borderRight="1px solid"
               borderColor="gray.200"
@@ -90,7 +90,7 @@ const MonthView = ({ date, setDate, onOpenDetailedModal }) => {
             </Box>
           ))}
         </Grid>
-        <Grid templateColumns="repeat(7, 1fr)" templateRows="auto">
+        <Grid templateColumns={{ base: "repeat(1, 1fr)", sm: "repeat(7, 1fr)" }} templateRows="auto">
           {days.map(day => {
             return (
               <GridItem key={day}>

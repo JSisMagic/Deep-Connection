@@ -43,8 +43,8 @@ const EventsList = ({ events = [], inUserProfile }) => {
   }, [searchTerm, events])
 
   return (
-    <Stack gap={5}>
-      <InputGroup>
+    <Stack gap={{ base: 2, sm: 3, md: 5 }} px={{ base: 4, sm: 6, md: 0 }}>
+      <InputGroup size={{ base: "sm", md: "md" }}>
         <Input
           placeholder="Search for events.."
           value={searchTerm}
@@ -54,13 +54,13 @@ const EventsList = ({ events = [], inUserProfile }) => {
           <SearchIcon />
         </InputLeftElement>
       </InputGroup>
-      <Stack height={!inUserProfile && "75vh"} overflowY="auto">
+      <Stack height={{ base: "60vh", md: !inUserProfile && "75vh" }} overflowY="auto">
         {filteredEvents.length > 0 ? (
           filteredEvents.map(event => (
             <EventPageCard key={event.id} eventData={event} onOpenDetailedEvent={onOpen} />
           ))
         ) : (
-          <Heading size="lg" textAlign="center" marginTop={10}>
+          <Heading size={{ base: "md", md: "lg" }} textAlign="center" marginTop={10}>
             No events found
           </Heading>
         )}
