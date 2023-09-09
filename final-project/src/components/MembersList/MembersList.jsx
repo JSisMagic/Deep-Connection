@@ -78,59 +78,59 @@ const MemberItem = ({ user }) => {
     setIsCurrentlyBlocked(prev => !prev)
   }
 
-  useEffect(() => {
-  const fetchIsContact = async () => {
-    try {
-      const contacts = await getContacts(userData.uid);
-      const isUserContact = contacts.some(
-        (contact) => contact.contactUserId === user.uid
-      );
-      setIsContact(isUserContact);
-    } catch (error) {
-      console.error('Failed to fetch contacts:', error);
-    }
-  };
-
-  fetchIsContact();
-}, [userData.uid, user.uid]);
-
-  const handleAddContact = async () => {
-    try {
-      const existingContacts = await getContacts(userData.uid);
-  
-      const alreadyExists = existingContacts.some(
-        (contact) => contact.contactUserId === user.uid
-      );
-  
-      if (alreadyExists) {
-        console.error('User is already a contact');
-        return;
-      }
-  
-      await addContact(userData.uid, `${user.firstName} ${user.lastName}`, user.uid);
-      setIsContact(true);
-    } catch (error) {
-      console.error('Failed to add contact:', error);
-    }
-  };
-  
-  const handleRemoveContact = async () => {
-    try {
-      const contacts = await getContacts(userData.uid); 
-      // console.log('All Contacts:', contacts)
-      const contact = contacts.find((contact) => contact.name === `${user.firstName} ${user.lastName}` && contact.contactUserId === user.uid); // Added user UID check
-      // console.log('Found Contact:', contact);
-  
-      if (contact) {
-        await removeContact(userData.uid, contact.id);
-        setIsContact(false);
-      } else {
-        console.error('Contact not found');
-      }
-    } catch (error) {
-      console.error('Failed to remove contact:', error);
-    }
-  };
+   useEffect(() => {
+      const fetchIsContact = async () => {
+        try {
+          const contacts = await getContacts(userData.uid);
+          const isUserContact = contacts.some(
+            (contact) => contact.contactUserId === user.uid
+          );
+          setIsContact(isUserContact);
+        } catch (error) {
+          console.error('Failed to fetch contacts:', error);
+        }
+      };
+    
+      fetchIsContact();
+    }, [userData.uid, user.uid]);
+    
+      const handleAddContact = async () => {
+        try {
+          const existingContacts = await getContacts(userData.uid);
+      
+          const alreadyExists = existingContacts.some(
+            (contact) => contact.contactUserId === user.uid
+          );
+      
+          if (alreadyExists) {
+            console.error('User is already a contact');
+            return;
+          }
+      
+          await addContact(userData.uid, `${user.firstName} ${user.lastName}`, user.uid);
+          setIsContact(true);
+        } catch (error) {
+          console.error('Failed to add contact:', error);
+        }
+      };
+      
+      const handleRemoveContact = async () => {
+        try {
+          const contacts = await getContacts(userData.uid); 
+          // console.log('All Contacts:', contacts)
+          const contact = contacts.find((contact) => contact.name === `${user.firstName} ${user.lastName}` && contact.contactUserId === user.uid); // Added user UID check
+          // console.log('Found Contact:', contact);
+      
+          if (contact) {
+            await removeContact(userData.uid, contact.id);
+            setIsContact(false);
+          } else {
+            console.error('Contact not found');
+          }
+        } catch (error) {
+          console.error('Failed to remove contact:', error);
+        }
+      };
 
   return (
     <Flex
