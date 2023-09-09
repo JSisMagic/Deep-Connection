@@ -96,17 +96,43 @@ const ContactList = () => {
   };
 
   const handleCreateList = async () => {
-    if (listName && userUid) {
-      const newList = await createContactListForUser(userUid, {
-        name: listName,
-        contacts: {},
+    try {
+      if (listName && userUid) {
+        const newList = await createContactListForUser(userUid, {
+          name: listName,
+          contacts: {},
+        });
+  
+        setContactLists((prevLists) => {
+          return { ...prevLists, [newList.id]: newList };
+        });
+  
+        setListName("");
+  
+        toast({
+          title: "List Created",
+          description: `Successfully created the list "${listName}".`,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: "Creation Failed",
+          description: "Please provide a valid list name and user UID.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: `An error occurred while creating the list: ${error.message}`,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
       });
-
-      setContactLists((prevLists) => {
-        return { ...prevLists, [newList.id]: newList };
-      });
-
-      setListName("");
     }
   };
 
@@ -176,14 +202,28 @@ const ContactList = () => {
   const handleDeleteList = async (listId) => {
     try {
       await deleteContactListForUser(userUid, listId);
-
+  
       setContactLists((prevLists) => {
         const updatedLists = { ...prevLists };
         delete updatedLists[listId];
         return updatedLists;
       });
+  
+      toast({
+        title: "List Deleted",
+        description: "Successfully deleted the list.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
     } catch (error) {
-      console.log("Error deleting list:", error.message);
+      toast({
+        title: "Error",
+        description: `An error occurred while deleting the list: ${error.message}`,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
@@ -197,9 +237,23 @@ const ContactList = () => {
           ...prevLists,
           [listId]: updatedList,
         }));
+  
+        toast({
+          title: "User Removed",
+          description: "Successfully removed the user from the list.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
       }
     } catch (error) {
-      console.log("Error removing user from list:", error.message);
+      toast({
+        title: "Error",
+        description: `An error occurred while removing the user from the list: ${error.message}`,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 

@@ -12,6 +12,7 @@ import {
   Heading,
   Checkbox,
   Icon,
+  useToast
 } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import { AuthContext } from '../../context/AuthContext';
@@ -19,6 +20,7 @@ import { createTodoForUser, getTodosForUser, updateTodoForUser, deleteTodoForUse
 
 const TodoComponent = () => {
   const { user } = useContext(AuthContext)
+  const toast = useToast();
   const [todos, setTodos] = useState({});
   const [newTodo, setNewTodo] = useState('');
 
@@ -29,11 +31,36 @@ const TodoComponent = () => {
 
   const addTodo = async (e) => {
     e.preventDefault();
-
-    if (newTodo) {
-      await createTodoForUser(user.uid, { text: newTodo, completed: false });
-      setNewTodo('');
-      await fetchTodos();
+    try {
+      if (newTodo) {
+        await createTodoForUser(user.uid, { text: newTodo, completed: false });
+        setNewTodo('');
+        await fetchTodos();
+  
+        toast({
+          title: "Todo Added",
+          description: `You have successfully added a new todo: "${newTodo}".`,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: "No Todo Entered",
+          description: "Please enter a todo before trying to add it.",
+          status: "warning",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: `An error occurred while adding the todo: ${error.message}`,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
@@ -43,8 +70,26 @@ const TodoComponent = () => {
   };
 
   const removeTodo = async (todoId) => {
-    await deleteTodoForUser(user.uid, todoId);
-    await fetchTodos();
+    try {
+      await deleteTodoForUser(user.uid, todoId);
+      await fetchTodos();
+  
+      toast({
+        title: "Todo Removed",
+        description: "You have successfully removed a todo.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: `An error occurred while removing the todo: ${error.message}`,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
   };
 
   useEffect(() => {
