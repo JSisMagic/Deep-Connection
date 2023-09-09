@@ -9,8 +9,9 @@ import {
   Text,
   SimpleGrid,
 } from "@chakra-ui/react"
+import { getAllUsers, toggleBlockUser, updateUser, addContact, removeContact, getContacts  } from "../../services/users.services"
 import { FaUserPlus, FaBan, FaSearch, FaUserMinus } from "react-icons/fa"
-import { getAllUsers, toggleBlockUser, updateUser, addContact, removeContact, getContacts } from "../../services/users.services"
+
 import { useNavigate } from "react-router-dom"
 import { MEMBERS_LIST_HEIGHT } from "../../common/constrants"
 import { userRole } from "../../common/member-role"
@@ -72,6 +73,7 @@ const MemberItem = ({ user }) => {
   
   const toggleBlock = () => {
     console.log(isCurrentlyBlocked, user.username);
+    // updateUser(user.uid, { isBlocked: isCurrentlyBlocked ? null : true })
     toggleBlockUser(user.uid, !isCurrentlyBlocked)
     setIsCurrentlyBlocked(prev => !prev)
   }
@@ -186,6 +188,7 @@ const MemberItem = ({ user }) => {
       )}
     </Flex>
   )
+
 }
 
 export default MembersList

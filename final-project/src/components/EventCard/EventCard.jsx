@@ -1,36 +1,25 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Icon,
-  Image,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
-import { format } from "date-fns";
-import { FaLocationDot } from "react-icons/fa6";
-import FallbackImg from "../../assets/images/event.jpg";
-import { useContext } from "react";
-import { AuthContext } from "../../context/AuthContext";
-import { joinOrLeaveEvent } from "../../services/event.services";
-import { eventActions } from "../../common/event-enums";
+import { Box, Button, Flex, Heading, Icon, Image, Stack, Text } from "@chakra-ui/react"
+import { format } from "date-fns"
+import { FaLocationDot } from "react-icons/fa6"
+import FallbackImg from "../../assets/images/event.jpg"
+import { useContext } from "react"
+import { AuthContext } from "../../context/AuthContext"
+import { joinOrLeaveEvent } from "../../services/event.services"
+import { eventActions } from "../../common/event-enums"
+import { useState } from "react"
 
 const EventPageCard = ({ eventData, onOpenDetailedEvent }) => {
-  const { userData } = useContext(AuthContext);
+  const { userData } = useContext(AuthContext)
 
-  const hasJoined = userData?.events?.[eventData.id];
+  const [hasJoined, setHasJoined] = useState(userData?.events?.[eventData.id])
 
-  const handleJoinOrLeave = (event) => {
-    event.stopPropagation();
+  const handleJoinOrLeave = event => {
+    event.stopPropagation()
 
-    joinOrLeaveEvent(
-      userData,
-      eventData.id,
-      hasJoined ? eventActions.leave : eventActions.join
-    );
-  };
-
+    joinOrLeaveEvent(userData, eventData.id, hasJoined ? eventActions.leave : eventActions.join)
+    setHasJoined(prev => !prev)
+  }
+  console.log(eventData, hasJoined)
   return (
     <Flex
       p={3}
@@ -47,21 +36,13 @@ const EventPageCard = ({ eventData, onOpenDetailedEvent }) => {
       onClick={() => onOpenDetailedEvent(eventData)}
     >
       <Stack alignSelf={{ lg: "start" }} align="center" width="10%">
-        <Text fontWeight={500}>
-          {format(eventData.startDate, "ccc").toUpperCase()}
-        </Text>
+        <Text fontWeight={500}>{format(eventData.startDate, "ccc").toUpperCase()}</Text>
         <Heading size="md">{format(eventData.startDate, "d")}</Heading>
       </Stack>
-      <Stack
-        h="100%"
-        justify="space-between"
-        flexGrow={1}
-        width={{ lg: "60%" }}
-      >
+      <Stack h="100%" justify="space-between" flexGrow={1} width={{ lg: "60%" }}>
         <Flex justify="space-between" align="center">
           <Text fontWeight={500}>
-            {format(eventData.startDate, "MMMM")} @
-            {format(eventData.startDate, "HH:mm")} -
+            {format(eventData.startDate, "MMMM")} @{format(eventData.startDate, "HH:mm")} -
             {format(eventData.endDate, "HH:mm O")}
           </Text>
           {userData.uid !== eventData.creatorId && (
@@ -77,10 +58,7 @@ const EventPageCard = ({ eventData, onOpenDetailedEvent }) => {
             <Text fontWeight={600}>{eventData.location}</Text>
           </Flex>
         )}
-        <Text
-          dangerouslySetInnerHTML={{ __html: eventData.description }}
-          overflow="hidden"
-        />
+        <Text dangerouslySetInnerHTML={{ __html: eventData.description }} overflow="hidden" />
       </Stack>
       <Box h="100%" w={{ lg: "30%" }}>
         <Image
@@ -92,7 +70,7 @@ const EventPageCard = ({ eventData, onOpenDetailedEvent }) => {
         />
       </Box>
     </Flex>
-  );
-};
+  )
+}
 
-export default EventPageCard;
+export default EventPageCard

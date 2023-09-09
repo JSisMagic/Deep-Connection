@@ -35,7 +35,7 @@ export const errorMessages = {
     PASSWORD_LEN_ERROR: "Password must be between 8 and 30 symbols.",
 
     AVATAR_ERROR: "Please select a JPEG under 1MB.",
-
+    INVALID_END_DATE: "End date should be after start date!"
 }
 
 export default errorMessages;

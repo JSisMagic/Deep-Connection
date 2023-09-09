@@ -1,35 +1,29 @@
-import { useState, useEffect } from "react"
+import { useLoadScript } from "@react-google-maps/api"
+import { useState } from "react"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { Route, Routes } from "react-router-dom"
+import Calendar from "./components/Calendar/calendar"
+import ContactList from "./components/ContactList/ContactList"
+import Notifications, { useInterval } from "./components/Notifications/Notifications"
+import ProfilePage from "./components/Profile/ProfilePage"
+import TodoComponent from "./components/Todo/ToDo"
 import { auth } from "./config/firebase"
+import ApplicationLayout from "./layout/ApplicationLayout"
 import LandingLayout from "./layout/LandingLayout"
+import BlockedUserPage from "./pages/BlockedUser/BlockedUserPage"
+import CreateEventPage from "./pages/CreateEvent/CreateEventPage"
+import EditEventPage from "./pages/EditEvent/EditEventPage"
+import EventsPage from "./pages/Events/EventsPage"
 import LandingPage from "./pages/Landing/LandingPage"
 import LoginPage from "./pages/Login/LoginPage"
-import RegisterPage from "./pages/Register/RegisterPage"
-import Calendar from "./components/Calendar/calendar"
-import ApplicationLayout from "./layout/ApplicationLayout"
-import ProfilePage from "./components/Profile/ProfilePage"
-import EventForm from "./components/Events/EventForm"
-import { useLoadScript } from "@react-google-maps/api"
-import ContactList from "./components/ContactList/ContactList"
-import Notifications from "./components/Notifications/Notifications"
 import MembersPage from "./pages/Members/Members"
-import EventsPage from "./pages/Events/EventsPage"
-import AboutUsPage from "./components/AboutUs/AboutUs"
-import { useInterval } from "./components/Notifications/Notifications"
-import { getNotifications } from "./services/notification.services"
-import TodoComponent from "./components/Todo/ToDo"
-import EditEventPage from "./pages/EditEvent/EditEventPage"
-import CreateEventPage from "./pages/CreateEvent/CreateEventPage"
-import { useContext } from "react"
-import { AuthContext } from "./context/AuthContext"
-import BlockedUserPage from "./pages/BlockedUser/BlockedUserPage"
 import NotFoundPage from "./pages/NotFound/NotFoundPage"
+import RegisterPage from "./pages/Register/RegisterPage"
+import { getNotifications } from "./services/notification.services"
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyCs89FEdCghqxYJoWMICN59cqhVOYyRLgs"
 const LIBRARIES = ["places"]
 function App() {
-  const { userData } = useContext(AuthContext)
   const [user, loading] = useAuthState(auth)
   const [notifications, setNotifications] = useState([])
 
@@ -37,7 +31,7 @@ function App() {
     googleMapsApiKey: GOOGLE_MAPS_API_KEY,
     libraries: LIBRARIES,
   })
-
+  
   useInterval(() => {
     const fetchNotifications = async () => {
       const fetchedNotifications = await getNotifications(user?.uid)
