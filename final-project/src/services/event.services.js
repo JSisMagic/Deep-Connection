@@ -72,11 +72,11 @@ export const getEventData = async eventId => {
 
   return eventData
     ? {
-      ...eventData,
-      id: eventId,
-      startDate: new Date(eventData.startDate),
-      endDate: new Date(eventData.endDate),
-    }
+        ...eventData,
+        id: eventId,
+        startDate: new Date(eventData.startDate),
+        endDate: new Date(eventData.endDate),
+      }
     : {}
 }
 
@@ -122,11 +122,11 @@ export const getPublicEvents = async () => {
 
   return value
     ? Object.keys(value).map(key => ({
-      ...value[key],
-      id: key,
-      startDate: new Date(value[key].startDate),
-      endDate: new Date(value[key].endDate),
-    }))
+        ...value[key],
+        id: key,
+        startDate: new Date(value[key].startDate),
+        endDate: new Date(value[key].endDate),
+      }))
     : []
 }
 
@@ -182,7 +182,6 @@ export const denyInvite = async (email, eventId) => {
 export const joinOrLeaveEvent = async (userData, eventId, action) => {
   const event = await getEventData(eventId)
   let accepted = event.attendees?.accepted || []
-
 
   if (action === eventActions.join) {
     accepted.push(userData)
