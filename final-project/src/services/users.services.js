@@ -107,6 +107,58 @@ export const deleteContactListForUser = async (uid, listId) => {
   await remove(ref(db, `users/${uid}/contactLists/${listId}`))
 }
 
+export const addContact = async (uid, contactName, contactUserId) => {
+  if (!uid || !contactName || !contactUserId) {
+    throw new Error("UID, contact name, and contact user ID must be provided!");
+  }
+
+  const contactId = v4();
+
+  await set(ref(db, `users/${uid}/myContacts/${contactId}`), { 
+    name: contactName, 
+    contactUserId 
+  });
+
+  return { id: contactId, name: contactName, userId: contactUserId };
+};
+
+export const getContact = async (uid, contactId) => {
+  if (!uid || !contactId) {
+    throw new Error("Both UID and contact ID must be provided!");
+  }
+
+  const snapshot = await get(ref(db, `users/${uid}/myContacts/${contactId}`));
+  
+  if(!snapshot.val()) {
+    return null;
+  }
+
+  return { id: contactId, ...snapshot.val() };
+};
+
+export const getContacts = async (uid) => {
+  if (!uid) {
+    throw new Error("UID must be provided!");
+  }
+
+  const snapshot = await get(ref(db, `users/${uid}/myContacts`));
+  
+  if(!snapshot.val()) {
+    return [];
+  }
+
+  return Object.entries(snapshot.val()).map(([id, data]) => ({ id, ...data }));
+};
+
+export const removeContact = async (uid, contactId) => {
+  if (!uid || !contactId) {
+    throw new Error("Both UID and contact ID must be provided!");
+  }
+
+  await remove(ref(db, `users/${uid}/myContacts/${contactId}`));
+};
+
+
 export const getUserByEmail = async email => {
   const snapshot = await get(query(ref(db, "users"), orderByChild("email"), equalTo(email)))
   const value = snapshot.val()

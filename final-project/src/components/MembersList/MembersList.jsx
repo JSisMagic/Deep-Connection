@@ -12,8 +12,8 @@ import {
   Text,
   SimpleGrid,
 } from "@chakra-ui/react"
-import { FaUserPlus, FaBan, FaSearch } from "react-icons/fa"
-import { getAllUsers, toggleBlockUser, updateUser } from "../../services/users.services"
+import { FaUserPlus, FaBan, FaSearch, FaUserMinus } from "react-icons/fa"
+import { getAllUsers, toggleBlockUser, updateUser, addContact, removeContact, getContacts } from "../../services/users.services"
 import { useNavigate } from "react-router-dom"
 import { MEMBERS_LIST_HEIGHT } from "../../common/constrants"
 import { userRole } from "../../common/member-role"
@@ -71,13 +71,40 @@ const MemberItem = ({ user }) => {
   const navigate = useNavigate()
   const { userData } = useContext(AuthContext)
   const [isCurrentlyBlocked, setIsCurrentlyBlocked] = useState(user?.isBlocked || false)
+  const [isContact, setIsContact] = useState(false);
   
   const toggleBlock = () => {
     console.log(isCurrentlyBlocked, user.username);
-    // updateUser(user.uid, { isBlocked: isCurrentlyBlocked ? null : true })
     toggleBlockUser(user.uid, !isCurrentlyBlocked)
     setIsCurrentlyBlocked(prev => !prev)
   }
+
+  const handleAddContact = async () => {
+    try {
+      await addContact(userData.uid, `${user.firstName} ${user.lastName}`, user.uid);
+      setIsContact(true);
+    } catch (error) {
+      console.error('Failed to add contact:', error);
+    }
+  };
+  
+  const handleRemoveContact = async () => {
+    try {
+      const contacts = await getContacts(userData.uid); 
+      console.log('All Contacts:', contacts)
+      const contact = contacts.find((contact) => contact.name === `${user.firstName} ${user.lastName}` && contact.contactUserId === user.uid); // Added user UID check
+      console.log('Found Contact:', contact);
+  
+      if (contact) {
+        await removeContact(userData.uid, contact.id);
+        setIsContact(false);
+      } else {
+        console.error('Contact not found');
+      }
+    } catch (error) {
+      console.error('Failed to remove contact:', error);
+    }
+  };
 
   return (
     <Flex
@@ -99,9 +126,27 @@ const MemberItem = ({ user }) => {
       </Flex>
       {userData.uid !== user.uid && (
         <Stack spacing={2}>
-          <Button bgColor="#E9D8FD" fontWeight={600} size="sm" leftIcon={<FaUserPlus />}>
-            Add
-          </Button>
+          {!isContact ? (
+            <Button
+              bgColor="#E9D8FD"
+              fontWeight={600}
+              size="sm"
+              leftIcon={<FaUserPlus />}
+              onClick={handleAddContact}
+            >
+              Add
+            </Button>
+          ) : (
+            <Button
+              bgColor="#E9D8FD"
+              fontWeight={600}
+              size="sm"
+              leftIcon={<FaUserMinus />} 
+              onClick={handleRemoveContact}
+            >
+              Remove
+            </Button>
+          )}
           {userData.role === userRole.ADMIN && (
             <Button
               bgColor="#E9D8FD"
