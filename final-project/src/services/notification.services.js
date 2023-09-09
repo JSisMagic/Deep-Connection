@@ -1,13 +1,33 @@
 import { db } from "../config/firebase";
-import { set, get, ref, update, remove, push } from "firebase/database";
+import { set, get, ref, update, remove, push, onValue, query, orderByChild } from "firebase/database";
 import { getUserByEmail, getUserByUid } from "./users.services";
 
 
-export const getNotifications = async (uid) => {
-  const snapshot = await get(ref(db, `notifications/${uid}`));
-  const value = snapshot.val();
-  const data = value ? Object.entries(value).map(([id, notification]) => ({ ...notification, id })) : [];
-  return data.sort((a, b) => b.date - a.date)
+export const getNotifications = async (uid, callback) => {
+  // const snapshot = await get(ref(db, `notifications/${uid}`));
+  // const value = snapshot.val();
+  // const data = value ? Object.entries(value).map(([id, notification]) => ({ ...notification, id })) : [];
+  // return data.sort((a, b) => b.date - a.date)
+  const notificationRef = ref(db, `notifications/${uid}`);
+  const notificationQuery = query(notificationRef, orderByChild("date"));
+
+  onValue(
+    notificationQuery,
+    snapshot => {
+      const data = snapshot.val()
+
+      if (data) {
+        callback(Object.entries(data).map(([id, notification]) => ({ ...notification, id })).reverse())
+      } else {
+        callback([])
+      }
+    },
+    error => {
+      console.error("Error fetching notifications:", error)
+      callback([])
+    }
+  )
+
 };
 
 export const createNotification = async (userId, notification) => {
