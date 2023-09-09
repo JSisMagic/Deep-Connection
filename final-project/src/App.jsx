@@ -1,10 +1,10 @@
 import { useLoadScript } from "@react-google-maps/api"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { Route, Routes } from "react-router-dom"
 import Calendar from "./components/Calendar/calendar"
 import ContactList from "./components/ContactList/ContactList"
-import Notifications, { useInterval } from "./components/Notifications/Notifications"
+import Notifications from "./components/Notifications/Notifications"
 import ProfilePage from "./components/Profile/ProfilePage"
 import TodoComponent from "./components/Todo/ToDo"
 import { auth } from "./config/firebase"
@@ -32,14 +32,13 @@ function App() {
     libraries: LIBRARIES,
   })
   
-  useInterval(() => {
+  useEffect(() => {
     const fetchNotifications = async () => {
-      const fetchedNotifications = await getNotifications(user?.uid)
-      setNotifications(fetchedNotifications)
+      await getNotifications(user?.uid, setNotifications)
     }
 
     fetchNotifications()
-  }, 3000)
+  }, [user])
 
   const handleNotificationRead = n => {
     const updatedNotifications = [...notifications]
