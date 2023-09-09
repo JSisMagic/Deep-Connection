@@ -25,22 +25,22 @@ import {
   FaChevronDown,
   FaChevronUp,
   FaTimes,
-  FaUserPlus,
-  FaPlus,
 } from "react-icons/fa";
 import {
-  getUserByEmail,
   getUserContactLists,
   createContactListForUser,
   updateContactListForUser,
   deleteContactListForUser,
-  getUsersByUsernamePartial
+  getUsersByUsernamePartial,
+  getContacts,
+  removeContact
 } from "../../services/users.services";
 
 const ContactList = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const [contactLists, setContactLists] = useState({});
+  const [myContacts, setMyContacts] = useState([]);
   const [listName, setListName] = useState("");
   const [emailToAdd, setEmailToAdd] = useState("");
   const [selectedList, setSelectedList] = useState(null);
@@ -68,6 +68,19 @@ const ContactList = () => {
         setContactLists(lists);
       };
 
+      fetchContactLists();
+    }
+  }, [userUid]);
+
+  useEffect(() => {
+    if (userUid) {
+      const fetchContactLists = async () => {
+        const lists = await getUserContactLists(userUid);
+        setContactLists(lists);
+        const contacts = await getContacts(userUid);
+        setMyContacts(contacts);
+      };
+  
       fetchContactLists();
     }
   }, [userUid]);
@@ -199,19 +212,22 @@ const ContactList = () => {
   }
 
   return (
-    <Flex flexDirection={{ base: "column", md: "row" }}>
+    <Flex flexDirection={{ base: "column", md: "row" }} height="100vh">
       <Box
-        width={{ base: "100%", md: "30%" }}
+        width={{ base: "100%", md: "25%" }}
         padding="4"
-        backgroundColor="rgba(255,255,255)"
+        backgroundColor="rgba(255,255,255,0.9)"
         maxHeight="100vh"
         overflowY="auto"
       >
-        <VStack spacing={4}>
-          <Heading fontWeight={600}>Contact Lists</Heading>
-          <Divider />
-          <VStack width="100%" align="stretch">
-            {Object.keys(contactLists).length === 0 ? (
+        <VStack spacing={6}>
+  
+          {/* Groups Section */}
+          <Box>
+            <Heading fontWeight={600} mb={4}>Groups</Heading>
+            <Divider />
+            <VStack width="100%" align="stretch">
+             {Object.keys(contactLists).length === 0 ? (
               <Box p={4} textAlign="center">
                 <p>You don't have any contact lists yet.</p>
                 <p>Create one to get started!</p>
@@ -298,16 +314,49 @@ const ContactList = () => {
               </Button>
             </Box>
           </VStack>
+          </Box>
+  
+          {/* My Contacts Section */}
+          <Box mt={6}>
+            <Heading fontWeight={600} mb={4}>My Contacts</Heading>
+            <Divider />
+            <SimpleGrid columns={1} spacing={2}>
+              {myContacts.map((contact, index) => (
+                <Box
+                  key={index}
+                  p={4}
+                  borderWidth="1px"
+                  borderRadius="lg"
+                  width="100%"
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                >
+                  <Flex gap={3} onClick={() => navigate(`/profile/${contact.contactUserId}`)} cursor="pointer">
+                    <Avatar src={contact.profilePicture} size="sm" mr={2} />
+                    {contact.name}
+                  </Flex>
+                </Box>
+              ))}
+            </SimpleGrid>
+          </Box>
         </VStack>
       </Box>
   
-      <Box width={{ base: "100%", md: "70%" }} padding="4">
-        <VStack spacing={4} width="100%">
-          <Heading fontWeight={600}>Manage Contact Lists</Heading>
-          <Divider />
+      <Box
+        width={{ base: "100%", md: "75%" }}
+        padding="4"
+        maxHeight="100vh"
+        overflowY="auto"
+      >
+        <VStack spacing={6} width="100%">
   
-          <Stack direction="column" spacing={4} width="100%">
-            <Select
+          {/* Manage Groups Section */}
+          <Box>
+            <Heading fontWeight={600}>Manage Groups</Heading>
+            <Divider />
+            <Stack direction="column" spacing={4} width="100%">
+           <Select
               placeholder="Select list"
               value={selectedList}
               onChange={(e) => setSelectedList(e.target.value)}
@@ -366,11 +415,12 @@ const ContactList = () => {
               </Box>
             )}
           </Stack>
+          </Box>
         </VStack>
       </Box>
     </Flex>
   )
-  }
+ }
   
 
 export default ContactList;

@@ -60,7 +60,7 @@ const DetailedEventCard = ({ detailedEventData, isOpen, onClose, onInviteAcceptD
   const hasAccepted = () => {
     const { accepted } = attendees || []
     // debugger;
-    console.log(accepted);
+    // console.log(accepted);
     return accepted && accepted.find(e => e.email === user.email) !== undefined
   }
 

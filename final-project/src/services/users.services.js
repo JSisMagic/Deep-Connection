@@ -61,7 +61,7 @@ export const updateUser = async (uid, data) => {
 }
 
 export const toggleBlockUser = async (uid, isBlocked) => {
-  console.log(isBlocked)
+  // console.log(isBlocked)
   return update(ref(db), {
     [`users/${uid}/isBlocked`]: isBlocked || null,
   })
