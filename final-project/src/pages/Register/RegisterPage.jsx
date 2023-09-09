@@ -12,18 +12,18 @@ import {
   InputRightElement,
   Stack,
   Text,
-} from "@chakra-ui/react"
-import { Link, useNavigate } from "react-router-dom"
-import { useState } from "react"
-import bgImage from "../../assets/images/hero.png"
-import { errorMessages } from "../../common/error-messages"
-import { registerUser } from "../../services/auth.services"
-import { createUser, getUser } from "../../services/users.services"
-import { useContext } from "react"
-import { AuthContext } from "../../context/AuthContext"
-import { useForm } from "react-hook-form" // Add this import
-import validation from "../../common/validation-enums"
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons"
+} from "@chakra-ui/react";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import bgImage from "../../assets/images/hero.png";
+import { errorMessages } from "../../common/error-messages";
+import { registerUser } from "../../services/auth.services";
+import { createUser, getUserByUsername } from "../../services/users.services";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
+import { useForm } from "react-hook-form";
+import validation from "../../common/validation-enums";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 
 const RegisterPage = () => {
   const {
@@ -32,10 +32,10 @@ const RegisterPage = () => {
     setError,
     formState: { errors },
     // watch,
-  } = useForm()
-  const { setAuthState } = useContext(AuthContext)
-  const navigate = useNavigate()
-  const [showPassword, setShowPassword] = useState(false)
+  } = useForm();
+  const { setAuthState } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
   const {
     MIN_USERNAME_LENGTH,
     MAX_USERNAME_LENGTH,
@@ -46,22 +46,22 @@ const RegisterPage = () => {
     PHONE_NUM_LENGTH,
     MIN_PASSWORD_LENGTH,
     MAX_PASSWORD_LENGTH,
-  } = validation
+  } = validation;
 
   const handleTogglePassword = () => {
-    setShowPassword(!showPassword)
-  }
+    setShowPassword(!showPassword);
+  };
 
-  const onSubmit = async values => {
-    const { email, username, firstName, lastName, phone, password } = values
+  const onSubmit = async (values) => {
+    const { email, username, firstName, lastName, phone, password } = values;
 
-    const user = await getUser(username)
+    const user = await getUserByUsername(username);
     if (user !== null) {
-      return setError("username", { message: errorMessages.USER_EXISTS })
+      return setError("username", { message: errorMessages.USER_EXISTS });
     }
 
     try {
-      const credentials = await registerUser(email, password)
+      const credentials = await registerUser(email, password);
 
       const userData = await createUser({
         uid: credentials.user.uid,
@@ -70,16 +70,16 @@ const RegisterPage = () => {
         firstName,
         phone,
         lastName,
-      })
+      });
 
-      setAuthState(prev => ({ ...prev, userData: userData }))
-      console.log("successful registration")
-      navigate("/")
+      setAuthState((prev) => ({ ...prev, userData: userData }));
+      console.log("successful registration");
+      navigate("/");
     } catch (e) {
-      setError("email", { message: errorMessages.EMAIL_EXISTS })
+      setError("email", { message: errorMessages.EMAIL_EXISTS });
     }
-  }
-  console.log("errors", errors)
+  };
+  console.log("errors", errors);
   return (
     <Flex
       direction="column"
@@ -148,7 +148,7 @@ const RegisterPage = () => {
                     message: `Maximum length should be ${MAX_FIRSTNAME_LENGTH}`,
                   },
                   validate: {
-                    containsOnlyLetters: value =>
+                    containsOnlyLetters: (value) =>
                       /^[a-zA-Z]+$/.test(value) ||
                       "First name must contain only uppercase and lowercase letters!",
                   },
@@ -171,7 +171,7 @@ const RegisterPage = () => {
                     message: `Maximum length should be ${MAX_LASTNAME_LENGTH}`,
                   },
                   validate: {
-                    containsOnlyLetters: value =>
+                    containsOnlyLetters: (value) =>
                       /^.[A-Za-z]+$/.test(value) ||
                       "Last name must contain only uppercase and lowercase letters!",
                   },
@@ -186,10 +186,12 @@ const RegisterPage = () => {
                 {...register("phone", {
                   required: "This is required!",
                   validate: {
-                    haveFixedLength: value =>
-                      value.length === PHONE_NUM_LENGTH || "Phone number must have 10 digit!",
-                    containsOnlyDigits: value =>
-                      /^[0-9]+$/.test(value) || "Phone number must have only digits!",
+                    haveFixedLength: (value) =>
+                      value.length === PHONE_NUM_LENGTH ||
+                      "Phone number must have 10 digit!",
+                    containsOnlyDigits: (value) =>
+                      /^[0-9]+$/.test(value) ||
+                      "Phone number must have only digits!",
                   },
                 })}
               />
@@ -211,15 +213,16 @@ const RegisterPage = () => {
                     },
                     required: "This is required!",
                     validate: {
-                      containsUpperLetter: value =>
+                      containsUpperLetter: (value) =>
                         /^.*[a-z]+.*/.test(value) ||
                         "Password must contain at least one lowercase letter!",
-                      containsCapitalLetter: value =>
+                      containsCapitalLetter: (value) =>
                         /^.*[A-Z]+.*/.test(value) ||
                         "Password must contain at least one capital letter!",
-                      containsNumber: value =>
-                        /^.*[0-9]+.*/.test(value) || "Password must contain at least one number!",
-                      containsSpecialChar: value =>
+                      containsNumber: (value) =>
+                        /^.*[0-9]+.*/.test(value) ||
+                        "Password must contain at least one number!",
+                      containsSpecialChar: (value) =>
                         /^.*[!@#$%^&*]+.*/.test(value) ||
                         "Password must contain at least one special character!",
                     },
@@ -229,7 +232,10 @@ const RegisterPage = () => {
                   {showPassword ? (
                     <ViewIcon cursor="pointer" onClick={handleTogglePassword} />
                   ) : (
-                    <ViewOffIcon cursor="pointer" onClick={handleTogglePassword} />
+                    <ViewOffIcon
+                      cursor="pointer"
+                      onClick={handleTogglePassword}
+                    />
                   )}
                 </InputRightElement>
               </InputGroup>
@@ -253,7 +259,7 @@ const RegisterPage = () => {
         </Stack>
       </Box>
     </Flex>
-  )
-}
+  );
+};
 
-export default RegisterPage
+export default RegisterPage;
