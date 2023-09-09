@@ -14,7 +14,12 @@ import {
   Select,
   Divider,
   Flex,
+  Avatar,
+  SimpleGrid,
+  Text,
+  useToast,
 } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom"
 import {
   FaTrash,
   FaChevronDown,
@@ -29,9 +34,12 @@ import {
   createContactListForUser,
   updateContactListForUser,
   deleteContactListForUser,
+  getUsersByUsernamePartial
 } from "../../services/users.services";
 
 const ContactList = () => {
+  const navigate = useNavigate();
+  const toast = useToast();
   const [contactLists, setContactLists] = useState({});
   const [listName, setListName] = useState("");
   const [emailToAdd, setEmailToAdd] = useState("");
@@ -39,6 +47,8 @@ const ContactList = () => {
   const [userUid, setUserUid] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedList, setExpandedList] = useState(null);
+  const [searchResults, setSearchResults] = useState([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -62,6 +72,16 @@ const ContactList = () => {
     }
   }, [userUid]);
 
+  const searchUsers = async (usernamePartial) => {
+    if (usernamePartial.length >= 3) {
+      const results = await getUsersByUsernamePartial(usernamePartial);
+      setSearchResults(results);
+      setIsDropdownOpen(true);
+    } else {
+      setIsDropdownOpen(false);
+    }
+  };
+
   const handleCreateList = async () => {
     if (listName && userUid) {
       const newList = await createContactListForUser(userUid, {
@@ -77,31 +97,68 @@ const ContactList = () => {
     }
   };
 
-  const handleAddUserToList = async () => {
+  const handleAddUserToList = async (user) => {
     try {
-      const user = await getUserByEmail(emailToAdd);
-      if (user) {
-        const list = { ...contactLists[selectedList] };
-
-        if (list.contacts[user.uid] === undefined) {
-          list.contacts[user.uid] = {
-            id: user.uid,
-            name: `${user.firstName} ${user.lastName}`,
+      const currentList = contactLists[selectedList];
+      if (currentList) {
+        const existingContacts = currentList.contacts || {};
+  
+        if (!existingContacts[user.uid]) {
+          existingContacts[user.uid] = {
+            id: user.uid, 
+            name: `${user.firstName} ${user.lastName}`, 
+            username: user.username,
+            avatar: user.profilePicture || null, 
           };
+  
+          await updateContactListForUser(userUid, selectedList, existingContacts);
+  
+          setContactLists((prevLists) => {
+            return { ...prevLists, [selectedList]: { ...currentList, contacts: existingContacts } };
+          });
 
-          await updateContactListForUser(userUid, selectedList, list);
-          setContactLists({ ...contactLists, [selectedList]: list });
+          toast({
+            title: "Contact Added",
+            description: `Successfully added ${user.firstName} ${user.lastName} to the list.`,
+            status: "success",
+            duration: 3000,
+            isClosable: true,
+          });
+  
           setEmailToAdd("");
+          setSearchResults([]);
+          setIsDropdownOpen(false);
         } else {
-          alert("User already in the list.");
+          toast({
+            title: "Contact Already Exists",
+            description: `${user.firstName} ${user.lastName} is already in the list.`,
+            status: "warning",
+            duration: 3000,
+            isClosable: true,
+          });
         }
       } else {
-        alert("No user found with that email.");
+        console.error("No list selected.");
+        toast({
+          title: "No List Selected",
+          description: "Please select a list to add the contact to.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
       }
     } catch (error) {
-      console.log("Error:", error.message);
+      console.error("Error adding user to list:", error);
+      toast({
+        title: "Error",
+        description: "There was an error adding the contact to the list.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
+  
 
   const handleDeleteList = async (listId) => {
     try {
@@ -143,150 +200,177 @@ const ContactList = () => {
 
   return (
     <Flex flexDirection={{ base: "column", md: "row" }}>
-    {/* Contact Lists */}
-    <Box
-      width={{ base: "100%", md: "30%" }}
-      padding="4"
-      backgroundColor="rgba(255,255,255)"
-      maxHeight="100vh"
-      overflowY="auto"
-    >
-      <VStack spacing={4}>
-        <Heading fontWeight={600}>Contact Lists</Heading>
-        <Divider />
-        <VStack width="100%" align="stretch">
-
-          {Object.keys(contactLists).length === 0 ? (
-            // Display the prompt if there are no contact lists
-            <Box p={4} textAlign="center">
-              <p>You don't have any contact lists yet.</p>
-              <p>Create one to get started!</p>
-            </Box>
-          ) : (
-            Object.values(contactLists).map((list) => (
-              <Box
-                key={list.id}
-                p={4}
-                borderWidth="1px"
-                borderRadius="lg"
-                width="100%"
-              >
-                <Heading
-                  size="md"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  fontWeight={600}
-                >
-                  {list.name}
-                  <Box>
-                    <Button
-                      size="sm"
-                      fontWeight={600}
-                      onClick={() =>
-                        setExpandedList((prev) =>
-                          prev === list.id ? null : list.id
-                        )
-                      }
-                      mr={2}
-                    >
-                      {expandedList === list.id ? (
-                        <FaChevronUp />
-                      ) : (
-                        <FaChevronDown />
-                      )}
-                    </Button>
-                    <Button
-                      size="sm"
-                      leftIcon={<FaTrash />}
-                      onClick={() => handleDeleteList(list.id)}
-                      bgColor="#E9D8FD"
-                    ></Button>
-                  </Box>
-                </Heading>
-                <Collapse in={expandedList === list.id}>
-                  <List spacing={2} fontWeight={600}>
-                    {Object.values(list.contacts || {}).map((contact) => (
-                      <ListItem
-                        key={contact.id}
-                        display="flex"
-                        justifyContent="space-between"
-                        alignItems="center"
-                      >
-                        {contact.name}
-                        <Button
-                          size="sm"
-                          leftIcon={<FaTimes />}
-                          onClick={() =>
-                            handleRemoveUserFromList(list.id, contact.id)
-                          }
-                          variant="outline"
-                        ></Button>
-                      </ListItem>
-                    ))}
-                  </List>
-                </Collapse>
+      <Box
+        width={{ base: "100%", md: "30%" }}
+        padding="4"
+        backgroundColor="rgba(255,255,255)"
+        maxHeight="100vh"
+        overflowY="auto"
+      >
+        <VStack spacing={4}>
+          <Heading fontWeight={600}>Contact Lists</Heading>
+          <Divider />
+          <VStack width="100%" align="stretch">
+            {Object.keys(contactLists).length === 0 ? (
+              <Box p={4} textAlign="center">
+                <p>You don't have any contact lists yet.</p>
+                <p>Create one to get started!</p>
               </Box>
-            ))
-          )}
-
+            ) : (
+              Object.values(contactLists).map((list) => (
+                <Box
+                  key={list.id}
+                  p={4}
+                  borderWidth="1px"
+                  borderRadius="lg"
+                  width="100%"
+                >
+                  <Heading
+                    size="md"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    fontWeight={600}
+                  >
+                    {list.name}
+                    <Box>
+                      <Button
+                        size="sm"
+                        fontWeight={600} 
+                        onClick={() =>
+                          setExpandedList((prev) =>
+                            prev === list.id ? null : list.id
+                          )
+                        }
+                        mr={2}
+                      >
+                        {expandedList === list.id ? <FaChevronUp /> : <FaChevronDown />}
+                      </Button>
+                      <Button
+                        size="sm"
+                        leftIcon={<FaTrash />}
+                        onClick={() => handleDeleteList(list.id)}
+                        bgColor="#E9D8FD"
+                      ></Button>
+                    </Box>
+                  </Heading>
+                  <Collapse in={expandedList === list.id}>
+                    <List spacing={2} fontWeight={600}>
+                      {Object.values(list.contacts || {}).map((contact, index) => {
+                        return (
+                          <ListItem
+                            key={contact.id || index}
+                            display="flex"
+                            justifyContent="space-between"
+                            alignItems="center"
+                          >
+                            <Flex gap={3} onClick={() => navigate(`/profile/${contact.id}`)} cursor="pointer">
+                              <Avatar src={contact.avatar} size="sm" mr={2} />
+                              {contact.name}
+                            </Flex>
+                            <Button
+                              size="sm"
+                              leftIcon={<FaTimes />}
+                              onClick={() => handleRemoveUserFromList(list.id, contact.id)}
+                              variant="outline"
+                            ></Button>
+                          </ListItem>
+                        );
+                      })}
+                    </List>
+                  </Collapse>
+                </Box>
+              ))
+            )}
+  
+            <Box mt={4}>
+              <Input
+                placeholder="New list name"
+                value={listName}
+                onChange={(e) => setListName(e.target.value)}
+              />
+              <Button
+                mt={2}
+                onClick={handleCreateList}
+                disabled={!listName.trim()}
+              >
+                Create new list
+              </Button>
+            </Box>
+          </VStack>
         </VStack>
-      </VStack>
-    </Box>
-
-    {/* Main Content */}
-    <Box width={{ base: "100%", md: "70%" }} padding="4">
-      <VStack spacing={4} width="100%">
-        <Heading fontWeight={600}>Manage Contact Lists</Heading>
-        <Divider />
-
-        {/* Create List */}
-        <Stack direction="column" spacing={4} width="100%">
-          <Input
-            value={listName}
-            onChange={(e) => setListName(e.target.value)}
-            placeholder="Enter list name"
-          />
-          <Button
-            onClick={handleCreateList}
-            bgColor="#E9D8FD"
-            rightIcon={<FaPlus />}
-          >
-            Create List
-          </Button>
-        </Stack>
-
-        <Divider />
-
-        {/* Add User to List */}
-        <Stack direction="column" spacing={4} width="100%">
-          <Input
-            value={emailToAdd}
-            onChange={(e) => setEmailToAdd(e.target.value)}
-            placeholder="Enter user email to add"
-          />
-          <Select
-            placeholder="Select a contact list"
-            onChange={(e) => setSelectedList(e.target.value)}
-          >
-            {Object.values(contactLists).map((list) => (
-              <option key={list.id} value={list.id}>
-                {list.name}
-              </option>
-            ))}
-          </Select>
-          <Button
-            onClick={handleAddUserToList}
-            bgColor="#E9D8FD"
-            rightIcon={<FaUserPlus />}
-          >
-            Add User to List
-          </Button>
-        </Stack>
-      </VStack>
-    </Box>
-  </Flex>
-  );
-};
+      </Box>
+  
+      <Box width={{ base: "100%", md: "70%" }} padding="4">
+        <VStack spacing={4} width="100%">
+          <Heading fontWeight={600}>Manage Contact Lists</Heading>
+          <Divider />
+  
+          <Stack direction="column" spacing={4} width="100%">
+            <Select
+              placeholder="Select list"
+              value={selectedList}
+              onChange={(e) => setSelectedList(e.target.value)}
+            >
+              {Object.values(contactLists).map((list) => (
+                <option key={list.id} value={list.id}>{list.name}</option>
+              ))}
+            </Select>
+  
+            <Input
+              value={emailToAdd}
+              onChange={(e) => {
+                setEmailToAdd(e.target.value);
+                searchUsers(e.target.value);
+              }}
+              placeholder="Search user by username"
+            />
+  
+            {isDropdownOpen && (
+              <Box
+                position="absolute"
+                mt={2}
+                w="100%"
+                zIndex="dropdown"
+                borderRadius="md"
+                boxShadow="md"
+                bg="gray.50"
+                overflowY="auto"
+                maxHeight="300px"
+              >
+                <SimpleGrid columns={1} spacing={3} marginTop={3}>
+                  {searchResults.map(user => (
+                    <Flex
+                      key={user.uid}
+                      background="white"
+                      p={3}
+                      borderRadius="md"
+                      justify="space-between"
+                      align="center"
+                      boxShadow="base"
+                      onClick={() => handleAddUserToList(user)}
+                      cursor="pointer"
+                    >
+                      <Flex gap={3}>
+                        <Avatar src={user.profilePicture} />
+                        <Box>
+                          <Heading size="sm">
+                            {user.firstName} {user.lastName}
+                          </Heading>
+                          <Text fontWeight={600}>@{user.username}</Text>
+                        </Box>
+                      </Flex>
+                    </Flex>
+                  ))}
+                </SimpleGrid>
+              </Box>
+            )}
+          </Stack>
+        </VStack>
+      </Box>
+    </Flex>
+  )
+  }
+  
 
 export default ContactList;

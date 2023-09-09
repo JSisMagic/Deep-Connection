@@ -98,10 +98,10 @@ export const createContactListForUser = async (uid, contactList) => {
   return { ...list }
 }
 
-export const updateContactListForUser = async (uid, listId, list) => {
-  await update(ref(db, `users/${uid}/contactLists/${listId}`), list)
-  return { ...list }
-}
+export const updateContactListForUser = async (uid, listId, contacts) => {
+  await update(ref(db, `users/${uid}/contactLists/${listId}`), { contacts });
+  return { contacts };
+};
 
 export const deleteContactListForUser = async (uid, listId) => {
   await remove(ref(db, `users/${uid}/contactLists/${listId}`))
