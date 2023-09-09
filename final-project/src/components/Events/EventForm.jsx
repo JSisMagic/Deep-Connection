@@ -14,8 +14,11 @@ import {
   Stack,
   VStack,
 } from "@chakra-ui/react"
+import { addMinutes, isSameDay, isToday, roundToNearestMinutes, setHours } from "date-fns"
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
 import { useContext, useState } from "react"
+import ReactDatePicker from "react-datepicker"
+import "react-datepicker/dist/react-datepicker.css"
 import { BiLockAlt, BiLockOpenAlt, BiRepeat, BiTag } from "react-icons/bi"
 import ReactQuill from "react-quill"
 import "react-quill/dist/quill.snow.css"
@@ -23,7 +26,7 @@ import { useNavigate } from "react-router-dom"
 import { v4 } from "uuid"
 import { categoryColors } from "../../common/colors"
 import { SUPPORTED_FORMATS, eventRepetitions } from "../../common/constrants"
-import { dateISOTimezoneAdjust, validateDescription, validateTitle } from "../../common/helpers"
+import { validateDates, validateDescription, validateTitle } from "../../common/helpers"
 import validation from "../../common/validation-enums"
 import { storage } from "../../config/firebase"
 import { AuthContext } from "../../context/AuthContext"
@@ -34,18 +37,20 @@ import Attendees from "./Attendees"
 
 const EventForm = ({ editMode = false, eventData = {} }) => {
   const navigate = useNavigate()
-  const { user } = useContext(AuthContext)
+  const { user, userData } = useContext(AuthContext)
   const [eventTitle, setEventTitle] = useState(eventData?.title || "")
   const [eventLocation, setEventLocation] = useState(eventData?.location || "")
   const [eventDescription, setEventDescription] = useState(eventData?.description || "")
   const [eventStartDate, setEventStartDate] = useState(
-    dateISOTimezoneAdjust(eventData?.startDate) || ""
+    eventData?.startDate || roundToNearestMinutes(new Date(), { nearestTo: 30 })
   )
-  const [eventEndDate, setEventEndDate] = useState(dateISOTimezoneAdjust(eventData?.endDate) || "")
+  const [eventEndDate, setEventEndDate] = useState(
+    eventData?.endDate || addMinutes(roundToNearestMinutes(new Date(), { nearestTo: 30 }), 30)
+  )
   const [eventColor, setEventColor] = useState(eventData?.color || "blue")
   const [eventAttendees, setEventAttendees] = useState(eventData?.attendees?.length || [])
   const [eventRepeat, setEventRepeat] = useState(eventData?.repeat || "never")
-  const [isPrivate, setIsPrivate] = useState(eventData?.isPrivate || true)
+  const [isPrivate, setIsPrivate] = useState(eventData.id ? eventData?.isPrivate : true)
   const [image, setImage] = useState(eventData?.image || "")
   const [errors, setErrors] = useState({
     title: "",
@@ -54,7 +59,7 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
     startDate: "",
     endDate: "",
   })
-
+  console.log(userData)
   const handleImageUpload = e => {
     if (!SUPPORTED_FORMATS.includes(e.target.files[0].type)) {
       console.log("Unsupported file format!")
@@ -67,6 +72,14 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
       return setErrors(prev => ({
         ...prev,
         title: `Length should be between ${validation.MIN_TITLE_LENGTH} and ${validation.MAX_TITLE_LENGTH} characters.`,
+      }))
+    }
+
+    const { isDateValid, key, message } = validateDates(eventStartDate, eventEndDate)
+    if (!isDateValid) {
+      return setErrors(prev => ({
+        ...prev,
+        [key]: message,
       }))
     }
 
@@ -104,8 +117,8 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
       location: eventLocation,
       description: eventDescription,
       attendees: { pending: eventAttendees },
-      startDate: eventStartDate,
-      endDate: eventEndDate,
+      startDate: eventStartDate.toISOString(),
+      endDate: eventEndDate.toISOString(),
       creatorId: user.uid,
       color: eventColor,
       isPrivate: isPrivate,
@@ -123,7 +136,7 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
       }
 
       await eventAttendees.map(att => notify(id, newEvent, att.uid))
-      navigate("/calendar")
+      navigate(-1)
     } catch (error) {
       console.error("Error creating event:", error)
     }
@@ -147,19 +160,40 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
     }
   }
 
+  const clearError = key => {
+    return setErrors(prev => ({ ...prev, [key]: "" }))
+  }
+
   const handleChangeTitle = e => {
     const value = e.target.value
 
     if (validateTitle(value) && errors.title) {
-      setErrors(prev => ({ ...prev, title: "" }))
+      clearError("title")
     }
 
     setEventTitle(value)
   }
 
+  const handleChangeStartDate = date => {
+    const { isDateValid } = validateDates(date, eventEndDate)
+    if (isDateValid && errors.startDate) {
+      clearError("startDate")
+    }
+
+    setEventStartDate(date)
+  }
+
+  const handleChangeEndDate = date => {
+    const { isDateValid } = validateDates(eventStartDate, date)
+    if (isDateValid && errors.endDate) {
+      clearError("endDate")
+    }
+    setEventEndDate(date)
+  }
+
   const handleChangeDescription = value => {
     if (validateDescription(value) && errors.description) {
-      setErrors(prev => ({ ...prev, description: "" }))
+      clearError("description")
     }
 
     setEventDescription(value)
@@ -172,7 +206,7 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
   const handleChangeRepetitions = value => {
     setEventRepeat(value)
   }
-  
+
   return (
     <Flex
       height="100%"
@@ -257,22 +291,39 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
 
         <FormControl>
           <FormLabel>Start Date and Time</FormLabel>
-          <Input
-            defaultValue={eventStartDate}
-            type="datetime-local"
-            value={eventStartDate}
-            onChange={e => setEventStartDate(e.target.value)}
+          <ReactDatePicker
+            selected={eventStartDate}
+            onChange={handleChangeStartDate}
+            showTimeSelect
+            showIcon
+            customInput={<Input />}
+            dateFormat="Pp"
+            minDate={new Date()}
+            minTime={isToday(eventStartDate) ? new Date() : setHours(new Date(eventStartDate), 23)}
+            maxTime={setHours(new Date(), 23)}
+            disabledKeyboardNavigation
           />
+          <FormErrorMessage></FormErrorMessage>
         </FormControl>
 
-        <FormControl>
+        <FormControl isInvalid={errors.endDate}>
           <FormLabel>End Date and Time</FormLabel>
-          <Input
-            defaultValue={eventStartDate}
-            type="datetime-local"
-            value={eventEndDate}
-            onChange={e => setEventEndDate(e.target.value)}
+          <ReactDatePicker
+            selected={eventEndDate}
+            onChange={handleChangeEndDate}
+            showTimeSelect
+            showIcon
+            customInput={<Input />}
+            dateFormat="Pp"
+            minDate={eventStartDate || new Date()}
+            minTime={
+              isSameDay(eventStartDate, eventEndDate)
+                ? addMinutes(eventStartDate, 30)
+                : setHours(new Date(), 23)
+            }
+            maxTime={addMinutes(setHours(new Date(), 23), 30)}
           />
+          <FormErrorMessage>{errors.endDate}</FormErrorMessage>
         </FormControl>
 
         <Stack direction="row" alignItems="center" spacing={4} width="100%">
