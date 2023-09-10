@@ -13,103 +13,123 @@ import {
   MenuOptionGroup,
   Stack,
   VStack,
-} from "@chakra-ui/react"
-import { addMinutes, isSameDay, isToday, roundToNearestMinutes, setHours } from "date-fns"
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
-import { useContext, useState } from "react"
-import ReactDatePicker from "react-datepicker"
-import "react-datepicker/dist/react-datepicker.css"
-import { BiLockAlt, BiLockOpenAlt, BiRepeat, BiTag } from "react-icons/bi"
-import ReactQuill from "react-quill"
-import "react-quill/dist/quill.snow.css"
-import { useNavigate } from "react-router-dom"
-import { v4 } from "uuid"
-import { categoryColors } from "../../common/colors"
-import { SUPPORTED_FORMATS, eventRepetitions } from "../../common/constrants"
-import { validateDates, validateDescription, validateTitle } from "../../common/helpers"
-import validation from "../../common/validation-enums"
-import { storage } from "../../config/firebase"
-import { AuthContext } from "../../context/AuthContext"
-import { createEvent, updateEvent } from "../../services/event.services"
-import { createNotificationByUserID } from "../../services/notification.services"
-import PlacesAutocomplete from "../Location/PlacesAutocomplete"
-import Attendees from "./Attendees"
+} from "@chakra-ui/react";
+import {
+  addMinutes,
+  isSameDay,
+  isToday,
+  roundToNearestMinutes,
+  setHours,
+} from "date-fns";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { useContext, useState } from "react";
+import ReactDatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { BiLockAlt, BiLockOpenAlt, BiRepeat, BiTag } from "react-icons/bi";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import { useNavigate } from "react-router-dom";
+import { v4 } from "uuid";
+import { categoryColors } from "../../common/colors";
+import { SUPPORTED_FORMATS, eventRepetitions } from "../../common/constrants";
+import {
+  validateDates,
+  validateDescription,
+  validateTitle,
+} from "../../common/helpers";
+import validation from "../../common/validation-enums";
+import { storage } from "../../config/firebase";
+import { AuthContext } from "../../context/AuthContext";
+import { createEvent, updateEvent } from "../../services/event.services";
+import { createNotificationByUserID } from "../../services/notification.services";
+import PlacesAutocomplete from "../Location/PlacesAutocomplete";
+import Attendees from "./Attendees";
 
 const EventForm = ({ editMode = false, eventData = {} }) => {
-  const navigate = useNavigate()
-  const { user, userData } = useContext(AuthContext)
+  const navigate = useNavigate();
+  const { user, userData } = useContext(AuthContext);
   const currentUserId = user?.uid;
-  const [eventTitle, setEventTitle] = useState(eventData?.title || "")
-  const [eventLocation, setEventLocation] = useState(eventData?.location || "")
-  const [eventDescription, setEventDescription] = useState(eventData?.description || "")
+  const [eventTitle, setEventTitle] = useState(eventData?.title || "");
+  const [eventLocation, setEventLocation] = useState(eventData?.location || "");
+  const [eventDescription, setEventDescription] = useState(
+    eventData?.description || ""
+  );
   const [eventStartDate, setEventStartDate] = useState(
     eventData?.startDate || roundToNearestMinutes(new Date(), { nearestTo: 30 })
-  )
+  );
   const [eventEndDate, setEventEndDate] = useState(
-    eventData?.endDate || addMinutes(roundToNearestMinutes(new Date(), { nearestTo: 30 }), 30)
-  )
-  const [eventColor, setEventColor] = useState(eventData?.color || "blue")
-  const [eventAttendees, setEventAttendees] = useState(eventData?.attendees?.length || [])
-  const [eventRepeat, setEventRepeat] = useState(eventData?.repeat || "never")
-  const [isPrivate, setIsPrivate] = useState(eventData.id ? eventData?.isPrivate : true)
-  const [image, setImage] = useState(eventData?.image || "")
+    eventData?.endDate ||
+      addMinutes(roundToNearestMinutes(new Date(), { nearestTo: 30 }), 30)
+  );
+  const [eventColor, setEventColor] = useState(eventData?.color || "blue");
+  const [eventAttendees, setEventAttendees] = useState(
+    eventData?.attendees?.length || []
+  );
+  const [eventRepeat, setEventRepeat] = useState(eventData?.repeat || "never");
+  const [isPrivate, setIsPrivate] = useState(
+    eventData.id ? eventData?.isPrivate : true
+  );
+  const [image, setImage] = useState(eventData?.image || "");
   const [errors, setErrors] = useState({
     title: "",
     location: "",
     description: "",
     startDate: "",
     endDate: "",
-  })
-  console.log(userData)
-  const handleImageUpload = e => {
+  });
+  console.log(userData);
+  const handleImageUpload = (e) => {
     if (!SUPPORTED_FORMATS.includes(e.target.files[0].type)) {
-      console.log("Unsupported file format!")
+      console.log("Unsupported file format!");
     }
-    setImage(e.target.files[0])
-  }
+    setImage(e.target.files[0]);
+  };
 
   const validateForm = () => {
     if (!validateTitle(eventTitle)) {
-      return setErrors(prev => ({
+      return setErrors((prev) => ({
         ...prev,
         title: `Length should be between ${validation.MIN_TITLE_LENGTH} and ${validation.MAX_TITLE_LENGTH} characters.`,
-      }))
+      }));
     }
 
-    const { isDateValid, key, message } = validateDates(eventStartDate, eventEndDate)
+    const { isDateValid, key, message } = validateDates(
+      eventStartDate,
+      eventEndDate
+    );
     if (!isDateValid) {
-      return setErrors(prev => ({
+      return setErrors((prev) => ({
         ...prev,
         [key]: message,
-      }))
+      }));
     }
 
     if (!validateDescription(eventDescription)) {
-      return setErrors(prev => ({
+      return setErrors((prev) => ({
         ...prev,
         description: `Length should be between ${validation.MIN_ADDITIONAL_INFO_LENGTH} and ${validation.MAX_ADDITIONAL_INFO_LENGTH} characters.`,
-      }))
+      }));
     }
 
-    return true
-  }
+    return true;
+  };
 
   const handleSubmit = async () => {
     if (!user) {
-      console.error("No user authenticated. Event not created.")
-      return
+      console.error("No user authenticated. Event not created.");
+      return;
     }
 
     if (!validateForm()) {
-      return
+      return;
     }
 
-    let url = image
+    let url = image;
     if (image !== eventData?.image) {
-      const imageRef = ref(storage, `images/${v4()}`)
+      const imageRef = ref(storage, `images/${v4()}`);
       if (typeof image !== "string") {
-        const result = await uploadBytes(imageRef, image)
-        url = await getDownloadURL(result.ref)
+        const result = await uploadBytes(imageRef, image);
+        url = await getDownloadURL(result.ref);
       }
     }
 
@@ -120,28 +140,28 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
       attendees: { pending: eventAttendees },
       startDate: eventStartDate.toISOString(),
       endDate: eventEndDate.toISOString(),
-      creatorId: user.uid,
+      creatorId: eventData?.creatorId || user.uid,
       color: eventColor,
       isPrivate: isPrivate,
       repeat: eventRepeat,
       image: url,
-    }
+    };
 
     try {
-      let id = eventData?.id
+      let id = eventData?.id;
 
       if (editMode) {
-        await updateEvent(id, newEvent)
+        await updateEvent(id, newEvent);
       } else {
-        id = await createEvent(newEvent)
+        id = await createEvent(newEvent);
       }
 
-      await eventAttendees.map(att => notify(id, newEvent, att.uid))
-      navigate(-1)
+      await eventAttendees.map((att) => notify(id, newEvent, att.uid));
+      navigate(-1);
     } catch (error) {
-      console.error("Error creating event:", error)
+      console.error("Error creating event:", error);
     }
-  }
+  };
 
   const notify = async (id, event, uid) => {
     const notification = {
@@ -152,61 +172,61 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
       meta: {
         eventId: id,
       },
-    }
+    };
 
     try {
-      await createNotificationByUserID(uid, notification)
+      await createNotificationByUserID(uid, notification);
     } catch (error) {
-      console.error("Error sending notification", error)
+      console.error("Error sending notification", error);
     }
-  }
+  };
 
-  const clearError = key => {
-    return setErrors(prev => ({ ...prev, [key]: "" }))
-  }
+  const clearError = (key) => {
+    return setErrors((prev) => ({ ...prev, [key]: "" }));
+  };
 
-  const handleChangeTitle = e => {
-    const value = e.target.value
+  const handleChangeTitle = (e) => {
+    const value = e.target.value;
 
     if (validateTitle(value) && errors.title) {
-      clearError("title")
+      clearError("title");
     }
 
-    setEventTitle(value)
-  }
+    setEventTitle(value);
+  };
 
-  const handleChangeStartDate = date => {
-    const { isDateValid } = validateDates(date, eventEndDate)
+  const handleChangeStartDate = (date) => {
+    const { isDateValid } = validateDates(date, eventEndDate);
     if (isDateValid && errors.startDate) {
-      clearError("startDate")
+      clearError("startDate");
     }
 
-    setEventStartDate(date)
-  }
+    setEventStartDate(date);
+  };
 
-  const handleChangeEndDate = date => {
-    const { isDateValid } = validateDates(eventStartDate, date)
+  const handleChangeEndDate = (date) => {
+    const { isDateValid } = validateDates(eventStartDate, date);
     if (isDateValid && errors.endDate) {
-      clearError("endDate")
+      clearError("endDate");
     }
-    setEventEndDate(date)
-  }
+    setEventEndDate(date);
+  };
 
-  const handleChangeDescription = value => {
+  const handleChangeDescription = (value) => {
     if (validateDescription(value) && errors.description) {
-      clearError("description")
+      clearError("description");
     }
 
-    setEventDescription(value)
-  }
+    setEventDescription(value);
+  };
 
-  const handleChangeEventColor = value => {
-    setEventColor(value)
-  }
+  const handleChangeEventColor = (value) => {
+    setEventColor(value);
+  };
 
-  const handleChangeRepetitions = value => {
-    setEventRepeat(value)
-  }
+  const handleChangeRepetitions = (value) => {
+    setEventRepeat(value);
+  };
 
   return (
     <Flex
@@ -227,13 +247,22 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
       >
         <FormControl isRequired isInvalid={errors.title}>
           <FormLabel fontSize={["sm", "md", "lg"]}>Title</FormLabel>
-          <Input value={eventTitle} onChange={handleChangeTitle} placeholder="Title" size="lg" width={{ base: "100%", md: "50%" }} />
+          <Input
+            value={eventTitle}
+            onChange={handleChangeTitle}
+            placeholder="Title"
+            size="lg"
+            width={{ base: "100%", md: "50%" }}
+          />
           <FormErrorMessage>{errors.title}</FormErrorMessage>
         </FormControl>
 
         <FormControl>
           <FormLabel>Location</FormLabel>
-          <PlacesAutocomplete selected={eventLocation} setSelected={setEventLocation} />
+          <PlacesAutocomplete
+            selected={eventLocation}
+            setSelected={setEventLocation}
+          />
         </FormControl>
 
         <FormControl isRequired isInvalid={errors.description}>
@@ -270,14 +299,13 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
 
         <input
           type="file"
-          onChange={e => handleImageUpload(e)}
+          onChange={(e) => handleImageUpload(e)}
           style={{ display: "none" }}
           id="upload-image"
         />
         <label
           htmlFor="upload-image"
           style={{
-          
             maxWidth: "100%",
             width: ["100%", "50%"],
             backgroundColor: `rgb(${categoryColors.blue})`,
@@ -303,7 +331,11 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
             customInput={<Input />}
             dateFormat="Pp"
             minDate={new Date()}
-            minTime={isToday(eventStartDate) ? new Date() : setHours(new Date(eventStartDate), 23)}
+            minTime={
+              isToday(eventStartDate)
+                ? new Date()
+                : setHours(new Date(eventStartDate), 23)
+            }
             maxTime={setHours(new Date(), 23)}
             disabledKeyboardNavigation
           />
@@ -330,9 +362,14 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
           <FormErrorMessage>{errors.endDate}</FormErrorMessage>
         </FormControl>
 
-        <Stack alignItems="center" spacing={{ base: 2, md: 4 }} width="100%" direction={{ base: "column", sm: "row" }} >
+        <Stack
+          alignItems="center"
+          spacing={{ base: 2, md: 4 }}
+          width="100%"
+          direction={{ base: "column", sm: "row" }}
+        >
           <Button
-            onClick={() => setIsPrivate(prev => !prev)}
+            onClick={() => setIsPrivate((prev) => !prev)}
             w="110px"
             rightIcon={isPrivate ? <BiLockAlt /> : <BiLockOpenAlt />}
           >
@@ -427,7 +464,12 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
             </MenuList>
           </Menu>
         </Stack>
-        <ButtonGroup width="100%" height="50px" fontSize="xl" flexDirection={{ base: "column", md: "row" }}>
+        <ButtonGroup
+          width="100%"
+          height="50px"
+          fontSize="xl"
+          flexDirection={{ base: "column", md: "row" }}
+        >
           <Button width="full" onClick={() => navigate("..")}>
             Cancel
           </Button>
@@ -437,7 +479,7 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
         </ButtonGroup>
       </VStack>
     </Flex>
-  )
-}
+  );
+};
 
-export default EventForm
+export default EventForm;
