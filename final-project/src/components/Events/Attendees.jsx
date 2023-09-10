@@ -11,16 +11,18 @@ import {
   Heading,
   SimpleGrid,
   Text,
-  WrapItem
+  WrapItem,
+  Select
 } from "@chakra-ui/react";
-import {  getUserByUid, getUsersByUsernamePartial } from "../../services/users.services";
+import {  getUserByUid, getUsersByUsernamePartial, getUserContactLists } from "../../services/users.services";
 
 
-const Attendees = ({ initialData = [], onChange }) => {
+const Attendees = ({ initialData = [], onChange, currentUserId }) => {
   const [value, setValue] = useState("");
   const [data, setData] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [contactLists, setContactLists] = useState([]);
 
   useEffect(() => {
     let prevInitialData = JSON.stringify(initialData);
@@ -39,6 +41,32 @@ const Attendees = ({ initialData = [], onChange }) => {
       prevInitialData = JSON.stringify(initialData);
     }
   }, [initialData]);
+
+  useEffect(() => {
+    const fetchContactLists = async () => {
+      try {
+        const lists = await getUserContactLists(currentUserId);
+        setContactLists(lists);
+      } catch (error) {
+        console.error('Failed to fetch contact lists', error);
+      }
+    };
+    fetchContactLists();
+  }, [currentUserId]);
+
+  const addParticipantsFromContactList = async (contactListId) => {
+    try {
+      const contactList = contactLists[contactListId];
+      if (contactList && contactList.contacts) {
+        const usersData = await Promise.all(
+          Object.keys(contactList.contacts).map(uid => getUserByUid(uid))
+        );
+        setData(prevData => [...prevData, ...usersData.filter(user => user && !exists(user.uid))]);
+      }
+    } catch (error) {
+      console.error('Failed to add participants from contact list', error);
+    }
+  };
 
   const searchUsers = async (usernamePartial) => {
     if (usernamePartial.length >= 3) {
@@ -158,6 +186,15 @@ const Attendees = ({ initialData = [], onChange }) => {
           </SimpleGrid>
         </Box>
       )}
+      <Box>
+        <Select placeholder="Select groups" onChange={e => addParticipantsFromContactList(e.target.value)}>
+          {Object.keys(contactLists).map(listId => (
+            <option key={listId} value={listId}>
+              {contactLists[listId].name}
+            </option>
+          ))}
+        </Select>
+      </Box>
     </Box>
   </>
   )

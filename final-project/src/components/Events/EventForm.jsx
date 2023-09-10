@@ -38,6 +38,7 @@ import Attendees from "./Attendees"
 const EventForm = ({ editMode = false, eventData = {} }) => {
   const navigate = useNavigate()
   const { user, userData } = useContext(AuthContext)
+  const currentUserId = user?.uid;
   const [eventTitle, setEventTitle] = useState(eventData?.title || "")
   const [eventLocation, setEventLocation] = useState(eventData?.location || "")
   const [eventDescription, setEventDescription] = useState(eventData?.description || "")
@@ -262,6 +263,7 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
               endDate: eventEndDate,
               location: eventLocation,
             }}
+            currentUserId={currentUserId}
           />
           <FormErrorMessage>{errors.attendees}</FormErrorMessage>
         </FormControl>
