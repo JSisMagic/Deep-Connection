@@ -72,6 +72,9 @@ const DetailedEventCard = ({ detailedEventData, isOpen, onClose, onInviteAcceptD
   const handleDeleteEvent = async () => {
     try {
       await deleteSingleEvent(detailedEventData.id, detailedEventData.creatorId)
+      confirmationModal.onClose()
+      onClose()
+      navigate(-1);
     } catch (e) {
       console.log(e)
     }
