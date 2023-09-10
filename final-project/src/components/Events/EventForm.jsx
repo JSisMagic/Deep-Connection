@@ -233,7 +233,6 @@ const newAttendees = eventData?.attendees
 
   return (
     <Flex
-      height="100%"
       justify="center"
       align="center"
       py={2}
