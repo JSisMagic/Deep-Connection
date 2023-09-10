@@ -25,7 +25,9 @@ import {
   FaChevronDown,
   FaChevronUp,
   FaTimes,
+  FaUserEdit
 } from "react-icons/fa";
+import { BiTrashAlt, BiEditAlt } from "react-icons/bi";
 import {
   getUserContactLists,
   createContactListForUser,
@@ -47,6 +49,7 @@ const ContactList = () => {
   const [userUid, setUserUid] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedList, setExpandedList] = useState(null);
+  const [expandModifyBox, setExpandModifyBox] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -266,24 +269,17 @@ const ContactList = () => {
   }
 
   return (
-    <Flex flexDirection={{ base: "column", md: "row" }} height="100vh">
-      <Box
-        width={{ base: "100%", md: "25%" }}
-        padding="4"
-        backgroundColor="rgba(255,255,255,0.9)"
-        maxHeight="100vh"
-        overflowY="auto"
-      >
-        <VStack spacing={6}>
+    <Flex flexDirection={{ base: "column", md: "row" }} height="100vh" padding="20px">
+     
+     <VStack spacing={6} w={{ base: "100%", md: "50%" }} pr={{ md: "4" }}>
   
           {/* Groups Section */}
-          <Box>
-            <Heading fontWeight={600} mb={4}>Groups</Heading>
-            <Divider />
+          <Box w="100%">
+            <Heading fontWeight={600} mb={4}> My Groups</Heading>
             <VStack width="100%" align="stretch">
              {Object.keys(contactLists).length === 0 ? (
               <Box p={4} textAlign="center">
-                <p>You don't have any contact lists yet.</p>
+                <p>You don't have any groups yet.</p>
                 <p>Create one to get started!</p>
               </Box>
             ) : (
@@ -318,10 +314,23 @@ const ContactList = () => {
                       </Button>
                       <Button
                         size="sm"
-                        leftIcon={<FaTrash />}
+                        mr={2}
+                        
                         onClick={() => handleDeleteList(list.id)}
-                        bgColor="#E9D8FD"
-                      ></Button>
+                        bgColor="grey.100"
+                      >
+                        <BiTrashAlt />
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          setExpandModifyBox(!expandModifyBox);
+                          setSelectedList(list.id)
+                        }}
+                        bgColor="grey.100"
+                      >
+                        <BiEditAlt />
+                      </Button>
                     </Box>
                   </Heading>
                   <Collapse in={expandedList === list.id}>
@@ -349,13 +358,64 @@ const ContactList = () => {
                       })}
                     </List>
                   </Collapse>
+                  <Collapse in={expandModifyBox} >
+                    <Input
+                      value={emailToAdd}
+                      onChange={(e) => {
+                        setEmailToAdd(e.target.value);
+                        searchUsers(e.target.value);
+
+                        if (e.target.value === '') {
+                          setSearchResults([])
+                        }
+                      }}
+                      placeholder="Add user to group"
+                      
+                    />
+                    <Box
+                      position="absolute"
+                      mt={2}
+                      w="300px"
+                      zIndex="dropdown"
+                      borderRadius="md"
+                      boxShadow="md"
+                      bg="gray.50"
+                      overflowY="auto"
+                      maxHeight="300px"
+                    >
+                      {searchResults.map(user => (
+                        <Flex
+                          key={user.uid}
+                          background="white"
+                          p={3}
+                          borderRadius="md"
+                          justify="space-between"
+                          align="center"
+                          boxShadow="base"
+                          onClick={() => handleAddUserToList(user)}
+                          cursor="pointer"
+                          _hover={{ bg: "rgba(255,255,255, .2)" }}
+                        >
+                          <Flex gap={3}>
+                            <Avatar src={user.profilePicture} />
+                            <Box>
+                              <Heading size="sm">
+                                {user.firstName} {user.lastName}
+                              </Heading>
+                              <Text fontWeight={600}>@{user.username}</Text>
+                            </Box>
+                          </Flex>
+                        </Flex>
+                        ))}
+                    </Box>
+                  </Collapse>
                 </Box>
               ))
             )}
   
             <Box mt={4}>
               <Input
-                placeholder="New list name"
+                placeholder="New group name"
                 value={listName}
                 onChange={(e) => setListName(e.target.value)}
               />
@@ -364,16 +424,17 @@ const ContactList = () => {
                 onClick={handleCreateList}
                 disabled={!listName.trim()}
               >
-                Create new list
+                Create new group
               </Button>
             </Box>
           </VStack>
           </Box>
+          </VStack>
   
           {/* My Contacts Section */}
-          <Box mt={6}>
-            <Heading fontWeight={600} mb={4}>My Contacts</Heading>
-            <Divider />
+          <VStack spacing={6} w={{ base: "100%", md: "50%" }} pl={{ md: "4" }} mt={{ base: "6", md: "0" }}>
+          <Box w="100%">
+            <Heading fontWeight={600} mb={4} fontFamily="heading">My Contacts</Heading>
             <SimpleGrid columns={1} spacing={2}>
               {myContacts.map((contact, index) => (
                 <Box
@@ -394,84 +455,7 @@ const ContactList = () => {
               ))}
             </SimpleGrid>
           </Box>
-        </VStack>
-      </Box>
-  
-      <Box
-        width={{ base: "100%", md: "75%" }}
-        padding="4"
-        maxHeight="100vh"
-        overflowY="auto"
-      >
-        <VStack spacing={6} width="100%">
-  
-          {/* Manage Groups Section */}
-          <Box>
-            <Heading fontWeight={600}>Manage Groups</Heading>
-            <Divider />
-            <Stack direction="column" spacing={4} width="100%">
-           <Select
-              placeholder="Select list"
-              value={selectedList}
-              onChange={(e) => setSelectedList(e.target.value)}
-            >
-              {Object.values(contactLists).map((list) => (
-                <option key={list.id} value={list.id}>{list.name}</option>
-              ))}
-            </Select>
-  
-            <Input
-              value={emailToAdd}
-              onChange={(e) => {
-                setEmailToAdd(e.target.value);
-                searchUsers(e.target.value);
-              }}
-              placeholder="Search user by username"
-            />
-  
-            {isDropdownOpen && (
-              <Box
-                position="absolute"
-                mt={2}
-                w="100%"
-                zIndex="dropdown"
-                borderRadius="md"
-                boxShadow="md"
-                bg="gray.50"
-                overflowY="auto"
-                maxHeight="300px"
-              >
-                <SimpleGrid columns={1} spacing={3} marginTop={3}>
-                  {searchResults.map(user => (
-                    <Flex
-                      key={user.uid}
-                      background="white"
-                      p={3}
-                      borderRadius="md"
-                      justify="space-between"
-                      align="center"
-                      boxShadow="base"
-                      onClick={() => handleAddUserToList(user)}
-                      cursor="pointer"
-                    >
-                      <Flex gap={3}>
-                        <Avatar src={user.profilePicture} />
-                        <Box>
-                          <Heading size="sm">
-                            {user.firstName} {user.lastName}
-                          </Heading>
-                          <Text fontWeight={600}>@{user.username}</Text>
-                        </Box>
-                      </Flex>
-                    </Flex>
-                  ))}
-                </SimpleGrid>
-              </Box>
-            )}
-          </Stack>
-          </Box>
-        </VStack>
-      </Box>
+          </VStack>
     </Flex>
   )
  }
