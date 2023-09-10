@@ -334,9 +334,9 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
             minTime={
               isToday(eventStartDate)
                 ? new Date()
-                : setHours(new Date(eventStartDate), 23)
+                : setHours(new Date(eventStartDate), 0)
             }
-            maxTime={setHours(new Date(), 23)}
+            maxTime={addMinutes(setHours(new Date(), 23), 30)}
             disabledKeyboardNavigation
           />
           <FormErrorMessage></FormErrorMessage>
@@ -355,7 +355,7 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
             minTime={
               isSameDay(eventStartDate, eventEndDate)
                 ? addMinutes(eventStartDate, 30)
-                : setHours(new Date(), 23)
+                : setHours(new Date(eventEndDate), 0)
             }
             maxTime={addMinutes(setHours(new Date(), 23), 30)}
           />
