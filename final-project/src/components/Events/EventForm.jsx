@@ -132,12 +132,15 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
         url = await getDownloadURL(result.ref);
       }
     }
+const newAttendees = eventData?.attendees
+? { ...eventData?.attendees, pending: eventAttendees }
+: { pending: eventAttendees}
 
     const newEvent = {
       title: eventTitle,
       location: eventLocation,
       description: eventDescription,
-      attendees: { pending: eventAttendees },
+      attendees: newAttendees,
       startDate: eventStartDate.toISOString(),
       endDate: eventEndDate.toISOString(),
       creatorId: eventData?.creatorId || user.uid,
