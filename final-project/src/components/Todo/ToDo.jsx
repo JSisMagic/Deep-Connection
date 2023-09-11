@@ -103,7 +103,7 @@ const TodoComponent = () => {
     bg="gray.50"
     borderRadius="md"
     overflowY="auto"
-    maxHeight="100vh"
+    h="100%"
   >
     <form onSubmit={addTodo}> 
       <InputGroup>
