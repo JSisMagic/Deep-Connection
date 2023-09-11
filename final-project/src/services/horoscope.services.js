@@ -1,5 +1,4 @@
-import { HOROSCOPE_API_KEY } from "../common/horoscope-constants";
-
+import { HOROSCOPE_API_KEY } from "../common/horoscope.constants";
 const myHeaders = new Headers();
 myHeaders.append(`Authorization`, `Bearer ${HOROSCOPE_API_KEY}`);
 
