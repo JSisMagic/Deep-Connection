@@ -42,6 +42,12 @@ export const eventRepetitions = {
   never: "Never",
 }
 
+export const dayCount = {
+  Weekly: 7,
+  Monthly: 30,
+  Yearly: 365,
+}
+
 export const HEADER_HEIGHT = "64px"
 export const CALENDAR_HEIGHT = "65vh"
 export const MEMBERS_LIST_HEIGHT = "70vh"
