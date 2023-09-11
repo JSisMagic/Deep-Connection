@@ -65,7 +65,7 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
   const [eventAttendees, setEventAttendees] = useState(
     eventData?.attendees?.length || []
   );
-  const [eventRepeat, setEventRepeat] = useState(eventData?.repeat || "never");
+  const [eventRepeat, setEventRepeat] = useState(eventData?.repeat || eventRepetitions.never);
   const [isPrivate, setIsPrivate] = useState(
     eventData.id ? eventData?.isPrivate : true
   );
@@ -77,7 +77,7 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
     startDate: "",
     endDate: "",
   });
-  console.log(userData);
+  
   const handleImageUpload = (e) => {
     if (!SUPPORTED_FORMATS.includes(e.target.files[0].type)) {
       console.log("Unsupported file format!");
@@ -132,9 +132,9 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
         url = await getDownloadURL(result.ref);
       }
     }
-    const newAttendees = eventData?.attendees
-      ? { ...eventData?.attendees, pending: eventAttendees }
-      : { pending: eventAttendees };
+const newAttendees = eventData?.attendees
+? { ...eventData?.attendees, pending: eventAttendees }
+: { pending: eventAttendees}
 
     const newEvent = {
       title: eventTitle,
@@ -238,6 +238,7 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
     if (field === "end") {
       return eventStartDate.getTime() < selectedDate.getTime();
     }
+
     return currentDate.getTime() < selectedDate.getTime();
   };
 
@@ -379,7 +380,7 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
           </Button>
           <Menu width="50%">
             <MenuButton as={Button} rightIcon={<BiRepeat />}>
-              {eventRepetitions[eventRepeat]}
+              {eventRepeat}
             </MenuButton>
             <MenuList width="100%" maxH="300px">
               <MenuOptionGroup
@@ -389,7 +390,7 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
                 fontWeight={600}
               >
                 {Object.entries(eventRepetitions).map(([key, value]) => (
-                  <MenuItemOption key={key} value={key}>
+                  <MenuItemOption key={key} value={value}>
                     {value}
                   </MenuItemOption>
                 ))}
