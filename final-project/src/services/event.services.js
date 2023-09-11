@@ -12,7 +12,7 @@ import {
   update,
 } from "firebase/database"
 import { db } from "../config/firebase"
-import { dateISOTimezoneAdjust } from "../common/helpers"
+import { hasRepetitionToday, dateISOTimezoneAdjust } from "../common/helpers"
 import { eventActions } from "../common/event-enums"
 
 export const createEvent = async event => {
@@ -94,15 +94,16 @@ export const getEventsForDate = (date, events) => {
     .filter(event => {
       const startDate = new Date(event.startDate)
       const endDate = new Date(event.endDate)
-
+      
       const currentDate = date
       currentDate.setHours(0, 0, 0, 0)
       startDate.setHours(0, 0, 0, 0)
       endDate.setHours(0, 0, 0, 0)
 
-      if (startDate <= currentDate && currentDate <= endDate) {
+      if (startDate <= currentDate && currentDate <= endDate || hasRepetitionToday(date, event)) {
         return true
       }
+
 
       return false
     })
