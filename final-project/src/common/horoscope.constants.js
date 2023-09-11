@@ -1,0 +1,2 @@
+export const HOROSCOPE_API_KEY =
+    "2131|vvVeyGKiS8jChqDSLkTLBYXvl1GPSmfuZC9PEPVv";
