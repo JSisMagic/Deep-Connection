@@ -1,3 +1,5 @@
+import { differenceInCalendarDays, differenceInDays, isBefore } from "date-fns"
+import { dayCount, eventRepetitions } from "./constrants"
 import errorMessages from "./error-messages"
 import validation from "./validation-enums"
 
@@ -21,7 +23,7 @@ const validateDates = (startDate, endDate) => {
   const startDateInMs = startDate.getTime()
   const endDateInMs = endDate.getTime()
 
-  if (endDateInMs < startDateInMs) {
+  if (endDateInMs <= startDateInMs) {
     isDateValid = false
     key = "endDate"
     message = errorMessages.INVALID_END_DATE
@@ -30,10 +32,27 @@ const validateDates = (startDate, endDate) => {
   return { isDateValid, key, message }
 }
 
+const hasRepetitionToday = (date, event) => {
+  const { startDate, endDate, repeat } = event
+
+  if (isBefore(date, startDate) || repeat === eventRepetitions.never) return
+
+  const eventDurationInDays = differenceInDays(endDate, startDate)
+  const daysSinceStart = differenceInCalendarDays(date, startDate)
+
+  if (daysSinceStart % dayCount[repeat] === 0) return true
+  if (daysSinceStart % dayCount[repeat] <= eventDurationInDays) return true
+}
+
 const dateISOTimezoneAdjust = date =>
   date
     ? new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, -8)
     : null
 
-export { dateISOTimezoneAdjust, validateDates, validateDescription, validateTitle }
-
+export {
+  dateISOTimezoneAdjust,
+  validateDates,
+  validateDescription,
+  validateTitle,
+  hasRepetitionToday,
+}
