@@ -132,9 +132,9 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
         url = await getDownloadURL(result.ref);
       }
     }
-const newAttendees = eventData?.attendees
-? { ...eventData?.attendees, pending: eventAttendees }
-: { pending: eventAttendees}
+    const newAttendees = eventData?.attendees
+      ? { ...eventData?.attendees, pending: eventAttendees }
+      : { pending: eventAttendees };
 
     const newEvent = {
       title: eventTitle,
@@ -229,6 +229,16 @@ const newAttendees = eventData?.attendees
 
   const handleChangeRepetitions = (value) => {
     setEventRepeat(value);
+  };
+
+  const filterPassedTime = (time, field) => {
+    const currentDate = new Date();
+    const selectedDate = new Date(time);
+
+    if (field === "end") {
+      return eventStartDate.getTime() < selectedDate.getTime();
+    }
+    return currentDate.getTime() < selectedDate.getTime();
   };
 
   return (
@@ -333,12 +343,7 @@ const newAttendees = eventData?.attendees
             customInput={<Input />}
             dateFormat="Pp"
             minDate={new Date()}
-            minTime={
-              isToday(eventStartDate)
-                ? new Date()
-                : setHours(new Date(eventStartDate), 0)
-            }
-            maxTime={addMinutes(setHours(new Date(), 23), 30)}
+            filterTime={(time) => filterPassedTime(time, "start")}
             disabledKeyboardNavigation
           />
           <FormErrorMessage></FormErrorMessage>
@@ -354,12 +359,7 @@ const newAttendees = eventData?.attendees
             customInput={<Input />}
             dateFormat="Pp"
             minDate={eventStartDate || new Date()}
-            minTime={
-              isSameDay(eventStartDate, eventEndDate)
-                ? addMinutes(eventStartDate, 30)
-                : setHours(new Date(eventEndDate), 0)
-            }
-            maxTime={addMinutes(setHours(new Date(), 23), 30)}
+            filterTime={(time) => filterPassedTime(time, "end")}
           />
           <FormErrorMessage>{errors.endDate}</FormErrorMessage>
         </FormControl>
