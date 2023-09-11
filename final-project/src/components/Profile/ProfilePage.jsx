@@ -13,7 +13,7 @@ import {
   IconButton,
   Input,
   Stack,
-  Text
+  Text,
 } from "@chakra-ui/react"
 import React, { useEffect, useState } from "react"
 import { useAuthState } from "react-firebase-hooks/auth"
@@ -53,7 +53,7 @@ const ProfilePage = () => {
     description: "",
   })
   const [editState, setEditState] = useState(false)
-  
+
   const fetchProfileData = async () => {
     if (uid) {
       const userData = await getUserByUid(uid)
@@ -67,20 +67,8 @@ const ProfilePage = () => {
 
   const initials = (profileData.firstName.charAt(0) + profileData.lastName.charAt(0)).toUpperCase()
 
-  const addSocialMediaLink = (link, platform) => {
-    setProfileData({
-      ...profileData,
-      socialMediaLinks: [...profileData.socialMediaLinks, { link, platform }],
-    })
-  }
-
-  const removeSocialMediaLink = index => {
-    const updatedLinks = [...profileData.socialMediaLinks]
-    updatedLinks.splice(index, 1)
-    setProfileData({
-      ...profileData,
-      socialMediaLinks: updatedLinks,
-    })
+  const handleOpenSocialMediaLink = url => {
+    window.open(url, "_blank").focus()
   }
 
   return (
@@ -109,6 +97,7 @@ const ProfilePage = () => {
               isMyProfile={user.uid === uid}
               setEditState={setEditState}
               initials={initials}
+              handleOpenSocialMediaLink={handleOpenSocialMediaLink}
             />
           )}
         </Box>
@@ -125,7 +114,13 @@ const ProfilePage = () => {
   )
 }
 
-const ProfileComponent = ({ profileData, isMyProfile, setEditState, initials }) => {
+const ProfileComponent = ({
+  profileData,
+  isMyProfile,
+  setEditState,
+  initials,
+  handleOpenSocialMediaLink,
+}) => {
   return (
     <Box w="100%" m="auto" p="4" bg="white" borderRadius="lg" boxShadow="md">
       <Flex justify="space-between">
@@ -170,9 +165,21 @@ const ProfileComponent = ({ profileData, isMyProfile, setEditState, initials }) 
       )}
       <Divider my={3} w="40%" marginInline="auto" borderColor={COOL_BLUE} />
       <Flex justify="center" gap={2}>
-        <IconButton icon={getSocialMediaIcon("Facebook")} isDisabled={!profileData.facebookUrl} />
-        <IconButton icon={getSocialMediaIcon("Instagram")} isDisabled={!profileData.instagramUrl} />
-        <IconButton icon={getSocialMediaIcon("LinkedIn")} isDisabled={!profileData.linkedInUrl} />
+        <IconButton
+          icon={getSocialMediaIcon("Facebook")}
+          isDisabled={!profileData.facebookUrl}
+          onClick={() => handleOpenSocialMediaLink(profileData.facebookUrl)}
+        />
+        <IconButton
+          icon={getSocialMediaIcon("Instagram")}
+          isDisabled={!profileData.instagramUrl}
+          onClick={() => handleOpenSocialMediaLink(profileData.instagramUrl)}
+        />
+        <IconButton
+          icon={getSocialMediaIcon("LinkedIn")}
+          isDisabled={!profileData.linkedInUrl}
+          onClick={() => handleOpenSocialMediaLink(profileData.linkedInUrl)}
+        />
       </Flex>
     </Box>
   )
@@ -192,10 +199,13 @@ const EditProfileComponent = ({ profileData, setProfileData, initials, setEditSt
       phone: profileData.phone,
       profilePicture: profileData.profilePicture,
       slogan: profileData.slogan,
+      facebookUrl: profileData.facebookUrl,
+      instagramUrl: profileData.instagramUrl,
+      linkedInUrl: profileData.linkedInUrl,
     },
   })
   const [description, setDescription] = useState(profileData.description)
-  console.log(errors)
+
   const handleChangeDescription = value => {
     if (validateDescription(value)) {
       clearErrors("description")
@@ -203,18 +213,17 @@ const EditProfileComponent = ({ profileData, setProfileData, initials, setEditSt
 
     setDescription(value)
   }
-  // console.log(profileData)
+  
   const onSaveChanges = async values => {
-    if (!validateDescription(description)) {
+    if (profileData.description !== description && !validateDescription(description)) {
       return setError("description", {
         message: `Length should be between ${validation.MIN_ADDITIONAL_INFO_LENGTH} and ${validation.MAX_ADDITIONAL_INFO_LENGTH} characters.`,
       })
     }
-
     try {
-      const newUserData = { ...values, description }
-      if (values.profilePicture !== profileData.profilePicture) {
-        const image = values.profilePicture.item(0)
+      const newUserData = description ? { ...values, description } : { ...values }
+      const image = values.profilePicture.item(0)
+      if (image) {
         const fileType = image.type
         if (!SUPPORTED_FORMATS.includes(fileType)) {
           return setError("profilePicture", { message: "Invalid format!" })
@@ -232,7 +241,14 @@ const EditProfileComponent = ({ profileData, setProfileData, initials, setEditSt
   }
 
   return (
-    <Box width={{ base: "100%", md: "75%", lg: "50%" }} margin="auto" padding="4" backgroundColor="white" borderRadius="lg" boxShadow="md">
+    <Box
+      width="100%"
+      margin="auto"
+      padding="4"
+      backgroundColor="white"
+      borderRadius="lg"
+      boxShadow="md"
+    >
       <form onSubmit={handleSubmit(onSaveChanges)}>
         <Flex direction={{ base: "column", md: "row" }} justify="space-between">
           <FormControl isInvalid={errors?.profilePicture}>
@@ -350,6 +366,21 @@ const EditProfileComponent = ({ profileData, setProfileData, initials, setEditSt
               })}
             />
             <FormErrorMessage>{errors?.slogan?.message}</FormErrorMessage>
+          </FormControl>
+          <FormControl isInvalid={errors?.facebookUrl}>
+            <FormLabel>Facebook URL</FormLabel>
+            <Input type="text" id="slogan" {...register("facebookUrl")} />
+            <FormErrorMessage>{errors?.facebookUrl?.message}</FormErrorMessage>
+          </FormControl>
+          <FormControl isInvalid={errors?.instagramUrl}>
+            <FormLabel>Instagram URL</FormLabel>
+            <Input type="text" id="slogan" {...register("instagramUrl")} />
+            <FormErrorMessage>{errors?.instagramUrl?.message}</FormErrorMessage>
+          </FormControl>
+          <FormControl isInvalid={errors?.linkedInUrl}>
+            <FormLabel>LinkedIn URL</FormLabel>
+            <Input type="text" id="slogan" {...register("linkedInUrl")} />
+            <FormErrorMessage>{errors?.linkedInUrl?.message}</FormErrorMessage>
           </FormControl>
         </Stack>
       </form>
