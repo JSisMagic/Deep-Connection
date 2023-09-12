@@ -12,11 +12,10 @@ import {
 import { format } from "date-fns";
 import { FaLocationDot } from "react-icons/fa6";
 import FallbackImg from "../../assets/images/event.jpg";
-import { useContext } from "react";
+import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { joinOrLeaveEvent } from "../../services/event.services";
 import { eventActions } from "../../common/event-enums";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const EventPageCard = ({
@@ -28,6 +27,34 @@ const EventPageCard = ({
   const toast = useToast();
   const navigate = useNavigate();
   const [hasJoined, setHasJoined] = useState(userData?.events?.[eventData.id]);
+  const [timeRemaining, setTimeRemaining] = useState(calculateTimeRemaining());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeRemaining(calculateTimeRemaining());
+    }, 1000);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
+
+  function calculateTimeRemaining() {
+    const now = new Date();
+    const startDate = new Date(eventData.startDate);
+    const timeDiff = startDate - now;
+
+    if (timeDiff < 0) {
+      return "Event started";
+    }
+
+    const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+    return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+  }
 
   const handleClickEvent = () => {
     if (userData === null) {
@@ -100,7 +127,10 @@ const EventPageCard = ({
         <Text fontWeight={500}>
           {format(eventData.startDate, "ccc").toUpperCase()}
         </Text>
-        <Heading size="md">{format(eventData.startDate, "d")}</Heading>
+        <Heading size="md">
+          {format(eventData.startDate, "d")}
+        </Heading>
+        
       </Stack>
       <Stack
         h="100%"
@@ -114,6 +144,7 @@ const EventPageCard = ({
             {format(eventData.startDate, "HH:mm")} -
             {format(eventData.endDate, "HH:mm O")}
           </Text>
+          <Text fontSize="sm">{timeRemaining}</Text>
           {userData?.uid !== eventData.creatorId && (
             <Button colorScheme="blue" onClick={handleJoinOrLeave}>
               {hasJoined ? "Leave" : "Join"}
