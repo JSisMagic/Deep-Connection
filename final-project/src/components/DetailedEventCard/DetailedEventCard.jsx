@@ -1,4 +1,4 @@
-import { CheckIcon, CloseIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons"
+import { CheckIcon, CloseIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import {
   Avatar,
   Box,
@@ -22,82 +22,95 @@ import {
   Stack,
   Text,
   useDisclosure,
-  useToast
-} from "@chakra-ui/react"
-import { format } from "date-fns"
-import { useContext } from "react"
-import { FaLocationDot } from "react-icons/fa6"
-import { useNavigate } from "react-router-dom"
-import { confirmMessages } from "../../common/confirmation-messages"
-import { userRole } from "../../common/member-role"
-import { AuthContext } from "../../context/AuthContext"
-import { acceptInvite, deleteSingleEvent, denyInvite } from "../../services/event.services"
-import EventCreatorInfo from "../Events/EventCreatorInfor"
-import ConfirmationModal from "../Modals/ConfirmationModal"
+} from "@chakra-ui/react";
+import { format } from "date-fns";
+import { useContext } from "react";
+import { FaLocationDot } from "react-icons/fa6";
+import { useNavigate } from "react-router-dom";
+import { confirmMessages } from "../../common/confirmation-messages";
+import { userRole } from "../../common/member-role";
+import { AuthContext } from "../../context/AuthContext";
+import {
+  acceptInvite,
+  deleteSingleEvent,
+  denyInvite,
+} from "../../services/event.services";
+import EventCreatorInfo from "../Events/EventCreatorInfor";
+import ConfirmationModal from "../Modals/ConfirmationModal";
 
-const DetailedEventCard = ({ detailedEventData, isOpen, onClose, onInviteAcceptDeny }) => {
-  const toast = useToast();
-  const { user, userData } = useContext(AuthContext)
-  const { attendees } = detailedEventData || {}
-  const { onOpen } = useDisclosure()
-  const confirmationModal = useDisclosure()
-  const navigate = useNavigate()
+const DetailedEventCard = ({
+  detailedEventData,
+  isOpen,
+  onClose,
+  onInviteAcceptDeny,
+}) => {
+  const { user, userData } = useContext(AuthContext);
+  const { attendees } = detailedEventData || {};
+  const { onOpen } = useDisclosure();
+  const confirmationModal = useDisclosure();
+  const navigate = useNavigate();
   // console.log(detailedEventData)
 
   const handleAccept = async () => {
-    const event = await acceptInvite(user.email, detailedEventData.id)
-    onInviteAcceptDeny(event)
-  }
+    const event = await acceptInvite(user.email, detailedEventData.id);
+    onInviteAcceptDeny(event);
+  };
 
   const handleDeny = async () => {
-    const event = await denyInvite(user.email, detailedEventData.id)
-    onInviteAcceptDeny(event)
-  }
+    const event = await denyInvite(user.email, detailedEventData.id);
+    onInviteAcceptDeny(event);
+  };
 
   const hasPendingInvite = () => {
-    const { pending } = attendees || []
-    return pending && pending.find(e => e.email === user.email) !== undefined
-  }
+    const { pending } = attendees || [];
+    return pending && pending.find((e) => e.email === user.email) !== undefined;
+  };
 
   const hasAccepted = () => {
-    const { accepted } = attendees || []
+    const { accepted } = attendees || [];
     // debugger;
     // console.log(accepted);
-    return accepted && accepted.find(e => e.email === user.email) !== undefined
-  }
+    return (
+      accepted && accepted.find((e) => e.email === user.email) !== undefined
+    );
+  };
 
   const hasDenied = () => {
-    const { denied } = attendees || []
-    return denied && denied.find(e => e.email === user.email) !== undefined
-  }
+    const { denied } = attendees || [];
+    return denied && denied.find((e) => e.email === user.email) !== undefined;
+  };
 
   const handleDeleteEvent = async () => {
     try {
-      await deleteSingleEvent(detailedEventData.id, detailedEventData.creatorId);
+      await deleteSingleEvent(
+        detailedEventData.id,
+        detailedEventData.creatorId
+      );
       confirmationModal.onClose();
       onClose();
-  
+
       toast({
         title: "Event Deleted",
         description: "The event has been successfully deleted.",
         status: "success",
-        duration: 3000, 
-        isClosable: true, 
+        duration: 3000,
+        isClosable: true,
       });
     } catch (e) {
       console.error(e);
-  
+
       toast({
         title: "Error",
-        description: "An error occurred while deleting the event. Please try again later.",
+        description:
+          "An error occurred while deleting the event. Please try again later.",
         status: "error",
         duration: 5000,
         isClosable: true,
       });
     }
-  }
+  };
 
-  const messageContainer = text => (
+  const messageContainer = (text) => (
     <Flex
       p={5}
       bg="gray.100"
@@ -108,10 +121,10 @@ const DetailedEventCard = ({ detailedEventData, isOpen, onClose, onInviteAcceptD
     >
       {text}
     </Flex>
-  )
+  );
 
   if (detailedEventData === undefined) {
-    return
+    return;
   }
 
   return (
@@ -139,13 +152,19 @@ const DetailedEventCard = ({ detailedEventData, isOpen, onClose, onInviteAcceptD
           <Stack gap={3} py={5}>
             <Flex justify="space-between">
               <Heading size="lg">{detailedEventData.title}</Heading>
-              {(detailedEventData?.creatorId === user?.uid || userData.role === userRole.ADMIN) && (
+              {(detailedEventData?.creatorId === user?.uid ||
+                userData.role === userRole.ADMIN) && (
                 <ButtonGroup>
                   <IconButton
                     icon={<EditIcon />}
-                    onClick={() => navigate(`/edit-event/${detailedEventData.id}`)}
+                    onClick={() =>
+                      navigate(`/edit-event/${detailedEventData.id}`)
+                    }
                   />
-                  <IconButton icon={<DeleteIcon />} onClick={confirmationModal.onOpen} />
+                  <IconButton
+                    icon={<DeleteIcon />}
+                    onClick={confirmationModal.onOpen}
+                  />
                 </ButtonGroup>
               )}
             </Flex>
@@ -223,14 +242,18 @@ const DetailedEventCard = ({ detailedEventData, isOpen, onClose, onInviteAcceptD
           )}
           {hasAccepted() && messageContainer("You have accepted this event")}
           {hasDenied() && messageContainer("You have denied this event")}
-          {((detailedEventData.isPrivate && hasAccepted()) || !detailedEventData.isPrivate) && (
+          {((detailedEventData.isPrivate && hasAccepted()) ||
+            !detailedEventData.isPrivate) && (
             <Menu>
               <MenuButton as={Button} rightIcon="▼">
                 Participants
               </MenuButton>
               <MenuList maxH="200px" overflowY="auto">
                 {attendees?.accepted?.map((userDetail, index) => (
-                  <MenuItem key={index} onClick={() => navigate(`/profile/${userDetail.uid}`)}>
+                  <MenuItem
+                    key={index}
+                    onClick={() => navigate(`/profile/${userDetail.uid}`)}
+                  >
                     <Flex
                       w="full"
                       background="white"
@@ -258,7 +281,7 @@ const DetailedEventCard = ({ detailedEventData, isOpen, onClose, onInviteAcceptD
         </ModalBody>
       </ModalContent>
     </Modal>
-  )
-}
+  );
+};
 
-export default DetailedEventCard
+export default DetailedEventCard;
