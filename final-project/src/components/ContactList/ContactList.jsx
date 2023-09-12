@@ -300,8 +300,13 @@ const ContactList = () => {
      <VStack spacing={6} w={{ base: "100%", md: "50%" }} pr={{ md: "4" }}>
   
           {/* Groups Section */}
-          <Box w="100%">
-            <Heading fontWeight={600} mb={4}> My Groups</Heading>
+          <Box 
+            p={4}
+            borderWidth="1px"
+            borderRadius="lg"
+            width="100%"
+            >
+            <Heading fontWeight={500} mb={4}> My Groups</Heading>
             <VStack width="100%" align="stretch">
              {Object.keys(contactLists).length === 0 ? (
               <Box p={4} textAlign="center">
@@ -459,8 +464,13 @@ const ContactList = () => {
   
           {/* My Contacts Section */}
           <VStack spacing={6} w={{ base: "100%", md: "50%" }} pl={{ md: "4" }} mt={{ base: "6", md: "0" }}>
-          <Box w="100%">
-            <Heading fontWeight={600} mb={4} fontFamily="heading">My Contacts</Heading>
+          <Box 
+            p={4}
+            borderWidth="1px"
+            borderRadius="lg"
+            width="100%"
+            >
+            <Heading fontWeight={500} mb={4} fontFamily="heading">My Contacts</Heading>
             <SimpleGrid columns={1} spacing={2}>
               {myContacts.map((contact, index) => (
                 <Box

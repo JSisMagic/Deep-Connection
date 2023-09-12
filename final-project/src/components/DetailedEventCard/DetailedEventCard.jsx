@@ -162,6 +162,7 @@ const DetailedEventCard = ({
 
   const timerStyles = {
     container: {
+      paddingTop: '2.0625rem',
       display: 'flex',
       alignItems: 'center',
     },
