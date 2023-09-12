@@ -1,97 +1,62 @@
-import {
-  Flex,
-  Box,
-  Grid,
-  Button,
-  IconButton,
-  Heading,
-  GridItem,
-  Image,
-} from "@chakra-ui/react";
-import { ArrowForwardIcon, ArrowBackIcon } from "@chakra-ui/icons";
-import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../../context/AuthContext";
-import { getEventsForUser } from "../../services/event.services";
-import EventsColumn from "./EventsColumn";
-import HoursColumn from "./HoursColumn";
-import { addDays, format, subDays } from "date-fns";
-import { CALENDAR_HEIGHT } from "../../common/constrants";
-import TodoComponent from "../Todo/ToDo";
-import { getHoroscope } from "../../services/horoscope.services";
+import { Flex, Box, Grid, Button, IconButton, Heading, GridItem, Image } from "@chakra-ui/react"
+import { ArrowForwardIcon, ArrowBackIcon } from "@chakra-ui/icons"
+import { useContext, useEffect, useState } from "react"
+import { AuthContext } from "../../context/AuthContext"
+import { getEventsForUser } from "../../services/event.services"
+import EventsColumn from "./EventsColumn"
+import HoursColumn from "./HoursColumn"
+import { addDays, format, subDays } from "date-fns"
+import { CALENDAR_HEIGHT, HEADER_HEIGHT } from "../../common/constrants"
+import TodoComponent from "../Todo/ToDo"
+import Horoscope from "../Horoscope/Horoscope"
 
 const DayView = ({ date, setDate, onOpenDetailedModal }) => {
-  const { user } = useContext(AuthContext);
-  const [events, setEvents] = useState([]);
-  const [horoscope, setHoroscope] = useState("");
-
-  const [selectedSunsign, setSelectedSunsign] = useState("aries"); // Set an initial value
-
-  const handleSunsignChange = (event) => {
-    setSelectedSunsign(event.target.value);
-  };
-
-  const sunsigns = [
-    "aries",
-    "taurus",
-    "gemini",
-    "cancer",
-    "leo",
-    "virgo",
-    "libra",
-    "scorpio",
-    "sagittarius",
-    "capricorn",
-    "aquarius",
-    "pisces",
-  ];
+  const { user } = useContext(AuthContext)
+  const [events, setEvents] = useState([])
 
   useEffect(() => {
     if (user.uid) {
-      getEventsForUser(user.uid).then(setEvents).catch(console.error);
+      getEventsForUser(user.uid).then(setEvents).catch(console.error)
     }
-  }, [date, user.uid, selectedSunsign]);
+  }, [date, user.uid])
 
-  useEffect(() => {
-    getHoroscope(selectedSunsign)
-      .then((response) => response.json())
-      .then((body) => setHoroscope(body.Horoscope))
-      .catch(console.error);
-  }, [selectedSunsign]);
-
-  const handleNavigate = (action) => {
+  const handleNavigate = action => {
     return () => {
       switch (action) {
         case "today":
-          setDate(new Date());
-          break;
+          setDate(new Date())
+          break
         case "prev":
-          setDate((prev) => subDays(prev, 1));
-          break;
+          setDate(prev => subDays(prev, 1))
+          break
         case "next":
-          setDate((prev) => addDays(prev, 1));
+          setDate(prev => addDays(prev, 1))
       }
-    };
-  };
+    }
+  }
 
   const DESKTOP_AREAS = `
   "calendar quote"
   "calendar todos"
-  `;
+  "calendar horoscope"
+  `
   const MOBILE_AREAS = `
   "calendar"
   "todos"
   "quote"
-  `;
+  "horoscope"
+  `
 
   return (
     <Grid
       templateAreas={{ base: MOBILE_AREAS, lg: DESKTOP_AREAS }}
       gridTemplateColumns={{ lg: "2fr 1fr" }}
-      gridTemplateRows={{ lg: "1fr 2fr" }}
+      gridTemplateRows={{ lg: "1fr 2fr 1fr" }}
       columnGap={3}
       rowGap={3}
+      maxHeight={`calc(90vh - ${HEADER_HEIGHT})`}
     >
-      <GridItem area="calendar">
+      <GridItem area="calendar" height={{lg: "90%"}} >
         <Grid
           templateColumns={{ base: "1fr", sm: "repeat(3, 1fr)" }}
           py={2}
@@ -107,36 +72,16 @@ const DayView = ({ date, setDate, onOpenDetailedModal }) => {
             Today
           </Button>
 
-          <Flex
-            justify="center"
-            align="center"
-            gap={3}
-            mx={{ base: "auto", sm: "unset" }}
-          >
-            <IconButton
-              size="sm"
-              icon={<ArrowBackIcon />}
-              onClick={handleNavigate("prev")}
-            />
-            <Heading
-              size="md"
-              textAlign="center"
-              w={{ base: "200px", md: "300px" }}
-            >
+          <Flex justify="center" align="center" gap={3} mx={{ base: "auto", sm: "unset" }}>
+            <IconButton size="sm" icon={<ArrowBackIcon />} onClick={handleNavigate("prev")} />
+            <Heading size="md" textAlign="center" w={{ base: "200px", md: "300px" }}>
               {format(date, "PPPP")}
             </Heading>
-            <IconButton
-              size="sm"
-              icon={<ArrowForwardIcon />}
-              onClick={handleNavigate("next")}
-            />
+            <IconButton size="sm" icon={<ArrowForwardIcon />} onClick={handleNavigate("next")} />
           </Flex>
         </Grid>
-        <Box overflowY="scroll" height={{ base: "300px", md: CALENDAR_HEIGHT }}>
-          <Flex
-            direction={{ base: "column", md: "row" }}
-            align={{ base: "stretch", md: "flex-start" }}
-          >
+        <Box overflowY="scroll" height="100%">
+          <Flex>
             <HoursColumn />
             <EventsColumn
               date={new Date(date)}
@@ -147,22 +92,6 @@ const DayView = ({ date, setDate, onOpenDetailedModal }) => {
           </Flex>
         </Box>
       </GridItem>
-      <div>
-        <label htmlFor="sunsignSelect">Select a Sunsign:</label>
-        <select
-          id="sunsignSelect"
-          value={selectedSunsign}
-          onChange={handleSunsignChange}
-        >
-          {sunsigns.map((sunsign) => (
-            <option key={sunsign} value={sunsign}>
-              {sunsign}
-            </option>
-          ))}
-        </select>
-        <p>Selected Sunsign: {selectedSunsign}</p>
-      </div>
-      <p>{horoscope}</p>
       <GridItem
         h={{ base: "250px", lg: "100%" }}
         area="quote"
@@ -173,11 +102,14 @@ const DayView = ({ date, setDate, onOpenDetailedModal }) => {
           backgroundPosition: "center",
         }}
       ></GridItem>
-      <GridItem area="todos">
+      <GridItem area="todos" overflow="auto">
         <TodoComponent />
       </GridItem>
+      <GridItem area="horoscope">
+        <Horoscope />
+      </GridItem>
     </Grid>
-  );
-};
+  )
+}
 
-export default DayView;
+export default DayView
