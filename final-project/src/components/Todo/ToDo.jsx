@@ -102,7 +102,6 @@ const TodoComponent = () => {
     p={4}
     bg="gray.50"
     borderRadius="md"
-    overflowY="auto"
     h="100%"
   >
     <form onSubmit={addTodo}> 
