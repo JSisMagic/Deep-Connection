@@ -76,7 +76,7 @@ const WeekView = ({ date, setDate, isWorkWeek = false, onOpenDetailedModal }) =>
         templateColumns={{ base: `repeat(${daysCount + 1}, 1fr)`, md: `50px repeat(${daysCount}, 1fr)` }}
         border="1px solid"
         borderColor="gray.300"
-        gap={{ base: 2, md: 3 }}
+        // gap={{ base: 2, md: 3 }}
       >
         <GridItem rowStart={2} colEnd={2}>
           <HoursColumn />
