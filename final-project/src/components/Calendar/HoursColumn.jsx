@@ -8,7 +8,7 @@ const HoursColumn = () => {
   )
 
   return (
-    <Grid templateRows={{ base: "repeat(48, 20px)", md: "repeat(48, 30px)" }}>
+    <Grid templateRows={"repeat(48, 30px)"}>
       {hoursWithMinutes.map((hour, i) => (
         <GridItem
           key={hour}
