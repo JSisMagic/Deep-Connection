@@ -27,34 +27,6 @@ const EventPageCard = ({
   const toast = useToast();
   const navigate = useNavigate();
   const [hasJoined, setHasJoined] = useState(userData?.events?.[eventData.id]);
-  const [timeRemaining, setTimeRemaining] = useState(calculateTimeRemaining());
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeRemaining(calculateTimeRemaining());
-    }, 1000);
-
-    return () => {
-      clearInterval(timer);
-    };
-  }, []);
-
-  function calculateTimeRemaining() {
-    const now = new Date();
-    const startDate = new Date(eventData.startDate);
-    const timeDiff = startDate - now;
-
-    if (timeDiff < 0) {
-      return "Event started";
-    }
-
-    const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
-
-    return `${days}d ${hours}h ${minutes}m ${seconds}s`;
-  }
 
   const handleClickEvent = () => {
     if (userData === null) {
@@ -144,7 +116,6 @@ const EventPageCard = ({
             {format(eventData.startDate, "HH:mm")} -
             {format(eventData.endDate, "HH:mm O")}
           </Text>
-          <Text fontSize="sm">{timeRemaining}</Text>
           {userData?.uid !== eventData.creatorId && (
             <Button colorScheme="blue" onClick={handleJoinOrLeave}>
               {hasJoined ? "Leave" : "Join"}

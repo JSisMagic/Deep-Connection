@@ -22,9 +22,10 @@ import {
   Stack,
   Text,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { format } from "date-fns";
-import { useContext } from "react";
+import { useContext, useState, useEffect } from "react";
 import { FaLocationDot } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import { confirmMessages } from "../../common/confirmation-messages";
@@ -45,11 +46,42 @@ const DetailedEventCard = ({
   onInviteAcceptDeny,
 }) => {
   const { user, userData } = useContext(AuthContext);
+  const toast = useToast();
   const { attendees } = detailedEventData || {};
   const { onOpen } = useDisclosure();
   const confirmationModal = useDisclosure();
   const navigate = useNavigate();
-  // console.log(detailedEventData)
+  const [timeRemaining, setTimeRemaining] = useState("");
+
+  const calculateTimeRemaining = () => {
+    const now = new Date();
+    const startTime = new Date(detailedEventData.startDate); 
+    const timeDifference = startTime - now;
+  
+    if (timeDifference <= 0) {
+      setTimeRemaining("Event has ended");
+    } else {
+      const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor(
+        (timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+      );
+      const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+  
+      setTimeRemaining({ days, hours, minutes, seconds });
+    }
+    }
+  
+
+    useEffect(() => {
+      calculateTimeRemaining();
+  
+      const timerInterval = setInterval(() => {
+        calculateTimeRemaining();
+      }, 1000);
+  
+      return () => clearInterval(timerInterval);
+    }, [detailedEventData]);
 
   const handleAccept = async () => {
     const event = await acceptInvite(user.email, detailedEventData.id);
@@ -123,6 +155,32 @@ const DetailedEventCard = ({
     </Flex>
   );
 
+  const timerStyles = {
+    container: {
+      display: 'flex',
+      alignItems: 'center',
+    },
+    digitContainer: {
+      backgroundColor: '#f3f3f3',
+      borderRadius: '0.25rem',
+      margin: '0 0.1rem',
+      padding: '0.2rem 0.4rem',
+      border: '1px solid #ccc',
+    },
+    digit: {
+      fontSize: '1rem',
+      fontWeight: 'bold',
+      color: '#333',
+      textAlign: 'center',
+    },
+    separator: {
+      fontSize: '1rem',
+      fontWeight: 'bold',
+      color: '#333',
+      margin: '0',
+    },
+  };
+
   if (detailedEventData === undefined) {
     return;
   }
@@ -168,8 +226,31 @@ const DetailedEventCard = ({
                 </ButtonGroup>
               )}
             </Flex>
-            <EventCreatorInfo creator={detailedEventData.creatorId} />
-
+            
+            <Flex justify="space-between">
+              <EventCreatorInfo creator={detailedEventData.creatorId} />
+                <Box textAlign="right" style={timerStyles.container}>
+                  <Box style={timerStyles.digitContainer}>
+                    <Text style={timerStyles.digit}>{timeRemaining.days}</Text>
+                    <Text>Days</Text>
+                  </Box>
+                  <Box style={timerStyles.separator}>:</Box>
+                  <Box style={timerStyles.digitContainer}>
+                    <Text style={timerStyles.digit}>{timeRemaining.hours}</Text>
+                    <Text>Hours</Text>
+                  </Box>
+                  <Box style={timerStyles.separator}>:</Box>
+                  <Box style={timerStyles.digitContainer}>
+                    <Text style={timerStyles.digit}>{timeRemaining.minutes}</Text>
+                    <Text>Minutes</Text>
+                  </Box>
+                  <Box style={timerStyles.separator}>:</Box>
+                  <Box style={timerStyles.digitContainer}>
+                    <Text style={timerStyles.digit}>{timeRemaining.seconds}</Text>
+                    <Text>Seconds</Text>
+                  </Box>
+                </Box>
+            </Flex>
             <Flex
               p={5}
               bg="gray.100"
