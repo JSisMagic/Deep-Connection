@@ -93,19 +93,20 @@ const DayView = ({ date, setDate, onOpenDetailedModal }) => {
         </Box>
       </GridItem>
       <GridItem
-        h={{ base: "250px", lg: "100%" }}
-        area="quote"
-        style={{
-          backgroundImage: `url(https://zenquotes.io/api/image)`,
-          backgroundSize: "cover",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center",
-        }}
-      ></GridItem>
+  h={{ base: "150px", lg: "100%" }}
+  area="quote"
+  style={{
+    backgroundImage: `url(https://zenquotes.io/api/image)`,
+    backgroundSize: "cover",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+  }}
+></GridItem>
+
       <GridItem area="todos" overflow="auto">
         <TodoComponent />
       </GridItem>
-      <GridItem area="horoscope">
+      <GridItem area="horoscope" overflow="auto">
         <Horoscope />
       </GridItem>
     </Grid>
