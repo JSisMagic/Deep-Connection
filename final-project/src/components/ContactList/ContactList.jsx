@@ -260,6 +260,32 @@ const ContactList = () => {
     }
   };
 
+  const handleRemoveContact = async (contactId) => {
+    try {
+      await removeContact(userUid, contactId);
+      setMyContacts((prevContacts) =>
+        prevContacts.filter((contact) => contact.id !== contactId)
+      );
+  
+      toast({
+        title: "Contact Removed",
+        description: "Successfully removed the contact from your list.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error("Error removing contact:", error);
+      toast({
+        title: "Error",
+        description: "There was an error removing the contact.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
   if (isLoading) {
     return <Spinner />;
   }
@@ -451,6 +477,13 @@ const ContactList = () => {
                     <Avatar src={contact.profilePicture} size="sm" mr={2} />
                     {contact.name}
                   </Flex>
+                  <Button
+                    size="sm"
+                    onClick={() => handleRemoveContact(contact.id)}
+                    variant="outline"
+                  >
+                    <BiTrashAlt />
+                  </Button>
                 </Box>
               ))}
             </SimpleGrid>
