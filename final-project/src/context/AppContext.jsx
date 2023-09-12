@@ -1,8 +1,11 @@
 import { createContext, useState } from "react"
+import { useLocation, useNavigate } from "react-router-dom"
 
 export const AppContext = createContext()
 
 export const AppContextProvider = ({ children }) => {
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
   const [appState, setAppState] = useState({
     showSidebar: true,
     showMobileSidebar: false,
@@ -24,6 +27,9 @@ export const AppContextProvider = ({ children }) => {
   }
 
   const handleClickNavLink = link => {
+    if (pathname !== "/") {
+      navigate("/")
+    }
     setAppState(prev => ({ ...prev, selectedNavSection: link }))
   }
 
