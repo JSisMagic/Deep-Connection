@@ -6,6 +6,8 @@ import Weather from "../../components/Weather/Weather"
 import { useContext, useEffect, useRef } from "react"
 import { AppContext } from "../../context/AppContext"
 import { publicNavLinks } from "../../common/constrants"
+import TrendingEvents from "../../components/TrendingEvents/TrendingEvents"
+import Footer from "../../components/Footer/Footer"
 
 const LandingPage = () => {
   const { selectedNavSection } = useContext(AppContext)
@@ -19,16 +21,17 @@ const LandingPage = () => {
     } else if (selectedNavSection === publicNavLinks.aboutUs) {
       aboutUsRef.current?.scrollIntoView({ behavior: "smooth" })
     } else if (selectedNavSection === publicNavLinks.home) {
-      window.scrollTo({ top: 0 , behavior: "smooth"})
+      window.scrollTo({ top: 0, behavior: "smooth" })
     }
   }, [selectedNavSection])
 
   return (
     <Box>
       <Hero />
-      <Weather />
       <Box textAlign="center" mt={4}>
+        <TrendingEvents ref={eventsRef} />
         <AboutUs ref={aboutUsRef} />
+        <Footer />
       </Box>
     </Box>
   )
