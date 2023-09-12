@@ -10,7 +10,7 @@ const LandingLayout = ({ children }) => {
     <Box height="100vh" position="relative">
       <LandingHeader handleClickNavLink={handleClickNavLink} />
       {children}
-      <LandingFooter />
+    
     </Box>
   )
 }
