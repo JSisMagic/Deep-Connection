@@ -152,68 +152,67 @@ const AboutUs = forwardRef(function AboutUs(props, ref) {
         </Stack>
 
         {/* Gergana's and Mariela's Profiles */}
-        <Flex
-          direction={{ base: "column", md: "row" }}
-          alignItems="center"
-          justifyContent="center"
-          gap={8}
-          mt={16}
-          initial="initial"
-          animate="animate"
-          variants={fadeInUp}
-        >
-          {team.map((member, index) => (
-            <Box
-              key={index}
-              width={{ base: "100%", md: "30%" }}
-              bg="white"
-              py={8}
-              px={4}
-              textAlign="center"
-              borderRadius="lg"
-              boxShadow="lg"
+      <Flex
+        direction={{ base: "column", md: "row" }}
+        alignItems="center"
+        justifyContent="space-between"
+        mt={16}
+        initial="initial"
+        animate="animate"
+        variants={fadeInUp}
+      >
+        {team.map((member, index) => (
+          <Box
+            key={index}
+            width={{ base: "100%", md: "45%" }}
+            bg="white"
+            py={8}
+            px={4}
+            textAlign="center"
+            borderRadius="lg"
+            boxShadow="lg"
+            mb={6}
+            mx={2} // Added margin for spacing between the columns
+          >
+            <Image
+              src={member.imageUrl}
+              alt={member.name}
+              boxSize="200px"
+              borderRadius="full"
+              shadow="lg"
               mb={6}
-              mr={index === 0 ? 4 : 0}
-            >
-              <Image
-                src={member.imageUrl}
-                alt={member.name}
-                boxSize="200px"
-                borderRadius="full"
-                shadow="lg"
-                mb={6}
-                mx="auto"
+              mx="auto"
+            />
+            <Heading as="h3" size="lg" fontWeight="medium">
+              {member.name}
+            </Heading>
+            <Text color="gray.400">{member.role}</Text>
+            <Text>{member.bio}</Text>
+            <Flex mt={4} alignItems="center" justifyContent="center">
+              <IconButton
+                as={Link}
+                href={member.gitlabUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                color="orange.500"
+                _hover={{ color: "orange.700" }}
+                aria-label="Gitlab"
+                icon={<SiGitlab />}
+                fontSize="20px"
               />
-              <Heading as="h3" size="lg" fontWeight="medium">
-                {member.name}
-              </Heading>
-              <Text color="gray.400">{member.role}</Text>
-              <Text>{member.bio}</Text>
-              <Flex mt={4} alignItems="center" justifyContent="center">
-                <IconButton
-                  as={Link}
-                  href={member.gitlabUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  color="orange.500"
-                  _hover={{ color: "orange.700" }}
-                  aria-label="Gitlab"
-                  icon={<SiGitlab />}
-                  fontSize="20px"
-                />
-                <IconButton
-                  as={Link}
-                  href={member.linkedinUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  color="blue.500"
-                  _hover={{ color: "blue.400" }}
-                  aria-label="LinkedIn"
-                  icon={<SiLinkedin />}
-                  fontSize="20px"
-                  ml={2}
-                />
-              </Flex>
+              <IconButton
+                as={Link}
+                href={member.linkedinUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                color="blue.500"
+                _hover={{ color: "blue.400" }}
+                aria-label="LinkedIn"
+                icon={<SiLinkedin />}
+                fontSize="20px"
+                ml={2}
+              />
+            </Flex>
             </Box>
           ))}
         </Flex>
