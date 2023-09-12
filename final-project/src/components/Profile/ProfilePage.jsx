@@ -1,4 +1,4 @@
-import { EditIcon } from "@chakra-ui/icons"
+import { EditIcon } from "@chakra-ui/icons";
 import {
   Avatar,
   Box,
@@ -14,11 +14,11 @@ import {
   Input,
   Stack,
   Text,
-} from "@chakra-ui/react"
-import React, { useEffect, useState } from "react"
-import { useAuthState } from "react-firebase-hooks/auth"
-import { useForm } from "react-hook-form"
-import { BiSolidQuoteAltLeft, BiSolidQuoteAltRight } from "react-icons/bi"
+} from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { useForm } from "react-hook-form";
+import { BiSolidQuoteAltLeft, BiSolidQuoteAltRight } from "react-icons/bi";
 import {
   FaFacebook,
   FaGitlab,
@@ -28,21 +28,25 @@ import {
   FaLinkedin,
   FaPlus,
   FaTiktok,
-} from "react-icons/fa"
-import ReactQuill from "react-quill"
-import "react-quill/dist/quill.snow.css"
-import { useParams } from "react-router-dom"
-import { COOL_BLUE } from "../../common/colors"
-import { SUPPORTED_FORMATS } from "../../common/constrants"
-import { validateDescription } from "../../common/helpers"
-import validation from "../../common/validation-enums"
-import { auth } from "../../config/firebase"
-import { getUserByUid, updateUser, uploadImage } from "../../services/users.services"
-import MyEvents from "../Events/MyEvents"
+} from "react-icons/fa";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import { useParams } from "react-router-dom";
+import { COOL_BLUE } from "../../common/colors";
+import { SUPPORTED_FORMATS } from "../../common/constrants";
+import { validateDescription } from "../../common/helpers";
+import validation from "../../common/validation-enums";
+import { auth } from "../../config/firebase";
+import {
+  getUserByUid,
+  updateUser,
+  uploadImage,
+} from "../../services/users.services";
+import MyEvents from "../Events/MyEvents";
 
 const ProfilePage = () => {
-  const { uid } = useParams()
-  const [user, loading] = useAuthState(auth)
+  const { uid } = useParams();
+  const [user, loading] = useAuthState(auth);
   const [profileData, setProfileData] = useState({
     email: "",
     username: "",
@@ -51,29 +55,37 @@ const ProfilePage = () => {
     phone: "",
     socialMediaLinks: [],
     description: "",
-  })
-  const [editState, setEditState] = useState(false)
+  });
+  const [editState, setEditState] = useState(false);
 
   const fetchProfileData = async () => {
     if (uid) {
-      const userData = await getUserByUid(uid)
-      setProfileData(userData)
+      const userData = await getUserByUid(uid);
+      setProfileData(userData);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchProfileData()
-  }, [uid])
+    fetchProfileData();
+  }, [uid]);
 
-  const initials = (profileData.firstName.charAt(0) + profileData.lastName.charAt(0)).toUpperCase()
+  const initials = (
+    profileData.firstName.charAt(0) + profileData.lastName.charAt(0)
+  ).toUpperCase();
 
-  const handleOpenSocialMediaLink = url => {
-    window.open(url, "_blank").focus()
-  }
+  const handleOpenSocialMediaLink = (url) => {
+    window.open(url, "_blank").focus();
+  };
 
   return (
     <Box p={5}>
-      <Flex direction="column" width="100%" justify="center" align="center" overflowY="auto">
+      <Flex
+        direction="column"
+        width="100%"
+        justify="center"
+        align="center"
+        overflowY="auto"
+      >
         <Box
           width={{ base: "90%", lg: "60%" }} // Increase the size of the background picture container
           bgColor="white"
@@ -111,8 +123,8 @@ const ProfilePage = () => {
         </Box>
       )}
     </Box>
-  )
-}
+  );
+};
 
 const ProfileComponent = ({
   profileData,
@@ -150,7 +162,9 @@ const ProfileComponent = ({
             )}
           </Stack>
         </Flex>
-        {isMyProfile && <IconButton icon={<EditIcon />} onClick={() => setEditState(true)} />}
+        {isMyProfile && (
+          <IconButton icon={<EditIcon />} onClick={() => setEditState(true)} />
+        )}
       </Flex>
       {profileData.description && (
         <>
@@ -182,10 +196,15 @@ const ProfileComponent = ({
         />
       </Flex>
     </Box>
-  )
-}
+  );
+};
 
-const EditProfileComponent = ({ profileData, setProfileData, initials, setEditState }) => {
+const EditProfileComponent = ({
+  profileData,
+  setProfileData,
+  initials,
+  setEditState,
+}) => {
   const {
     register,
     handleSubmit,
@@ -203,42 +222,48 @@ const EditProfileComponent = ({ profileData, setProfileData, initials, setEditSt
       instagramUrl: profileData.instagramUrl,
       linkedInUrl: profileData.linkedInUrl,
     },
-  })
-  const [description, setDescription] = useState(profileData.description)
+  });
+  const [description, setDescription] = useState(profileData.description);
 
-  const handleChangeDescription = value => {
+  const handleChangeDescription = (value) => {
     if (validateDescription(value)) {
-      clearErrors("description")
+      clearErrors("description");
     }
 
-    setDescription(value)
-  }
-  
-  const onSaveChanges = async values => {
-    if (profileData.description !== description && !validateDescription(description)) {
+    setDescription(value);
+  };
+
+  const onSaveChanges = async (values) => {
+    if (
+      profileData.description !== description &&
+      !validateDescription(description)
+    ) {
       return setError("description", {
         message: `Length should be between ${validation.MIN_ADDITIONAL_INFO_LENGTH} and ${validation.MAX_ADDITIONAL_INFO_LENGTH} characters.`,
-      })
+      });
     }
     try {
-      const newUserData = description ? { ...values, description } : { ...values }
-      const image = values.profilePicture.item(0)
-      if (image) {
-        const fileType = image.type
+      const newUserData = description
+        ? { ...values, description }
+        : { ...values };
+
+      if (typeof values.profilePicture === "object") {
+        const image = values.profilePicture?.item(0);
+        const fileType = image.type;
         if (!SUPPORTED_FORMATS.includes(fileType)) {
-          return setError("profilePicture", { message: "Invalid format!" })
+          return setError("profilePicture", { message: "Invalid format!" });
         }
 
-        const url = await uploadImage(image)
-        newUserData.profilePicture = url
+        const url = await uploadImage(image);
+        newUserData.profilePicture = url;
       }
 
-      await updateUser(profileData.uid, newUserData)
-      setEditState(false)
+      await updateUser(profileData.uid, newUserData);
+      setEditState(false);
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   return (
     <Box
@@ -261,10 +286,20 @@ const EditProfileComponent = ({ profileData, setProfileData, initials, setEditSt
                 size="xl"
               />
             </FormLabel>
-            <Input type="file" id="avatar" display="none" {...register("profilePicture")} />
-            <FormErrorMessage>{errors?.profilePicture?.message}</FormErrorMessage>
+            <Input
+              type="file"
+              id="avatar"
+              display="none"
+              {...register("profilePicture")}
+            />
+            <FormErrorMessage>
+              {errors?.profilePicture?.message}
+            </FormErrorMessage>
           </FormControl>
-          <ButtonGroup flexDirection={{ base: "column", md: "row" }} spacing="4">
+          <ButtonGroup
+            flexDirection={{ base: "column", md: "row" }}
+            spacing="4"
+          >
             <Button onClick={() => setEditState(false)}>Cancel</Button>
             <Button colorScheme="green" type="submit">
               Save changes
@@ -288,7 +323,7 @@ const EditProfileComponent = ({ profileData, setProfileData, initials, setEditSt
                   message: `Maximum length should be ${validation.MAX_FIRSTNAME_LENGTH}`,
                 },
                 validate: {
-                  containsOnlyLetters: value =>
+                  containsOnlyLetters: (value) =>
                     /^[a-zA-Z]+$/.test(value) ||
                     "First name must contain only uppercase and lowercase letters!",
                 },
@@ -312,7 +347,7 @@ const EditProfileComponent = ({ profileData, setProfileData, initials, setEditSt
                   message: `Maximum length should be ${validation.MAX_LASTNAME_LENGTH}`,
                 },
                 validate: {
-                  containsOnlyLetters: value =>
+                  containsOnlyLetters: (value) =>
                     /^[a-zA-Z]+$/.test(value) ||
                     "Last name must contain only uppercase and lowercase letters!",
                 },
@@ -328,11 +363,12 @@ const EditProfileComponent = ({ profileData, setProfileData, initials, setEditSt
               {...register("phone", {
                 required: "This is required!",
                 validate: {
-                  haveFixedLength: value =>
+                  haveFixedLength: (value) =>
                     value.length === validation.PHONE_NUM_LENGTH ||
                     "Phone number must have 10 digit!",
-                  containsOnlyDigits: value =>
-                    /^[0-9]+$/.test(value) || "Phone number must have only digits!",
+                  containsOnlyDigits: (value) =>
+                    /^[0-9]+$/.test(value) ||
+                    "Phone number must have only digits!",
                 },
               })}
             />
@@ -385,30 +421,30 @@ const EditProfileComponent = ({ profileData, setProfileData, initials, setEditSt
         </Stack>
       </form>
     </Box>
-  )
-}
+  );
+};
 
-const getSocialMediaIcon = platform => {
+const getSocialMediaIcon = (platform) => {
   switch (platform) {
     case "Instagram":
-      return <FaInstagram />
+      return <FaInstagram />;
     case "Facebook":
-      return <FaFacebook />
+      return <FaFacebook />;
     case "LinkedIn":
-      return <FaLinkedin />
+      return <FaLinkedin />;
     case "Gitlab":
-      return <FaGitlab />
+      return <FaGitlab />;
     case "IMDb":
-      return <FaImdb />
+      return <FaImdb />;
     case "TikTok":
-      return <FaTiktok />
+      return <FaTiktok />;
     case "Personal Site":
-      return <FaGlobe />
+      return <FaGlobe />;
     case "Add":
-      return <FaPlus />
+      return <FaPlus />;
     default:
-      return null
+      return null;
   }
-}
+};
 
-export default ProfilePage
+export default ProfilePage;
