@@ -54,6 +54,11 @@ const DetailedEventCard = ({
   const [timeRemaining, setTimeRemaining] = useState("");
 
   const calculateTimeRemaining = () => {
+    if (!detailedEventData || !detailedEventData.startDate) {
+      setTimeRemaining("Event date not available");
+      return;
+    }
+
     const now = new Date();
     const startTime = new Date(detailedEventData.startDate); 
     const timeDifference = startTime - now;
