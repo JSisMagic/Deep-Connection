@@ -127,13 +127,13 @@ const AboutUs = forwardRef(function AboutUs(props, ref) {
         <Stack gap={5} w={{ lg: "80%" }}>
           <Heading size="xl">Our mission</Heading>
           <Text fontSize="xl" color="gray.500">
-            Deep Connection is the heartfelt creation of our passionate team, a
-            dedicated group of individuals who wholeheartedly believe in the
-            transformative power of profound connections. Our platform is the
-            tangible realization of our shared vision, passionately designed to
-            help you plan your day effectively, ensuring that you find time for
-            yourself, well-being, and attending these events, all while
-            fostering meaningful connections.
+          At Deep Connection, our mission is simple yet profoundly impactful:
+          we're dedicated to helping you discover a new way to organize your day,
+          prioritizing wellness, mindfulness, and self-care in your busy life. 
+          We understand the hectic pace of modern living, where personal well-being
+          often takes a backseat. That's why we've crafted a platform that offers 
+          you the perfect blend of organization and self-discovery, all while connecting
+          you with like-minded souls who share your passion for mindfulness and profound connections.
           </Text>
         </Stack>
 
