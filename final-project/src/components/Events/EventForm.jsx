@@ -13,6 +13,7 @@ import {
   MenuOptionGroup,
   Stack,
   VStack,
+  useToast
 } from "@chakra-ui/react";
 import {
   addMinutes,
@@ -47,6 +48,7 @@ import Attendees from "./Attendees";
 
 const EventForm = ({ editMode = false, eventData = {} }) => {
   const navigate = useNavigate();
+  const toast = useToast();
   const { user, userData } = useContext(AuthContext);
   const currentUserId = user?.uid;
   const [eventTitle, setEventTitle] = useState(eventData?.title || "");
@@ -81,6 +83,13 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
   const handleImageUpload = (e) => {
     if (!SUPPORTED_FORMATS.includes(e.target.files[0].type)) {
       console.log("Unsupported file format!");
+      toast({
+        title: "Unsupported File Format",
+        description: "Please choose a valid image file format.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
     setImage(e.target.files[0]);
   };
@@ -91,6 +100,7 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
         ...prev,
         title: `Length should be between ${validation.MIN_TITLE_LENGTH} and ${validation.MAX_TITLE_LENGTH} characters.`,
       }));
+      
     }
 
     const { isDateValid, key, message } = validateDates(
@@ -158,11 +168,26 @@ const newAttendees = eventData?.attendees
       } else {
         id = await createEvent(newEvent);
       }
-
+      toast({
+        title: editMode ? "Event Updated" : "Event Created",
+        description: editMode
+          ? "Your event has been successfully updated."
+          : "Your event has been successfully created.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
       await eventAttendees.map((att) => notify(id, newEvent, att.uid));
       navigate(-1);
     } catch (error) {
       console.error("Error creating event:", error);
+      toast({
+        title: "Error",
+        description: "An error occurred while creating/updating the event. Please try again later.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 

@@ -22,6 +22,7 @@ import {
   Stack,
   Text,
   useDisclosure,
+  useToast
 } from "@chakra-ui/react"
 import { format } from "date-fns"
 import { useContext } from "react"
@@ -35,6 +36,7 @@ import EventCreatorInfo from "../Events/EventCreatorInfor"
 import ConfirmationModal from "../Modals/ConfirmationModal"
 
 const DetailedEventCard = ({ detailedEventData, isOpen, onClose, onInviteAcceptDeny }) => {
+  const toast = useToast();
   const { user, userData } = useContext(AuthContext)
   const { attendees } = detailedEventData || {}
   const { onOpen } = useDisclosure()
@@ -71,11 +73,27 @@ const DetailedEventCard = ({ detailedEventData, isOpen, onClose, onInviteAcceptD
 
   const handleDeleteEvent = async () => {
     try {
-      await deleteSingleEvent(detailedEventData.id, detailedEventData.creatorId)
-      confirmationModal.onClose()
-      onClose()
+      await deleteSingleEvent(detailedEventData.id, detailedEventData.creatorId);
+      confirmationModal.onClose();
+      onClose();
+  
+      toast({
+        title: "Event Deleted",
+        description: "The event has been successfully deleted.",
+        status: "success",
+        duration: 3000, 
+        isClosable: true, 
+      });
     } catch (e) {
-      console.log(e)
+      console.error(e);
+  
+      toast({
+        title: "Error",
+        description: "An error occurred while deleting the event. Please try again later.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   }
 

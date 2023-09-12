@@ -8,6 +8,7 @@ import {
   Stack,
   Text,
   SimpleGrid,
+  useToast
 } from "@chakra-ui/react"
 import { getAllUsers, toggleBlockUser, updateUser, addContact, removeContact, getContacts  } from "../../services/users.services"
 import { FaUserPlus, FaBan, FaSearch, FaUserMinus } from "react-icons/fa"
@@ -67,6 +68,7 @@ const MembersList = ({ searchTerm, setSearchTerm }) => {
 
 const MemberItem = ({ user }) => {
   const navigate = useNavigate()
+  const toast = useToast();
   const { userData } = useContext(AuthContext)
   const [isCurrentlyBlocked, setIsCurrentlyBlocked] = useState(user?.isBlocked || false)
   const [isContact, setIsContact] = useState(false);
@@ -94,43 +96,76 @@ const MemberItem = ({ user }) => {
       fetchIsContact();
     }, [userData.uid, user.uid]);
     
-      const handleAddContact = async () => {
-        try {
-          const existingContacts = await getContacts(userData.uid);
-      
-          const alreadyExists = existingContacts.some(
-            (contact) => contact.contactUserId === user.uid
-          );
-      
-          if (alreadyExists) {
-            console.error('User is already a contact');
-            return;
-          }
-      
-          await addContact(userData.uid, `${user.firstName} ${user.lastName}`, user.uid);
-          setIsContact(true);
-        } catch (error) {
-          console.error('Failed to add contact:', error);
+    const handleAddContact = async () => {
+      try {
+        const existingContacts = await getContacts(userData.uid);
+  
+        const alreadyExists = existingContacts.some(
+          (contact) => contact.contactUserId === user.uid
+        );
+  
+        if (alreadyExists) {
+          console.error('User is already a contact');
+          return;
         }
-      };
+  
+        await addContact(userData.uid, `${user.firstName} ${user.lastName}`, user.uid);
+        setIsContact(true);
+  
+        toast({
+          title: "Contact Added",
+          description: `${user.firstName} ${user.lastName} has been added to your contacts.`,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      } catch (error) {
+        console.error('Failed to add contact:', error);
+        toast({
+          title: "Error",
+          description: "Failed to add contact. Please try again later.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    };
       
-      const handleRemoveContact = async () => {
-        try {
-          const contacts = await getContacts(userData.uid); 
-          // console.log('All Contacts:', contacts)
-          const contact = contacts.find((contact) => contact.name === `${user.firstName} ${user.lastName}` && contact.contactUserId === user.uid); // Added user UID check
-          // console.log('Found Contact:', contact);
-      
-          if (contact) {
-            await removeContact(userData.uid, contact.id);
-            setIsContact(false);
-          } else {
-            console.error('Contact not found');
-          }
-        } catch (error) {
-          console.error('Failed to remove contact:', error);
+    const handleRemoveContact = async () => {
+      try {
+        const contacts = await getContacts(userData.uid);
+        const contact = contacts.find(
+          (contact) =>
+            contact.name === `${user.firstName} ${user.lastName}` && contact.contactUserId === user.uid
+        );
+  
+        if (contact) {
+          await removeContact(userData.uid, contact.id);
+          setIsContact(false);
+  
+          // Display a success toast
+          toast({
+            title: "Contact Removed",
+            description: `${user.firstName} ${user.lastName} has been removed from your contacts.`,
+            status: "success",
+            duration: 3000,
+            isClosable: true,
+          });
+        } else {
+          console.error('Contact not found');
         }
-      };
+      } catch (error) {
+        console.error('Failed to remove contact:', error);
+        // Display an error toast
+        toast({
+          title: "Error",
+          description: "Failed to remove contact. Please try again later.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    }
 
   return (
     <Flex

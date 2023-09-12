@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Icon, Image, Stack, Text } from "@chakra-ui/react"
+import { Box, Button, Flex, Heading, Icon, Image, Stack, Text, useToast } from "@chakra-ui/react"
 import { format } from "date-fns"
 import { FaLocationDot } from "react-icons/fa6"
 import FallbackImg from "../../assets/images/event.jpg"
@@ -10,15 +10,41 @@ import { useState } from "react"
 
 const EventPageCard = ({ eventData, onOpenDetailedEvent }) => {
   const { userData } = useContext(AuthContext)
-
+  const toast = useToast();
   const [hasJoined, setHasJoined] = useState(userData?.events?.[eventData.id])
 
-  const handleJoinOrLeave = event => {
-    event.stopPropagation()
+  const handleJoinOrLeave = async (event) => {
+    event.stopPropagation();
 
-    joinOrLeaveEvent(userData, eventData.id, hasJoined ? eventActions.leave : eventActions.join)
-    setHasJoined(prev => !prev)
+    try {
+      await joinOrLeaveEvent(
+        userData,
+        eventData.id,
+        hasJoined ? eventActions.leave : eventActions.join
+      );
+      setHasJoined((prev) => !prev);
+
+      toast({
+        title: hasJoined ? "Left the event" : "Joined the event",
+        description: hasJoined
+          ? `You have left the event: ${eventData.title}`
+          : `You have joined the event: ${eventData.title}`,
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error("Error while joining/leaving event:", error);
+      toast({
+        title: "An error occurred",
+        description: "Failed to join/leave the event. Please try again later.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   }
+  
   console.log(eventData, hasJoined)
   return (
     <Flex
