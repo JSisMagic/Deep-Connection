@@ -14,6 +14,7 @@ import {
 import { db } from "../config/firebase"
 import { hasRepetitionToday, dateISOTimezoneAdjust } from "../common/helpers"
 import { eventActions } from "../common/event-enums"
+import { differenceInHours } from "date-fns"
 
 export const createEvent = async event => {
   const { key } = await push(ref(db, "events"), event)
@@ -112,8 +113,9 @@ export const getEventsForDate = (date, events) => {
       const startAtHalf = event.startDate.getMinutes() === 30
       const endHour = event.endDate.getHours()
       const endAtHalf = event.endDate.getMinutes() === 30
+      const durationInHours = differenceInHours(event.endDate, event.startDate)
 
-      return { ...event, startHour, endHour, startAtHalf, endAtHalf }
+      return { ...event, startHour, endHour, startAtHalf, endAtHalf, durationInHours }
     })
 }
 
