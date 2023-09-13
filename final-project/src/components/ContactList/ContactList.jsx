@@ -338,151 +338,155 @@ const ContactList = () => {
         </Box>
       </VStack>
 
+        {/* Groups Section */}
       <Box
-        bg="linear-gradient(135deg, #8232B2, #3490E3)"
-        w={{ base: "100%", md: "50%" }}
-        p={1}
-        mt={{ base: "6", md: "0" }}
-        h="max-content"
-      >
-        <VStack spacing={6} bg="white">
-          {/* Groups Section */}
-          <Box p={4} borderWidth="1px" borderRadius="lg" width="100%">
-            <Heading fontWeight={500} mb={4}>
-              {" "}
-              My Groups
-            </Heading>
-            <VStack width="100%" align="stretch">
-              {Object.keys(contactLists).length === 0 ? (
-                <Box p={4} textAlign="center">
-                  <p>You don't have any groups yet.</p>
-                  <p>Create one to get started!</p>
-                </Box>
-              ) : (
-                Object.values(contactLists).map(list => (
-                  <Box key={list.id} p={4} borderWidth="1px" borderRadius="lg" width="100%">
-                    <Heading
-                      size="md"
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="space-between"
+      bg="linear-gradient(135deg, #8232B2, #3490E3)"
+      w={{ base: "100%", md: "50%" }}
+      p={1}
+      mt={{ base: "6", md: "0" }}
+      h="max-content"
+    >
+      <VStack spacing={6} bg="white">
+        <Box p={4} borderWidth="1px" borderRadius="lg" width="100%">
+          <Heading fontWeight={500} mb={4}>
+            My Groups
+          </Heading>
+          <VStack width="100%" align="stretch">
+            {Object.values(contactLists).map((list) => (
+              <Box key={list.id} p={4} borderWidth="1px" borderRadius="lg" width="100%">
+                <Heading
+                  size="md"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  fontWeight={600}
+                >
+                  {list.name}
+                  <Box>
+                    <Button
+                      size="sm"
                       fontWeight={600}
+                      onClick={() =>
+                        setExpandedList((prev) => (prev === list.id ? null : list.id))
+                      }
+                      mr={2}
                     >
-                      {list.name}
-                      <Box>
-                        <Button
-                          size="sm"
-                          fontWeight={600}
-                          onClick={() =>
-                            setExpandedList(prev => (prev === list.id ? null : list.id))
-                          }
-                          mr={2}
-                        >
-                          {expandedList === list.id ? <FaChevronUp /> : <FaChevronDown />}
-                        </Button>
-                        <Button
-                          size="sm"
-                          mr={2}
-                          onClick={() => handleDeleteList(list.id)}
-                          bgColor="grey.100"
-                        >
-                          <BiTrashAlt />
-                        </Button>
-                        <Button
-                          size="sm"
-                          onClick={() => {
-                            setExpandModifyBox(list.id === expandModifyBox ? null : list.id)
-                            setSelectedList(list.id)
-                          }}
-                          bgColor="grey.100"
-                        >
-                          <BiEditAlt />
-                        </Button>
-                      </Box>
-                    </Heading>
-                    <Collapse in={expandedList === list.id}>
-                      <List spacing={2} fontWeight={600}>
-                        {Object.values(list.contacts || {}).map((contact, index) => {
-                          return (
-                            <ListItem
-                              key={contact.id || index}
-                              display="flex"
-                              justifyContent="space-between"
-                              alignItems="center"
-                            >
-                              <Flex
-                                gap={3}
-                                onClick={() => navigate(`/profile/${contact.id}`)}
-                                cursor="pointer"
-                              >
-                                <Avatar src={contact.avatar} size="sm" mr={2} />
-                                {contact.name}
-                              </Flex>
-                              <Button
-                                size="sm"
-                                leftIcon={<FaTimes />}
-                                onClick={() => handleRemoveUserFromList(list.id, contact.id)}
-                                variant="outline"
-                              ></Button>
-                            </ListItem>
-                          )
-                        })}
-                      </List>
-                    </Collapse>
-                    <Collapse in={expandModifyBox === list.id}>
-                      <Input
-                        value={emailToAdd}
-                        onChange={e => {
-                          setEmailToAdd(e.target.value)
-                          searchUsers(e.target.value)
-
-                          if (e.target.value === "") {
-                            setSearchResults([])
-                          }
-                        }}
-                        placeholder="Add user to group"
-                      />
-                      <Box
-                        position="absolute"
-                        mt={2}
-                        w="300px"
-                        zIndex="dropdown"
-                        borderRadius="md"
-                        boxShadow="md"
-                        bg="gray.50"
-                        overflowY="auto"
-                        maxHeight="300px"
-                      >
-                        {searchResults.map(user => (
-                          <Flex
-                            key={user.uid}
-                            background="white"
-                            p={3}
-                            borderRadius="md"
-                            justify="space-between"
-                            align="center"
-                            boxShadow="base"
-                            onClick={() => handleAddUserToList(user)}
-                            cursor="pointer"
-                            _hover={{ bg: "rgba(255,255,255, .2)" }}
-                          >
-                            <Flex gap={3}>
-                              <Avatar src={user.profilePicture} />
-                              <Box>
-                                <Heading size="sm">
-                                  {user.firstName} {user.lastName}
-                                </Heading>
-                                <Text fontWeight={600}>@{user.username}</Text>
-                              </Box>
-                            </Flex>
-                          </Flex>
-                        ))}
-                      </Box>
-                    </Collapse>
+                      {expandedList === list.id ? <FaChevronUp /> : <FaChevronDown />}
+                    </Button>
+                    <Button
+                      size="sm"
+                      mr={2}
+                      onClick={() => handleDeleteList(list.id)}
+                      bgColor="grey.100"
+                    >
+                      <BiTrashAlt />
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        setExpandModifyBox(
+                          list.id === expandModifyBox ? null : list.id
+                        );
+                        setSelectedList(list.id);
+                      }}
+                      bgColor="grey.100"
+                    >
+                      <BiEditAlt />
+                    </Button>
                   </Box>
-                ))
-              )}
+                </Heading>
+                <Collapse in={expandedList === list.id}>
+                  <List spacing={2} fontWeight={600}>
+                    {Object.values(list.contacts || {}).map((contact, index) => {
+                      return (
+                        <ListItem
+                          key={contact.id || index}
+                          display="flex"
+                          justifyContent="space-between"
+                          alignItems="center"
+                        >
+                          <Box
+                            bg="white"
+                            p={4}
+                            borderWidth="1px"
+                            borderRadius="lg"
+                            width="100%"
+                            display="flex"
+                            justifyContent="space-between"
+                            alignItems="center"
+                          >
+                            <Flex
+                              gap={3}
+                              onClick={() => navigate(`/profile/${contact.id}`)}
+                              cursor="pointer"
+                            >
+                              <Avatar src={contact.avatar} size="sm" mr={2} />
+                              {contact.name}
+                            </Flex>
+                            <Button
+                              size="sm"
+                              leftIcon={<FaTimes />}
+                              onClick={() => handleRemoveUserFromList(list.id, contact.id)}
+                              variant="outline"
+                            ></Button>
+                          </Box>
+                        </ListItem>
+                      );
+                    })}
+                  </List>
+                </Collapse>
+                <Collapse in={expandModifyBox === list.id}>
+                  <Input
+                    value={emailToAdd}
+                    onChange={(e) => {
+                      setEmailToAdd(e.target.value);
+                      searchUsers(e.target.value);
 
+                      if (e.target.value === "") {
+                        setSearchResults([]);
+                      }
+                    }}
+                    placeholder="Add user to group"
+                  />
+                  <Box
+                    position="absolute"
+                    mt={2}
+                    w="300px"
+                    zIndex="dropdown"
+                    borderRadius="md"
+                    boxShadow="md"
+                    bg="gray.50"
+                    overflowY="auto"
+                    maxHeight="300px"
+                  >
+                    {searchResults.map((user) => (
+                      <Flex
+                        key={user.uid}
+                        background="white"
+                        p={3}
+                        borderRadius="md"
+                        justify="space-between"
+                        align="center"
+                        boxShadow="base"
+                        onClick={() => handleAddUserToList(user)}
+                        cursor="pointer"
+                        _hover={{ bg: "rgba(255,255,255, .2)" }}
+                      >
+                        <Flex gap={3}>
+                          <Avatar src={user.profilePicture} />
+                          <Box>
+                            <Heading size="sm">
+                              {user.firstName} {user.lastName}
+                            </Heading>
+                            <Text fontWeight={600}>@{user.username}</Text>
+                          </Box>
+                        </Flex>
+                      </Flex>
+                    ))}
+                  </Box>
+                </Collapse>
+              </Box>
+            ))}
               <Box mt={4}>
                 <Input
                   placeholder="New group name"
