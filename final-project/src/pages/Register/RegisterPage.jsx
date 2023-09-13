@@ -129,6 +129,11 @@ const RegisterPage = () => {
                     value: MAX_USERNAME_LENGTH,
                     message: `Maximum length should be ${MAX_USERNAME_LENGTH}`,
                   },
+                  validate: {
+                    startsWithLowercase: (value) =>
+                      /^[a-z].*/.test(value) ||
+                      "Username must start with a lowercase letter.",
+                  },
                 })}
               />
               <FormErrorMessage>{errors?.username?.message}</FormErrorMessage>
