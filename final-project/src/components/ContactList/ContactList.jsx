@@ -49,7 +49,7 @@ const ContactList = () => {
   const [userUid, setUserUid] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedList, setExpandedList] = useState(null);
-  const [expandModifyBox, setExpandModifyBox] = useState(false);
+  const [expandModifyBox, setExpandModifyBox] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -355,7 +355,7 @@ const ContactList = () => {
                       <Button
                         size="sm"
                         onClick={() => {
-                          setExpandModifyBox(!expandModifyBox);
+                          setExpandModifyBox(list.id === expandModifyBox ? null : list.id);
                           setSelectedList(list.id)
                         }}
                         bgColor="grey.100"
@@ -389,7 +389,7 @@ const ContactList = () => {
                       })}
                     </List>
                   </Collapse>
-                  <Collapse in={expandModifyBox} >
+                  <Collapse in={expandModifyBox === list.id}>
                     <Input
                       value={emailToAdd}
                       onChange={(e) => {
@@ -397,11 +397,10 @@ const ContactList = () => {
                         searchUsers(e.target.value);
 
                         if (e.target.value === '') {
-                          setSearchResults([])
+                          setSearchResults([]);
                         }
                       }}
                       placeholder="Add user to group"
-                      
                     />
                     <Box
                       position="absolute"
