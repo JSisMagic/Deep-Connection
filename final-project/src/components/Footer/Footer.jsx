@@ -3,9 +3,9 @@ import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa"
 import Logo from "../Logo/Logo"
 
 const socialMediaLinks = [
-  { url: "https://www.instagram.com/plovdivdeepconnection/", icon: <FaInstagram /> },
-  { url: "https://www.facebook.com/plovdivdeepconnection", icon: <FaFacebook /> },
-  { url: "https://www.linkedin.com/company/alpha-mentors-club/", icon: <FaLinkedin /> },
+  { url: "https://www.instagram.com", icon: <FaInstagram /> },
+  { url: "https://www.facebook.com", icon: <FaFacebook /> },
+  { url: "https://www.linkedin.com/company/deep-connection7/about/?viewAsMember=true", icon: <FaLinkedin /> },
 ]
 
 const Footer = () => {
