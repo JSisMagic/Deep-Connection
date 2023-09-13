@@ -53,7 +53,7 @@ const Sidebar = ({ notificationCount }) => {
       }}
       h="100vh"
       zIndex={100}
-      width={{ base: "50vw", md: "320px" }}
+      width={{ base: "100vw", md: "320px" }}
       pos={{ base: "fixed", md: "static" }}
       // Updated background gradient from purple to blue
       bg="linear-gradient(135deg, #8232B2, #3490E3)"
