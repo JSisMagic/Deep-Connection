@@ -14,7 +14,7 @@ import {
   Stack,
   VStack,
 } from "@chakra-ui/react"
-import { addMinutes, isSameDay, isToday, roundToNearestMinutes, setHours } from "date-fns"
+import { addMinutes, roundToNearestMinutes } from "date-fns"
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
 import { useContext, useState } from "react"
 import ReactDatePicker from "react-datepicker"
@@ -34,6 +34,8 @@ import { createEvent, updateEvent } from "../../services/event.services"
 import { createNotificationByUserID } from "../../services/notification.services"
 import PlacesAutocomplete from "../Location/PlacesAutocomplete"
 import Attendees from "./Attendees"
+import "./Datepicker.css"
+import { eventCategories } from "../../common/event-enums"
 
 const EventForm = ({ editMode = false, eventData = {} }) => {
   const navigate = useNavigate()
@@ -233,30 +235,25 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
       <VStack
         spacing={[2, 4, 6]}
         padding={[3, 5]}
-        width={{ base: "100%", md: "50%" }}
+        width={{ base: "100%", md: "75%", lg: "50%" }}
         bgColor="rgba(255,255,255)"
         borderRadius="lg"
         boxShadow="2xl"
       >
         <FormControl isRequired isInvalid={errors.title}>
-          <FormLabel fontSize={["sm", "md", "lg"]}>Title</FormLabel>
-          <Input
-            value={eventTitle}
-            onChange={handleChangeTitle}
-            placeholder="Title"
-            size="lg"
-          />
+          <FormLabel>Title</FormLabel>
+          <Input value={eventTitle} onChange={handleChangeTitle} placeholder="Title" />
           <FormErrorMessage>{errors.title}</FormErrorMessage>
         </FormControl>
-        <Flex gap={3}>
+        <Flex gap={3} w="100%" direction={{ base: "column", md: "row" }}>
           <FormControl>
             <FormLabel>Start Date and Time</FormLabel>
             <ReactDatePicker
+              wrapperClassName="date-picker"
               selected={eventStartDate}
               onChange={handleChangeStartDate}
               showTimeSelect
-              showIcon
-              customInput={<Input />}
+              customInput={<Input style={{ width: "100%" }} />}
               dateFormat="Pp"
               minDate={new Date()}
               filterTime={time => filterPassedTime(time, "start")}
@@ -267,10 +264,10 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
           <FormControl isInvalid={errors.endDate}>
             <FormLabel>End Date and Time</FormLabel>
             <ReactDatePicker
+              wrapperClassName="date-picker"
               selected={eventEndDate}
               onChange={handleChangeEndDate}
               showTimeSelect
-              showIcon
               customInput={<Input />}
               dateFormat="Pp"
               minDate={eventStartDate || new Date()}
@@ -279,11 +276,102 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
             <FormErrorMessage>{errors.endDate}</FormErrorMessage>
           </FormControl>
         </Flex>
-        <FormControl>
-          <FormLabel>Location</FormLabel>
-          <PlacesAutocomplete selected={eventLocation} setSelected={setEventLocation} />
-        </FormControl>
-
+        <Stack
+          alignItems="center"
+          justify="center"
+          spacing={{ base: 2, md: 4 }}
+          width={{ base: "100%", md: "75%" }}
+          direction={{ base: "column", sm: "row" }}
+        >
+          <Button
+            onClick={() => setIsPrivate(prev => !prev)}
+            w="100%"
+            rightIcon={isPrivate ? <BiLockAlt /> : <BiLockOpenAlt />}
+          >
+            {isPrivate ? "Private" : "Public"}
+          </Button>
+          <Menu>
+            <MenuButton w="100%" as={Button} rightIcon={<BiRepeat />}>
+              {eventRepeat}
+            </MenuButton>
+            <MenuList width="100%" maxH="300px">
+              <MenuOptionGroup
+                type="radio"
+                defaultValue={eventRepeat}
+                onChange={handleChangeRepetitions}
+                fontWeight={600}
+              >
+                {Object.entries(eventRepetitions).map(([key, value]) => (
+                  <MenuItemOption key={key} value={value}>
+                    {value}
+                  </MenuItemOption>
+                ))}
+              </MenuOptionGroup>
+            </MenuList>
+          </Menu>
+          <Menu closeOnSelect={false}>
+            <MenuButton
+              w="100%"
+              as={Button}
+              rightIcon={<BiTag />}
+              color={`rgb(${categoryColors[eventColor]})`}
+              bg={`rgba(${categoryColors[eventColor]}, .3)`}
+              _hover={{ bgColor: `rgba(${categoryColors[eventColor]}, .4)` }}
+              _focus={{ bgColor: `rgba(${categoryColors[eventColor]}, .4)` }}
+              _active={{ bgColor: `rgba(${categoryColors[eventColor]}, .4)` }}
+            >
+              Categorize
+            </MenuButton>
+            <MenuList width="100%" maxH="300px">
+              <MenuOptionGroup
+                type="radio"
+                defaultValue={eventColor}
+                onChange={handleChangeEventColor}
+              >
+                {Object.entries(eventCategories).map(([key, value]) => (
+                  <MenuItemOption
+                    key={key}
+                    value={key}
+                    _hover={{ bgColor: `rgba(${categoryColors[key]}, .3)` }}
+                    color={`rgb(${categoryColors[key]})`}
+                    fontWeight={600}
+                  >
+                    {value}
+                  </MenuItemOption>
+                ))}
+              </MenuOptionGroup>
+            </MenuList>
+          </Menu>
+        </Stack>
+        <Stack direction={{ base: "column", lg: "row" }} align="center" w="100%">
+          <FormControl flexGrow={1}>
+            <FormLabel>Location</FormLabel>
+            <PlacesAutocomplete selected={eventLocation} setSelected={setEventLocation} />
+          </FormControl>
+          <FormControl alignSelf="end" width={{ base: "100%", lg: 230 }}>
+            <FormLabel
+              htmlFor="upload-image"
+              mb={0}
+              style={{
+                backgroundColor: `rgb(${categoryColors.blue})`,
+                color: "white",
+                borderRadius: "5px",
+                padding: "8px",
+                cursor: "pointer",
+                textAlign: "center", // Center text
+                fontWeight: "600",
+              }}
+            >
+              Upload Image
+            </FormLabel>
+            <Input
+              type="file"
+              onChange={e => handleImageUpload(e)}
+              style={{ display: "none" }}
+              id="upload-image"
+            />
+          </FormControl>
+        </Stack>
         <FormControl isRequired isInvalid={errors.description}>
           <FormLabel>Description</FormLabel>
           <ReactQuill
@@ -316,136 +404,13 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
           <FormErrorMessage>{errors.attendees}</FormErrorMessage>
         </FormControl>
 
-        <input
-          type="file"
-          onChange={e => handleImageUpload(e)}
-          style={{ display: "none" }}
-          id="upload-image"
-        />
-        <label
-          htmlFor="upload-image"
-          style={{
-            maxWidth: "100%",
-            width: ["100%", "50%"],
-            backgroundColor: `rgb(${categoryColors.blue})`,
-            color: "white",
-            borderRadius: "5px",
-            padding: "10px",
-            cursor: "pointer",
-            textAlign: "center", // Center text
-            fontSize: "18px",
-            fontWeight: "600",
-          }}
-        >
-          Upload Image
-        </label>
-
-        <Stack
-          alignItems="center"
-          spacing={{ base: 2, md: 4 }}
+        <Flex
+          marginTop={6}
           width="100%"
-          direction={{ base: "column", sm: "row" }}
-        >
-          <Button
-            onClick={() => setIsPrivate(prev => !prev)}
-            w="110px"
-            rightIcon={isPrivate ? <BiLockAlt /> : <BiLockOpenAlt />}
-          >
-            {isPrivate ? "Private" : "Public"}
-          </Button>
-          <Menu width="50%">
-            <MenuButton as={Button} rightIcon={<BiRepeat />}>
-              {eventRepeat}
-            </MenuButton>
-            <MenuList width="100%" maxH="300px">
-              <MenuOptionGroup
-                type="radio"
-                defaultValue={eventRepeat}
-                onChange={handleChangeRepetitions}
-                fontWeight={600}
-              >
-                {Object.entries(eventRepetitions).map(([key, value]) => (
-                  <MenuItemOption key={key} value={value}>
-                    {value}
-                  </MenuItemOption>
-                ))}
-              </MenuOptionGroup>
-            </MenuList>
-          </Menu>
-          <Menu closeOnSelect={false} width="50%">
-            <MenuButton
-              as={Button}
-              rightIcon={<BiTag />}
-              color={`rgb(${categoryColors[eventColor]})`}
-              bg={`rgba(${categoryColors[eventColor]}, .3)`}
-              _hover={{ bgColor: `rgba(${categoryColors[eventColor]}, .4)` }}
-              _focus={{ bgColor: `rgba(${categoryColors[eventColor]}, .4)` }}
-              _active={{ bgColor: `rgba(${categoryColors[eventColor]}, .4)` }}
-            >
-              Categorize
-            </MenuButton>
-            <MenuList width="100%" maxH="300px">
-              <MenuOptionGroup
-                type="radio"
-                defaultValue={eventColor}
-                onChange={handleChangeEventColor}
-              >
-                <MenuItemOption
-                  value="pink"
-                  _hover={{ bgColor: `rgba(${categoryColors.pink}, .3)` }}
-                  color={`rgb(${categoryColors.pink})`}
-                  fontWeight={600}
-                >
-                  Pink
-                </MenuItemOption>
-                <MenuItemOption
-                  value="purple"
-                  _hover={{ bgColor: `rgba(${categoryColors.purple}, .3)` }}
-                  color={`rgb(${categoryColors.purple})`}
-                  fontWeight={600}
-                >
-                  Purple
-                </MenuItemOption>
-                <MenuItemOption
-                  value="blue"
-                  _hover={{ bgColor: `rgba(${categoryColors.blue}, .3)` }}
-                  color={`rgb(${categoryColors.blue})`}
-                  fontWeight={600}
-                >
-                  Blue
-                </MenuItemOption>
-                <MenuItemOption
-                  value="green"
-                  _hover={{ bgColor: `rgba(${categoryColors.green}, .3)` }}
-                  color={`rgb(${categoryColors.green})`}
-                  fontWeight={600}
-                >
-                  Green
-                </MenuItemOption>
-                <MenuItemOption
-                  value="yellow"
-                  _hover={{ bgColor: `rgba(${categoryColors.yellow}, .3)` }}
-                  color={`rgb(${categoryColors.yellow})`}
-                  fontWeight={600}
-                >
-                  Yellow
-                </MenuItemOption>
-                <MenuItemOption
-                  value="orange"
-                  _hover={{ bgColor: `rgba(${categoryColors.orange}, .3)` }}
-                  color={`rgb(${categoryColors.orange})`}
-                  fontWeight={600}
-                >
-                  Orange
-                </MenuItemOption>
-              </MenuOptionGroup>
-            </MenuList>
-          </Menu>
-        </Stack>
-        <ButtonGroup
-          width="100%"
-          height="50px"
           fontSize="xl"
+          align="center"
+          justifyContent="center"
+          gap={2}
           flexDirection={{ base: "column", md: "row" }}
         >
           <Button width="full" onClick={() => navigate("..")}>
@@ -454,7 +419,7 @@ const EventForm = ({ editMode = false, eventData = {} }) => {
           <Button width="full" colorScheme="blue" onClick={handleSubmit}>
             {editMode ? "Save Changes" : "Create Event"}
           </Button>
-        </ButtonGroup>
+        </Flex>
       </VStack>
     </Flex>
   )
