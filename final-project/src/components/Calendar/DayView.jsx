@@ -56,7 +56,7 @@ const DayView = ({ date, setDate, onOpenDetailedModal }) => {
       rowGap={3}
       maxHeight={`calc(90vh - ${HEADER_HEIGHT})`}
     >
-      <GridItem area="calendar" height={{lg: "90%"}} >
+      <GridItem area="calendar" height={{ lg: "90%" }}>
         <Grid
           templateColumns={{ base: "1fr", sm: "repeat(3, 1fr)" }}
           py={2}
@@ -93,15 +93,15 @@ const DayView = ({ date, setDate, onOpenDetailedModal }) => {
         </Box>
       </GridItem>
       <GridItem
-  h={{ base: "150px", lg: "100%" }}
-  area="quote"
-  style={{
-    backgroundImage: `url(https://zenquotes.io/api/image)`,
-    backgroundSize: "cover",
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "center",
-  }}
-></GridItem>
+        h={{ base: "150px", lg: "100%" }}
+        area="quote"
+        style={{
+          backgroundImage: `url(https://zenquotes.io/api/image)`,
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
+        }}
+      ></GridItem>
 
       <GridItem area="todos" overflow="auto">
         <TodoComponent />
