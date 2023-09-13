@@ -1,11 +1,11 @@
 //final-react-project/final-project/src/components/Hero/Hero.jsx
 
-import { Box, Button, Heading, Stack, Text } from "@chakra-ui/react";
-import HeroImg from "../../assets/images/hero.png";
-import { useNavigate } from "react-router-dom";
+import { Box, Button, Heading, Stack, Text } from "@chakra-ui/react"
+import HeroImg from "../../assets/images/hero.png"
+import { useNavigate } from "react-router-dom"
 
 const Hero = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   return (
     <Box position="relative" direction="column">
@@ -17,6 +17,11 @@ const Hero = () => {
         textAlign="left"
         height="100vh"
         bgImage={HeroImg}
+        style={{
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
+        }}
         justify="center"
         spacing={6}
         padding={6}
@@ -39,18 +44,12 @@ const Hero = () => {
       </Stack>
 
       <Box position="absolute" left={8} bottom={8} maxWidth="60%" padding={6}>
-        <Text
-          fontSize="lg"
-          color="white"
-          fontWeight="bold"
-          fontStyle="italic"
-          textAlign="center"
-        >
+        <Text fontSize="lg" color="white" fontWeight="bold" fontStyle="italic" textAlign="center">
           Gateway to a world of deep connections and meaningful experiences...
         </Text>
       </Box>
     </Box>
-  );
-};
+  )
+}
 
-export default Hero;
+export default Hero
