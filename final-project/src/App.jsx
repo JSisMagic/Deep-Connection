@@ -20,6 +20,7 @@ import MembersPage from "./pages/Members/Members"
 import NotFoundPage from "./pages/NotFound/NotFoundPage"
 import RegisterPage from "./pages/Register/RegisterPage"
 import { getNotifications } from "./services/notification.services"
+import "./services/reminder.services"
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyCs89FEdCghqxYJoWMICN59cqhVOYyRLgs"
 const LIBRARIES = ["places"]
