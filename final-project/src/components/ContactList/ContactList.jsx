@@ -425,10 +425,9 @@ const ContactList = () => {
                             </Flex>
                             <Button
                               size="sm"
-                              leftIcon={<FaTimes />}
                               onClick={() => handleRemoveUserFromList(list.id, contact.id)}
                               variant="outline"
-                            ></Button>
+                            ><FaTimes /></Button>
                           </Box>
                         </ListItem>
                       );
