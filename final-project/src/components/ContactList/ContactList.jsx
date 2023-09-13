@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { auth } from "../../config/firebase";
+import React, { useState, useEffect } from "react"
+import { auth } from "../../config/firebase"
 import {
   Box,
   Heading,
@@ -18,16 +18,10 @@ import {
   SimpleGrid,
   Text,
   useToast,
-} from "@chakra-ui/react";
+} from "@chakra-ui/react"
 import { useNavigate } from "react-router-dom"
-import {
-  FaTrash,
-  FaChevronDown,
-  FaChevronUp,
-  FaTimes,
-  FaUserEdit
-} from "react-icons/fa";
-import { BiTrashAlt, BiEditAlt } from "react-icons/bi";
+import { FaTrash, FaChevronDown, FaChevronUp, FaTimes, FaUserEdit } from "react-icons/fa"
+import { BiTrashAlt, BiEditAlt } from "react-icons/bi"
 import {
   getUserContactLists,
   createContactListForUser,
@@ -35,68 +29,70 @@ import {
   deleteContactListForUser,
   getUsersByUsernamePartial,
   getContacts,
-  removeContact
-} from "../../services/users.services";
+  removeContact,
+} from "../../services/users.services"
+import { HEADER_HEIGHT } from "../../common/constrants"
+import { categoryColors } from "../../common/colors"
 
 const ContactList = () => {
-  const navigate = useNavigate();
-  const toast = useToast();
-  const [contactLists, setContactLists] = useState({});
-  const [myContacts, setMyContacts] = useState([]);
-  const [listName, setListName] = useState("");
-  const [emailToAdd, setEmailToAdd] = useState("");
-  const [selectedList, setSelectedList] = useState(null);
-  const [userUid, setUserUid] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [expandedList, setExpandedList] = useState(null);
-  const [expandModifyBox, setExpandModifyBox] = useState(null);
-  const [searchResults, setSearchResults] = useState([]);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const navigate = useNavigate()
+  const toast = useToast()
+  const [contactLists, setContactLists] = useState({})
+  const [myContacts, setMyContacts] = useState([])
+  const [listName, setListName] = useState("")
+  const [emailToAdd, setEmailToAdd] = useState("")
+  const [selectedList, setSelectedList] = useState(null)
+  const [userUid, setUserUid] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [expandedList, setExpandedList] = useState(null)
+  const [expandModifyBox, setExpandModifyBox] = useState(null)
+  const [searchResults, setSearchResults] = useState([])
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
+    const unsubscribe = auth.onAuthStateChanged(user => {
       if (user) {
-        setUserUid(user.uid);
+        setUserUid(user.uid)
       }
-      setIsLoading(false);
-    });
+      setIsLoading(false)
+    })
 
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    if (userUid) {
-      const fetchContactLists = async () => {
-        const lists = await getUserContactLists(userUid);
-        setContactLists(lists);
-      };
-
-      fetchContactLists();
-    }
-  }, [userUid]);
+    return () => unsubscribe()
+  }, [])
 
   useEffect(() => {
     if (userUid) {
       const fetchContactLists = async () => {
-        const lists = await getUserContactLists(userUid);
-        setContactLists(lists);
-        const contacts = await getContacts(userUid);
-        setMyContacts(contacts);
-      };
-  
-      fetchContactLists();
-    }
-  }, [userUid]);
+        const lists = await getUserContactLists(userUid)
+        setContactLists(lists)
+      }
 
-  const searchUsers = async (usernamePartial) => {
+      fetchContactLists()
+    }
+  }, [userUid])
+
+  useEffect(() => {
+    if (userUid) {
+      const fetchContactLists = async () => {
+        const lists = await getUserContactLists(userUid)
+        setContactLists(lists)
+        const contacts = await getContacts(userUid)
+        setMyContacts(contacts)
+      }
+
+      fetchContactLists()
+    }
+  }, [userUid])
+
+  const searchUsers = async usernamePartial => {
     if (usernamePartial.length >= 3) {
-      const results = await getUsersByUsernamePartial(usernamePartial);
-      setSearchResults(results);
-      setIsDropdownOpen(true);
+      const results = await getUsersByUsernamePartial(usernamePartial)
+      setSearchResults(results)
+      setIsDropdownOpen(true)
     } else {
-      setIsDropdownOpen(false);
+      setIsDropdownOpen(false)
     }
-  };
+  }
 
   const handleCreateList = async () => {
     try {
@@ -104,21 +100,21 @@ const ContactList = () => {
         const newList = await createContactListForUser(userUid, {
           name: listName,
           contacts: {},
-        });
-  
-        setContactLists((prevLists) => {
-          return { ...prevLists, [newList.id]: newList };
-        });
-  
-        setListName("");
-  
+        })
+
+        setContactLists(prevLists => {
+          return { ...prevLists, [newList.id]: newList }
+        })
+
+        setListName("")
+
         toast({
           title: "List Created",
           description: `Successfully created the list "${listName}".`,
           status: "success",
           duration: 3000,
           isClosable: true,
-        });
+        })
       } else {
         toast({
           title: "Creation Failed",
@@ -126,7 +122,7 @@ const ContactList = () => {
           status: "error",
           duration: 3000,
           isClosable: true,
-        });
+        })
       }
     } catch (error) {
       toast({
@@ -135,29 +131,29 @@ const ContactList = () => {
         status: "error",
         duration: 3000,
         isClosable: true,
-      });
+      })
     }
-  };
+  }
 
-  const handleAddUserToList = async (user) => {
+  const handleAddUserToList = async user => {
     try {
-      const currentList = contactLists[selectedList];
+      const currentList = contactLists[selectedList]
       if (currentList) {
-        const existingContacts = currentList.contacts || {};
-  
+        const existingContacts = currentList.contacts || {}
+
         if (!existingContacts[user.uid]) {
           existingContacts[user.uid] = {
-            id: user.uid, 
-            name: `${user.firstName} ${user.lastName}`, 
+            id: user.uid,
+            name: `${user.firstName} ${user.lastName}`,
             username: user.username,
-            avatar: user.profilePicture || null, 
-          };
-  
-          await updateContactListForUser(userUid, selectedList, existingContacts);
-  
-          setContactLists((prevLists) => {
-            return { ...prevLists, [selectedList]: { ...currentList, contacts: existingContacts } };
-          });
+            avatar: user.profilePicture || null,
+          }
+
+          await updateContactListForUser(userUid, selectedList, existingContacts)
+
+          setContactLists(prevLists => {
+            return { ...prevLists, [selectedList]: { ...currentList, contacts: existingContacts } }
+          })
 
           toast({
             title: "Contact Added",
@@ -165,11 +161,11 @@ const ContactList = () => {
             status: "success",
             duration: 3000,
             isClosable: true,
-          });
-  
-          setEmailToAdd("");
-          setSearchResults([]);
-          setIsDropdownOpen(false);
+          })
+
+          setEmailToAdd("")
+          setSearchResults([])
+          setIsDropdownOpen(false)
         } else {
           toast({
             title: "Contact Already Exists",
@@ -177,48 +173,47 @@ const ContactList = () => {
             status: "warning",
             duration: 3000,
             isClosable: true,
-          });
+          })
         }
       } else {
-        console.error("No list selected.");
+        console.error("No list selected.")
         toast({
           title: "No List Selected",
           description: "Please select a list to add the contact to.",
           status: "error",
           duration: 3000,
           isClosable: true,
-        });
+        })
       }
     } catch (error) {
-      console.error("Error adding user to list:", error);
+      console.error("Error adding user to list:", error)
       toast({
         title: "Error",
         description: "There was an error adding the contact to the list.",
         status: "error",
         duration: 3000,
         isClosable: true,
-      });
+      })
     }
-  };
-  
+  }
 
-  const handleDeleteList = async (listId) => {
+  const handleDeleteList = async listId => {
     try {
-      await deleteContactListForUser(userUid, listId);
-  
-      setContactLists((prevLists) => {
-        const updatedLists = { ...prevLists };
-        delete updatedLists[listId];
-        return updatedLists;
-      });
-  
+      await deleteContactListForUser(userUid, listId)
+
+      setContactLists(prevLists => {
+        const updatedLists = { ...prevLists }
+        delete updatedLists[listId]
+        return updatedLists
+      })
+
       toast({
         title: "List Deleted",
         description: "Successfully deleted the list.",
         status: "success",
         duration: 3000,
         isClosable: true,
-      });
+      })
     } catch (error) {
       toast({
         title: "Error",
@@ -226,28 +221,28 @@ const ContactList = () => {
         status: "error",
         duration: 3000,
         isClosable: true,
-      });
+      })
     }
-  };
+  }
 
   const handleRemoveUserFromList = async (listId, userId) => {
     try {
-      const updatedList = { ...contactLists[listId] };
+      const updatedList = { ...contactLists[listId] }
       if (updatedList.contacts[userId]) {
-        delete updatedList.contacts[userId];
-        await updateContactListForUser(userUid, listId, updatedList);
-        setContactLists((prevLists) => ({
+        delete updatedList.contacts[userId]
+        await updateContactListForUser(userUid, listId, updatedList)
+        setContactLists(prevLists => ({
           ...prevLists,
           [listId]: updatedList,
-        }));
-  
+        }))
+
         toast({
           title: "User Removed",
           description: "Successfully removed the user from the list.",
           status: "success",
           duration: 3000,
           isClosable: true,
-        });
+        })
       }
     } catch (error) {
       toast({
@@ -256,251 +251,254 @@ const ContactList = () => {
         status: "error",
         duration: 3000,
         isClosable: true,
-      });
+      })
     }
-  };
+  }
 
-  const handleRemoveContact = async (contactId) => {
+  const handleRemoveContact = async contactId => {
     try {
-      await removeContact(userUid, contactId);
-      setMyContacts((prevContacts) =>
-        prevContacts.filter((contact) => contact.id !== contactId)
-      );
-  
+      await removeContact(userUid, contactId)
+      setMyContacts(prevContacts => prevContacts.filter(contact => contact.id !== contactId))
+
       toast({
         title: "Contact Removed",
         description: "Successfully removed the contact from your list.",
         status: "success",
         duration: 3000,
         isClosable: true,
-      });
+      })
     } catch (error) {
-      console.error("Error removing contact:", error);
+      console.error("Error removing contact:", error)
       toast({
         title: "Error",
         description: "There was an error removing the contact.",
         status: "error",
         duration: 3000,
         isClosable: true,
-      });
+      })
     }
-  };
+  }
 
   if (isLoading) {
-    return <Spinner />;
+    return <Spinner />
   }
 
   if (!userUid) {
-    return <p>User not authenticated!</p>;
+    return <p>User not authenticated!</p>
   }
 
   return (
-    <Flex flexDirection={{ base: "column", md: "row" }} height="100vh" padding="20px">
-     
-     <VStack spacing={6} w={{ base: "100%", md: "50%" }} pr={{ md: "4" }}>
-  
-          {/* Groups Section */}
-          <Box 
-            p={4}
-            borderWidth="1px"
-            borderRadius="lg"
-            width="100%"
-            >
-            <Heading fontWeight={500} mb={4}> My Groups</Heading>
-            <VStack width="100%" align="stretch">
-             {Object.keys(contactLists).length === 0 ? (
-              <Box p={4} textAlign="center">
-                <p>You don't have any groups yet.</p>
-                <p>Create one to get started!</p>
-              </Box>
-            ) : (
-              Object.values(contactLists).map((list) => (
-                <Box
-                  key={list.id}
-                  p={4}
-                  borderWidth="1px"
-                  borderRadius="lg"
-                  width="100%"
-                >
-                  <Heading
-                    size="md"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    fontWeight={600}
-                  >
-                    {list.name}
-                    <Box>
-                      <Button
-                        size="sm"
-                        fontWeight={600} 
-                        onClick={() =>
-                          setExpandedList((prev) =>
-                            prev === list.id ? null : list.id
-                          )
-                        }
-                        mr={2}
-                      >
-                        {expandedList === list.id ? <FaChevronUp /> : <FaChevronDown />}
-                      </Button>
-                      <Button
-                        size="sm"
-                        mr={2}
-                        
-                        onClick={() => handleDeleteList(list.id)}
-                        bgColor="grey.100"
-                      >
-                        <BiTrashAlt />
-                      </Button>
-                      <Button
-                        size="sm"
-                        onClick={() => {
-                          setExpandModifyBox(list.id === expandModifyBox ? null : list.id);
-                          setSelectedList(list.id)
-                        }}
-                        bgColor="grey.100"
-                      >
-                        <BiEditAlt />
-                      </Button>
-                    </Box>
-                  </Heading>
-                  <Collapse in={expandedList === list.id}>
-                    <List spacing={2} fontWeight={600}>
-                      {Object.values(list.contacts || {}).map((contact, index) => {
-                        return (
-                          <ListItem
-                            key={contact.id || index}
-                            display="flex"
-                            justifyContent="space-between"
-                            alignItems="center"
-                          >
-                            <Flex gap={3} onClick={() => navigate(`/profile/${contact.id}`)} cursor="pointer">
-                              <Avatar src={contact.avatar} size="sm" mr={2} />
-                              {contact.name}
-                            </Flex>
-                            <Button
-                              size="sm"
-                              leftIcon={<FaTimes />}
-                              onClick={() => handleRemoveUserFromList(list.id, contact.id)}
-                              variant="outline"
-                            ></Button>
-                          </ListItem>
-                        );
-                      })}
-                    </List>
-                  </Collapse>
-                  <Collapse in={expandModifyBox === list.id}>
-                    <Input
-                      value={emailToAdd}
-                      onChange={(e) => {
-                        setEmailToAdd(e.target.value);
-                        searchUsers(e.target.value);
+    <Flex flexDirection={{ base: "column", md: "row" }} px={{ base: 3, lg: 20 }} py={8} gap={8}>
+      {/* My Contacts Section */}
 
-                        if (e.target.value === '') {
-                          setSearchResults([]);
-                        }
-                      }}
-                      placeholder="Add user to group"
-                    />
-                    <Box
-                      position="absolute"
-                      mt={2}
-                      w="300px"
-                      zIndex="dropdown"
-                      borderRadius="md"
-                      boxShadow="md"
-                      bg="gray.50"
-                      overflowY="auto"
-                      maxHeight="300px"
-                    >
-                      {searchResults.map(user => (
-                        <Flex
-                          key={user.uid}
-                          background="white"
-                          p={3}
-                          borderRadius="md"
-                          justify="space-between"
-                          align="center"
-                          boxShadow="base"
-                          onClick={() => handleAddUserToList(user)}
-                          cursor="pointer"
-                          _hover={{ bg: "rgba(255,255,255, .2)" }}
-                        >
-                          <Flex gap={3}>
-                            <Avatar src={user.profilePicture} />
-                            <Box>
-                              <Heading size="sm">
-                                {user.firstName} {user.lastName}
-                              </Heading>
-                              <Text fontWeight={600}>@{user.username}</Text>
-                            </Box>
-                          </Flex>
-                        </Flex>
-                        ))}
-                    </Box>
-                  </Collapse>
-                </Box>
-              ))
-            )}
-  
-            <Box mt={4}>
-              <Input
-                placeholder="New group name"
-                value={listName}
-                onChange={(e) => setListName(e.target.value)}
-              />
-              <Button
-                mt={2}
-                onClick={handleCreateList}
-                disabled={!listName.trim()}
+      <VStack
+        spacing={6}
+        bg="gray.50"
+        borderRadius="lg"
+        w={{ base: "100%", md: "50%" }}
+        p={1}
+        mt={{ base: "6", md: "0" }}
+      >
+        <Box p={4} borderWidth="1px" borderRadius="lg" width="100%">
+          <Heading fontWeight={500} mb={4} fontFamily="heading">
+            My Contacts
+          </Heading>
+          <SimpleGrid columns={1} spacing={2}>
+            {myContacts.map((contact, index) => (
+              <Box
+                bg="white"
+                key={index}
+                p={4}
+                borderWidth="1px"
+                borderRadius="lg"
+                width="100%"
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
               >
-                Create new group
-              </Button>
-            </Box>
-          </VStack>
-          </Box>
-          </VStack>
-  
-          {/* My Contacts Section */}
-          <VStack spacing={6} w={{ base: "100%", md: "50%" }} pl={{ md: "4" }} mt={{ base: "6", md: "0" }}>
-          <Box 
-            p={4}
-            borderWidth="1px"
-            borderRadius="lg"
-            width="100%"
-            >
-            <Heading fontWeight={500} mb={4} fontFamily="heading">My Contacts</Heading>
-            <SimpleGrid columns={1} spacing={2}>
-              {myContacts.map((contact, index) => (
-                <Box
-                  key={index}
-                  p={4}
-                  borderWidth="1px"
-                  borderRadius="lg"
-                  width="100%"
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
+                <Flex
+                  gap={3}
+                  onClick={() => navigate(`/profile/${contact.contactUserId}`)}
+                  cursor="pointer"
                 >
-                  <Flex gap={3} onClick={() => navigate(`/profile/${contact.contactUserId}`)} cursor="pointer">
-                    <Avatar src={contact.profilePicture} size="sm" mr={2} />
-                    {contact.name}
-                  </Flex>
-                  <Button
-                    size="sm"
-                    onClick={() => handleRemoveContact(contact.id)}
-                    variant="outline"
-                  >
-                    <BiTrashAlt />
-                  </Button>
+                  <Avatar src={contact.profilePicture} size="sm" mr={2} />
+                  {contact.name}
+                </Flex>
+                <Button
+                  bg={`rgba(${categoryColors.purple}, .2)`}
+                  size="sm"
+                  onClick={() => handleRemoveContact(contact.id)}
+                  variant="outline"
+                >
+                  <BiTrashAlt />
+                </Button>
+              </Box>
+            ))}
+          </SimpleGrid>
+        </Box>
+      </VStack>
+
+      <Box
+        bg="linear-gradient(135deg, #8232B2, #3490E3)"
+        w={{ base: "100%", md: "50%" }}
+        p={1}
+        mt={{ base: "6", md: "0" }}
+        h="max-content"
+      >
+        <VStack spacing={6} bg="white">
+          {/* Groups Section */}
+          <Box p={4} borderWidth="1px" borderRadius="lg" width="100%">
+            <Heading fontWeight={500} mb={4}>
+              {" "}
+              My Groups
+            </Heading>
+            <VStack width="100%" align="stretch">
+              {Object.keys(contactLists).length === 0 ? (
+                <Box p={4} textAlign="center">
+                  <p>You don't have any groups yet.</p>
+                  <p>Create one to get started!</p>
                 </Box>
-              ))}
-            </SimpleGrid>
+              ) : (
+                Object.values(contactLists).map(list => (
+                  <Box key={list.id} p={4} borderWidth="1px" borderRadius="lg" width="100%">
+                    <Heading
+                      size="md"
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      fontWeight={600}
+                    >
+                      {list.name}
+                      <Box>
+                        <Button
+                          size="sm"
+                          fontWeight={600}
+                          onClick={() =>
+                            setExpandedList(prev => (prev === list.id ? null : list.id))
+                          }
+                          mr={2}
+                        >
+                          {expandedList === list.id ? <FaChevronUp /> : <FaChevronDown />}
+                        </Button>
+                        <Button
+                          size="sm"
+                          mr={2}
+                          onClick={() => handleDeleteList(list.id)}
+                          bgColor="grey.100"
+                        >
+                          <BiTrashAlt />
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setExpandModifyBox(list.id === expandModifyBox ? null : list.id)
+                            setSelectedList(list.id)
+                          }}
+                          bgColor="grey.100"
+                        >
+                          <BiEditAlt />
+                        </Button>
+                      </Box>
+                    </Heading>
+                    <Collapse in={expandedList === list.id}>
+                      <List spacing={2} fontWeight={600}>
+                        {Object.values(list.contacts || {}).map((contact, index) => {
+                          return (
+                            <ListItem
+                              key={contact.id || index}
+                              display="flex"
+                              justifyContent="space-between"
+                              alignItems="center"
+                            >
+                              <Flex
+                                gap={3}
+                                onClick={() => navigate(`/profile/${contact.id}`)}
+                                cursor="pointer"
+                              >
+                                <Avatar src={contact.avatar} size="sm" mr={2} />
+                                {contact.name}
+                              </Flex>
+                              <Button
+                                size="sm"
+                                leftIcon={<FaTimes />}
+                                onClick={() => handleRemoveUserFromList(list.id, contact.id)}
+                                variant="outline"
+                              ></Button>
+                            </ListItem>
+                          )
+                        })}
+                      </List>
+                    </Collapse>
+                    <Collapse in={expandModifyBox === list.id}>
+                      <Input
+                        value={emailToAdd}
+                        onChange={e => {
+                          setEmailToAdd(e.target.value)
+                          searchUsers(e.target.value)
+
+                          if (e.target.value === "") {
+                            setSearchResults([])
+                          }
+                        }}
+                        placeholder="Add user to group"
+                      />
+                      <Box
+                        position="absolute"
+                        mt={2}
+                        w="300px"
+                        zIndex="dropdown"
+                        borderRadius="md"
+                        boxShadow="md"
+                        bg="gray.50"
+                        overflowY="auto"
+                        maxHeight="300px"
+                      >
+                        {searchResults.map(user => (
+                          <Flex
+                            key={user.uid}
+                            background="white"
+                            p={3}
+                            borderRadius="md"
+                            justify="space-between"
+                            align="center"
+                            boxShadow="base"
+                            onClick={() => handleAddUserToList(user)}
+                            cursor="pointer"
+                            _hover={{ bg: "rgba(255,255,255, .2)" }}
+                          >
+                            <Flex gap={3}>
+                              <Avatar src={user.profilePicture} />
+                              <Box>
+                                <Heading size="sm">
+                                  {user.firstName} {user.lastName}
+                                </Heading>
+                                <Text fontWeight={600}>@{user.username}</Text>
+                              </Box>
+                            </Flex>
+                          </Flex>
+                        ))}
+                      </Box>
+                    </Collapse>
+                  </Box>
+                ))
+              )}
+
+              <Box mt={4}>
+                <Input
+                  placeholder="New group name"
+                  value={listName}
+                  onChange={e => setListName(e.target.value)}
+                />
+                <Button mt={2} onClick={handleCreateList} disabled={!listName.trim()}>
+                  Create new group
+                </Button>
+              </Box>
+            </VStack>
           </Box>
-          </VStack>
+        </VStack>
+      </Box>
     </Flex>
   )
- }
-  
+}
 
-export default ContactList;
+export default ContactList
