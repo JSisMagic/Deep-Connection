@@ -1,12 +1,11 @@
 import { useLoadScript } from "@react-google-maps/api"
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { Route, Routes } from "react-router-dom"
 import Calendar from "./components/Calendar/calendar"
 import ContactList from "./components/ContactList/ContactList"
 import Notifications from "./components/Notifications/Notifications"
 import ProfilePage from "./components/Profile/ProfilePage"
-import TodoComponent from "./components/Todo/ToDo"
 import { auth } from "./config/firebase"
 import ApplicationLayout from "./layout/ApplicationLayout"
 import LandingLayout from "./layout/LandingLayout"
@@ -19,8 +18,8 @@ import LoginPage from "./pages/Login/LoginPage"
 import MembersPage from "./pages/Members/Members"
 import NotFoundPage from "./pages/NotFound/NotFoundPage"
 import RegisterPage from "./pages/Register/RegisterPage"
+import TodoPage from "./pages/Todo/TodoPage"
 import { getNotifications } from "./services/notification.services"
-import "./services/reminder.services"
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyCs89FEdCghqxYJoWMICN59cqhVOYyRLgs"
 const LIBRARIES = ["places"]
@@ -62,7 +61,7 @@ function App() {
             <Route path="/members" element={<MembersPage />} />
             <Route path="/profile/:uid" element={<ProfilePage />} />
             <Route path="/contacts" element={<ContactList />} />
-            <Route path="/todo" element={<TodoComponent />} />
+            <Route path="/todo" element={<TodoPage />} />
             <Route
               path="/notifications"
               element={
