@@ -100,6 +100,7 @@ const DayView = ({ date, setDate, onOpenDetailedModal }) => {
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
+          borderRadius: "10px",
         }}
       ></GridItem>
 
