@@ -73,8 +73,8 @@ Deep Connection offers a wide range of features to help you plan your day, impro
 ![Users view](./final-project/src/assets/images/members.png)
 ### About us
 ![About us view](./final-project/src/assets/images/about-us.png)
-### View profile
-![View other user profile view](./final-project/src/assets/images/view-profile.png)
 ### To Dos
 ![My profile view](./final-project/src/assets/images/to-dos.png)
+
+
 
