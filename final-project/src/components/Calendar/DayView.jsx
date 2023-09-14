@@ -51,7 +51,7 @@ const DayView = ({ date, setDate, onOpenDetailedModal }) => {
     <Grid
       templateAreas={{ base: MOBILE_AREAS, lg: DESKTOP_AREAS }}
       gridTemplateColumns={{ lg: "2fr 1fr" }}
-      gridTemplateRows={{ lg: "1fr auto 1fr" }}
+      gridTemplateRows={{ lg: "1fr 2fr 1fr" }}
       columnGap={3}
       rowGap={3}
       maxHeight={`calc(90vh - ${HEADER_HEIGHT})`}
@@ -100,10 +100,12 @@ const DayView = ({ date, setDate, onOpenDetailedModal }) => {
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
-          borderRadius: "10px",
         }}
       ></GridItem>
 
+      <GridItem area="todos" overflow="auto">
+        <TodoComponent />
+      </GridItem>
       <GridItem area="horoscope" overflow="auto">
         <Horoscope />
       </GridItem>
