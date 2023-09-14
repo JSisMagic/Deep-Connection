@@ -48,7 +48,7 @@ Deep Connection offers a wide range of features to help you plan your day, impro
 ### Login
 ![Login page view](./final-project/src/assets/images/login.png)
 ### Register
-![Register view](./final-project/src/assets/images/register.png)
+![Register view](./final-project/src/assets/images/Register.png)
 ### Events list
 ![Calendar add event modal view](./final-project/src/assets/images/events-list.png)
 ### Calendar ( Month view )
